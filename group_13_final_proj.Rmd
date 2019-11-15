@@ -1,6 +1,6 @@
 ---
 title: "Group 13 Final Project"
-author: "Clayton Snyder (cs3779), Keyanna Davis (kd2640), Olya Besedina (ob2305), Matthew Parker (mp3745), Lauren Franks (lef2147)"
+author: "cs3779, kd2640, ob2305, mp3745, lef2147"
 date: '`r format(Sys.time(), "%Y-%m-%d")`'
 output: github_document
 ---
@@ -25,3 +25,4 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
+

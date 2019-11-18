@@ -58,7 +58,8 @@ stop_frisk_tidy_df =
   sample_n(1000) %>% 
   select(pct, datestop, timestop, inout, perobs, perstop, arstmade, offunif, frisked, searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, rf_bulg, sex, race, age:othfeatr, city, xcoord, ycoord) %>% 
   mutate(
-    height_inch = ht_feet * 12 + ht_inch
+    height_inch = ht_feet * 12 + ht_inch,
+    age = as.numeric(age)
   )
 ```
 
@@ -67,8 +68,7 @@ stop_frisk_tidy_df =
 
 # count per sex group
 demographics = stop_frisk_tidy_df %>% 
-  select(sex:build) %>% 
-  mutate(age = as.numeric(age)) 
+  select(sex:build, height_inch, - ht_feet, -ht_inch) 
 
 # count subjects by sex
 demographics %>% 

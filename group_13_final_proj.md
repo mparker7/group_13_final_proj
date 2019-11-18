@@ -100,12 +100,23 @@ stop_frisk_df =
       "Z" = "unknown"
     ),
     # change boro columns to lowercase for consistency
-    boro = tolower(boro)
+    boro = tolower(boro),
+    # change character datatypes to numeric
+    age = as.numeric(age),
+    obs_time_min = as.numeric(obs_time_min),
   )  %>% 
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
          searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
          rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
   # change all columns that have Y/N to 1/0
-  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0")))
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) 
+
+# convert to dataframe
+stop_frisk_df = as.data.frame(stop_frisk_df)
+
+# order all categorical variables with more than 2 levels as factors
+for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")){
+  stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
+}
 ```

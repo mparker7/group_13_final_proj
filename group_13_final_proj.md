@@ -1,40 +1,111 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-14
+2019-11-18
 
 Read in and tidy the data
 
-Things to do:
+The following code:
 
-  - ~~Read in data~~
-  - ~~Subsample rows~~
-  - ~~Select columns that we want~~
-  - ~~Combine height into one column~~
-  - Make sure columns are right data type
-  - Rename columns to be more informative
-  - Recode columns to be more informative
-  - Format date, time
-  - Check for missing
+  - Reads in the data
+  - Renames columns to be more informative
+  - Combines height columns into a single height in inches
+  - Converts date\_stop to date data type
+  - Converts time\_stop to time data type
+  - Recodes the values in categorical columns to be more informative
+  - Selects column subset for further analysis
 
 <!-- end list -->
 
 ``` r
 # Read in data
 stop_frisk_df = 
+  # Read in data from internet
   GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
-  content("parsed") 
-```
-
-``` r
-# Subsample data to speed up calculation time
-# Select columns we want
-# Combine height into one column
-stop_frisk_tidy_df =
-  stop_frisk_df %>% 
-  sample_n(1000) %>% 
-  select(pct, datestop, timestop, inout, perobs, perstop, arstmade, offunif, frisked, searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, rf_bulg, sex, race, age:othfeatr, city, xcoord, ycoord) %>% 
+  content("parsed") %>% 
+  
+  # Clean and fix names of columns
+  janitor::clean_names() %>% 
+  rename(
+    precinct = pct,
+    date_stop = datestop,
+    time_stop = timestop,
+    stop_in_out = inout,
+    obs_time_min = perobs,
+    stop_time_min = perstop,
+    arst_made = arstmade,
+    off_in_unif = offunif,
+    hair_col = haircolr,
+    eye_col = eyecolor,
+    other_feature = othfeatr,
+    boro = city
+  )  %>% 
   mutate(
-    height_inch = ht_feet * 12 + ht_inch
-  )
+    # Combine height columns
+    height_inch = ht_feet * 12 + ht_inch,
+    # Convert date to proper format
+    date_stop = mdy(date_stop),
+    # Convert time to proper format
+    time_stop = hm(time_stop / 100),
+    # Recode to be more informative
+    stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
+    race = recode(
+      race, 
+      "A" = "asian/pacific islander", 
+      "B" = "black", 
+      "I" = "american indian/alaska native",
+      "P" = "black-hispanic",
+      "Q" = "white-hispanic",
+      "W" = "white",
+      "U" = "unknown",
+      "Z" = "other"
+    ),
+    hair_col = recode(
+      hair_col,
+      "BA" = "bald",
+      "BK" = "black",
+      "BL" = "blond",
+      "BR" = "brown",
+      "DY" = "dyed",
+      "FR" = "frosted",
+      "GY" = "gray",
+      "RA" = "red",
+      "SN" = "sandy",
+      "SP" = "salt and pepper",
+      "WH" = "white",
+      "XX" = "unknown",
+      "ZZ" = "other",
+    ),
+    eye_col = recode(
+      eye_col,
+      "BK" = "black",
+      "BL" = "blue",
+      "BR" = "brown",
+      "DF" = "different",
+      "GR" = "green",
+      "GY" = "gray",
+      "HA" = "hazel",
+      "MA" = "maroon",
+      "PK" = "pink",
+      "VI" = "violet",
+      "XX" = "unknown",
+      "Z" = "other",      
+    ),
+    build = recode(
+      build,
+      "H" = "heavy",
+      "M" = "medium",
+      "T" = "thin",
+      "U" = "muscular",
+      "Z" = "unknown"
+    ),
+    # change boro columns to lowercase for consistency
+    boro = tolower(boro)
+  )  %>% 
+  # select columns for further analysis
+  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
+         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
+         rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
+  # change all columns that have Y/N to 1/0
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0")))
 ```

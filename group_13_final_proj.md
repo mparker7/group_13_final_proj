@@ -1,7 +1,7 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-14
+2019-11-18
 
 Read in and tidy the data
 
@@ -38,3 +38,40 @@ stop_frisk_tidy_df =
     height_inch = ht_feet * 12 + ht_inch
   )
 ```
+
+``` r
+# count per sex group
+demographics = stop_frisk_tidy_df %>% 
+  select(sex:build) %>% 
+  mutate(age = as.numeric(age)) 
+
+# count subjects by sex
+demographics %>% 
+  group_by(sex) %>% 
+  summarize (count = n()) %>% 
+  knitr::kable()
+```
+
+| sex | count |
+| :-- | ----: |
+| F   |    84 |
+| M   |   909 |
+| Z   |     7 |
+
+``` r
+# distribution of age by sex
+demographics %>% 
+  ggplot(aes(x = sex, y = age, fill = sex))+
+  geom_boxplot(alpha = .5)
+```
+
+<img src="group_13_final_proj_files/figure-gfm/demographics-1.png" width="90%" />
+
+``` r
+# subjects count by race and sex 
+demographics %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")
+```
+
+<img src="group_13_final_proj_files/figure-gfm/demographics-2.png" width="90%" />

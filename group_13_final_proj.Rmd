@@ -135,18 +135,32 @@ stop_frisk_df =
          searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
          rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
   # change all columns that have Y/N to 1/0
-  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) 
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
+  # change binary columns to numeric instead of character
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.)))
 
 # convert to dataframe
 stop_frisk_df = as.data.frame(stop_frisk_df)
 
 # order all categorical variables with more than 2 levels as factors
-for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")){
+for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")) {
   stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
 }
 ```
 
 
+Evaluating Missing Data and Categorical Data
+```{r}
+table(stop_frisk_df$race)
+table(stop_frisk_df$hair_col)
+table(stop_frisk_df$eye_col)
+table(stop_frisk_df$build)
+# we should consider consolidating categories
+
+colSums(is.na(stop_frisk_df))
+# we should consider removing variable other_feature (11637 missing obs)
+# age has 35 missing values, consider multiple imputation methods here
+```
 
 
 

@@ -1,23 +1,21 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-14
+2019-11-18
 
 Read in and tidy the data
 
 Things to do:
 
-  - ~~Read in data~~
-  - ~~Subsample rows~~
-  - ~~Select columns that we want~~
-  - ~~Combine height into one column~~
-  - Make sure columns are right data type
-  - Rename columns to be more informative
-  - Recode columns to be more informative
-  - Format date, time
-  - Check for missing
-
-<!-- end list -->
+-   ~~Read in data~~
+-   ~~Subsample rows~~
+-   ~~Select columns that we want~~
+-   ~~Combine height into one column~~
+-   Make sure columns are right data type
+-   Rename columns to be more informative
+-   Recode columns to be more informative
+-   Format date, time
+-   Check for missing
 
 ``` r
 # Read in data

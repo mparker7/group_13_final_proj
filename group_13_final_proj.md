@@ -1,7 +1,7 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-18
+2019-11-19
 
 Read in and tidy the data
 
@@ -104,6 +104,7 @@ stop_frisk_df =
     # change character datatypes to numeric
     age = as.numeric(age),
     obs_time_min = as.numeric(obs_time_min),
+    stop_time_min = as.numeric(stop_time_min)
   )  %>% 
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
@@ -112,7 +113,9 @@ stop_frisk_df =
   # change all columns that have Y/N to 1/0
   mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
   # change binary columns to numeric instead of character
-  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.)))
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
+  # converts all character variables to factors (this does the same as the for loop)
+  mutate_if(is.character, as.factor)
 
 # convert to dataframe
 stop_frisk_df = as.data.frame(stop_frisk_df)
@@ -178,7 +181,7 @@ colSums(is.na(stop_frisk_df))
     ##      precinct     date_stop     time_stop   stop_in_out  obs_time_min 
     ##             1             1             1             1             1 
     ## stop_time_min     arst_made   off_in_unif       frisked      searched 
-    ##             1             1             1             1             1 
+    ##            24             1             1             1             1 
     ##      rf_vcrim      rf_othsw      rf_attir      cs_objcs      cs_descr 
     ##             1             1             1             1             1 
     ##      cs_casng      cs_lkout      rf_vcact      cs_cloth      cs_drgtr 
@@ -199,4 +202,23 @@ colSums(is.na(stop_frisk_df))
 ``` r
 # we should consider removing variable other_feature (11637 missing obs)
 # age has 35 missing values, consider multiple imputation methods here
+
+# Looks like there is also an entire row of NA's
 ```
+
+Looking at stops over time (not complete yet)
+
+``` r
+stop_frisk_df %>% 
+  group_by(date_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = date_stop, y = count)) + 
+    geom_point() +
+    geom_smooth(se = FALSE)
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-3-1.png" width="90%" />

@@ -181,6 +181,87 @@ stop_frisk_df %>%
 ```
 
 
+Logistic Regression Dataset
+  - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
+```{r}
+stop_frisk_log = stop_frisk_df %>% mutate(
+    recode(
+      race, 
+      "A" = "asian/pacific islander", 
+      "B" = "black", 
+      "I" = "other",
+      "P" = "black-hispanic",
+      "Q" = "white-hispanic",
+      "W" = "white",
+      "U" = "other",
+      "Z" = "other"
+    ),
+    hair_col = recode(
+      hair_col,
+      "BA" = "bald",
+      "BK" = "black",
+      "BL" = "blond",
+      "BR" = "brown",
+      "DY" = "other",
+      "FR" = "other",
+      "GY" = "other",
+      "RA" = "other",
+      "SN" = "other",
+      "SP" = "other",
+      "WH" = "other",
+      "XX" = "unknown",
+      "ZZ" = "other",
+    ),
+    eye_col = recode(
+      eye_col,
+      "BK" = "black",
+      "BL" = "blue",
+      "BR" = "brown",
+      "DF" = "other",
+      "GR" = "other",
+      "GY" = "other",
+      "HA" = "other",
+      "MA" = "other",
+      "PK" = "other",
+      "VI" = "other",
+      "XX" = "other",
+      "Z" = "other",      
+    ),
+    build = recode(
+      build,
+      "H" = "heavy",
+      "M" = "medium",
+      "T" = "thin",
+      "U" = "other",
+      "Z" = "other"
+    ))
+```
+
+
+Building a model using only characteristics, demographics, and location as predictors
+ - assess multicolinearity to determine if there are any variables that exhibit high correlation 
+ - We will remove any variables that exhibit signs of multicollinearity 
+```{r}
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+
+car::vif(model_1)
+# Based on the GVIF, we will remove boro
+
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+
+car::vif(model_2)
+# no more collinearity problems
+
+summary(model_2)
+# Remove hair and eye color because all categories within them are highly unsignificant 
+
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+
+car::vif(model_3)
+
+summary(model_3)
+# keep weight? Although race is insignificant across all groups, should we still keep this in the model? Seems like an important predictor to me, we can see if there is any literature supporting this to validate why we will keep it in the model
+```
 
 
 

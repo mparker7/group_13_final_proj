@@ -288,7 +288,7 @@ that exhibit signs of
 multicollinearity
 
 ``` r
-model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
 
 car::vif(model_1)
 ```
@@ -309,7 +309,7 @@ car::vif(model_1)
 ``` r
 # Based on the GVIF, we will remove boro
 
-model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
 
 car::vif(model_2)
 ```
@@ -336,7 +336,7 @@ summary(model_2)
     ## Call:
     ## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
     ##     hair_col + eye_col + build + stop_in_out + precinct, family = binomial, 
-    ##     data = stop_frisk_df)
+    ##     data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
@@ -396,7 +396,7 @@ summary(model_2)
 ``` r
 # Remove hair and eye color because all categories within them are highly unsignificant 
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
 
 car::vif(model_3)
 ```
@@ -418,7 +418,7 @@ summary(model_3)
     ## 
     ## Call:
     ## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
-    ##     build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+    ##     build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  

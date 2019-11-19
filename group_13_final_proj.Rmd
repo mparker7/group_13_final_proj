@@ -242,12 +242,12 @@ Building a model using only characteristics, demographics, and location as predi
  - assess multicolinearity to determine if there are any variables that exhibit high correlation 
  - We will remove any variables that exhibit signs of multicollinearity 
 ```{r}
-model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
 
 car::vif(model_1)
 # Based on the GVIF, we will remove boro
 
-model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
 
 car::vif(model_2)
 # no more collinearity problems
@@ -255,7 +255,7 @@ car::vif(model_2)
 summary(model_2)
 # Remove hair and eye color because all categories within them are highly unsignificant 
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_df)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
 
 car::vif(model_3)
 

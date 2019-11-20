@@ -22,6 +22,9 @@ Rough Outline of Project:
   * other things
 * Findings/Discussion
 
+
+
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
@@ -296,6 +299,23 @@ stop_frisk_df %>%
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Logistic Regression Dataset
   - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
 ```{r}
@@ -339,6 +359,10 @@ stop_frisk_log = stop_frisk_df %>% mutate(
       "muscular" = "other",
     ))
 ```
+
+
+
+
 
 
 Building a model using only characteristics, demographics, and location as predictors for frisked

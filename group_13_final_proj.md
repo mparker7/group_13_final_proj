@@ -2,7 +2,6 @@ Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
 2019-11-20
-<<<<<<< HEAD
 
 Rough Outline of Project:
 
@@ -26,8 +25,6 @@ Rough Outline of Project:
             more
       - other things
   - Findings/Discussion
-=======
->>>>>>> 7669463422990bede4418745b3a0dc47fb4580ae
 
 Read in and tidy the data
 

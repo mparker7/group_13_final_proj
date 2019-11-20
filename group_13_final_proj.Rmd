@@ -5,6 +5,25 @@ date: '`r format(Sys.time(), "%Y-%m-%d")`'
 output: github_document
 ---
 
+Rough Outline of Project:
+
+* Describe the goal/motivation of the project; have some stats and facts to explain our purpose in investigating this dataset
+* Describe the dataset: where is it from, what does it contain
+* Review the questions we intend on answering 
+* Exploratory Data Analysis
+  * Give an overview of the demographics of our dataset, any conclusion we make is only relevant to those who were stopped which is why it is good to give an idea of who is represented
+    * histogram of race/build/etc.
+    * distribution of continuous variables
+  * Logistic Regression
+    * odds of frisked
+    * odds of arrest
+  * Trends over time
+    * could maybe find a way to test this, i.e. linear regression, is the slope equal to zero, or something of that nature. the plot shows a funnel pattern so maybe we could look into that more
+  * other things
+* Findings/Discussion
+
+
+
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -129,6 +148,7 @@ stop_frisk_df =
     # change character datatypes to numeric
     age = as.numeric(age),
     obs_time_min = as.numeric(obs_time_min),
+    stop_time_min = as.numeric(stop_time_min)
   )  %>% 
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
@@ -137,7 +157,9 @@ stop_frisk_df =
   # change all columns that have Y/N to 1/0
   mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
   # change binary columns to numeric instead of character
-  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.)))
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
+  # converts all character variables to factors (this does the same as the for loop)
+  mutate_if(is.character, as.factor)
 
 # convert to dataframe
 stop_frisk_df = as.data.frame(stop_frisk_df)
@@ -160,6 +182,123 @@ table(stop_frisk_df$build)
 colSums(is.na(stop_frisk_df))
 # we should consider removing variable other_feature (11637 missing obs)
 # age has 35 missing values, consider multiple imputation methods here
+
+# Looks like there is also an entire row of NA's
+```
+
+
+Looking at stops over time 
+
+* Over a year
+* By time of day
+```{r, message=FALSE}
+# Number of stops per day
+stop_frisk_df %>% 
+  group_by(date_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+# Number of stops per month
+stop_frisk_df %>% 
+  mutate(
+    month_stop = factor(month(date_stop))
+  ) %>% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %>% 
+  group_by(month_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = month_stop, y = count)) + 
+  geom_bar(stat = "Identity") 
+
+# Number of stops per day (broken down by boro)
+stop_frisk_df %>% 
+  mutate(
+<<<<<<< HEAD
+    height_inch = ht_feet * 12 + ht_inch,
+    age = as.numeric(age)
+=======
+    month_stop = month(date_stop)
+  ) %>% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %>%   
+  group_by(month_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) 
+
+# Number of stops per hour over the day
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE)
+  ) %>% 
+  select(hour_stop, part_of_day) %>% 
+  group_by(hour_stop, part_of_day) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = "Identity", aes(fill = part_of_day)) +
+  geom_smooth(se = FALSE)
+
+# Number of stops per hour over the day (broken down by boro)
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(hour_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+This code chunk looks at the number of people stopped, frisked, frisked & searched, and searched over a single day
+```{r, message=FALSE}
+stop_frisk_df %>% 
+  filter(date_stop != is.na(date_stop)) %>% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(hour_stop, frisked, searched) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  pivot_wider(
+    names_from = frisked:searched,
+    values_from = count
+  ) %>% 
+  rename(
+    "stopped" = "0_0",
+    "frisked" = "1_0",
+    "searched" = "0_1",
+    "frisk_and_search" = "1_1"
+  ) %>%
+  mutate(
+    searched = replace_na(searched, 0),
+    stopped = replace_na(stopped, 0),
+    frisked = replace_na(frisked, 0),
+    frisk_and_search = replace_na(frisk_and_search, 0),
+    stopped = stopped + searched + frisked + frisk_and_search
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = stopped)) +
+  geom_smooth(se = FALSE, color = 'red') +
+  geom_smooth(aes(y = frisked, color = 'blue'), se = FALSE) +
+  geom_smooth(aes(y = searched, color = 'green'), se = FALSE) +
+  geom_smooth(aes(y = frisk_and_search, color = 'yellow'), se = FALSE) 
 ```
 
 
@@ -168,6 +307,144 @@ colSums(is.na(stop_frisk_df))
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Logistic Regression Dataset
+  - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
+```{r}
+stop_frisk_log = stop_frisk_df %>% mutate(
+    race = recode(
+      race, 
+      "asian/pacific islander" = "other", 
+      "black" = "black", 
+      "american indian/alaska native" = "other",
+      "black-hispanic" = "black-hispanic",
+      "white-hispanic" = "white-hispanic",
+      "white" = "white",
+      "unknown" = "other",
+      "other" = "other"
+    ),
+    hair_col = recode(
+      hair_col,
+      "dyed" = "other",
+      "frosted" = "other",
+      "gray" = "other",
+      "red" = "other",
+      "sandy" = "other",
+      "salt and pepper" = "other",
+      "white" ="other",
+      "unknown" = "other",
+      "ZZ" = "other"
+    ),
+    eye_col = recode(
+      eye_col,
+      "different" = "other",
+      "green" = "other",
+      "gray" = "other",
+      "hazel" = "other",
+      "maroon" = "other",
+      "pink" = "other",
+      "violet" = "other",
+      "unknown" = "other"
+    ),
+    build = recode(
+      build,
+      "muscular" = "other",
+    ))
+```
+
+
+
+
+
+
+Building a model using only characteristics, demographics, and location as predictors for frisked
+ - assess multicolinearity to determine if there are any variables that exhibit high correlation 
+ - We will remove any variables that exhibit signs of multicollinearity 
+ - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors
+    - IMPORTANT: we cannot make any causal statements from this model 'i.e. you have a higher odds of getting stopped if you are X race' because everyone in this dataset was stopped
+```{r}
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_1)
+# Based on the GVIF, we will remove boro
+
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_2)
+# no more collinearity problems
+
+summary(model_2)
+# Remove hair and eye color because all categories within them are highly unsignificant 
+
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_3)
+# keep weight? 
+```
+
+Building a model that uses characteristics, demographics, and location as predictors for arrest made
+```{r}
+model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_4)
+
+summary(model_4)
+
+# remove eye color
+model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_5)
+
+# remove hair color (rather large standard errors comparatively)
+model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_6)
+```
+
+
+```{r}
+stop_frisk_log %>% group_by(frisked, searched, arst_made) %>% 
+  summarise(
+    n_obs = n()
+>>>>>>> f4852b53e32a8d16d07de21222b06b47d3c54f08
+  )
+```
+
+
+```{r, demographics}
+
+# count per sex group
+demographics = stop_frisk_tidy_df %>% 
+  select(sex:build, height_inch, - ht_feet, -ht_inch) 
+
+# count subjects by sex
+demographics %>% 
+  group_by(sex) %>% 
+  summarize (count = n()) %>% 
+  knitr::kable()
+  
+# distribution of age by sex
+demographics %>% 
+  ggplot(aes(x = sex, y = age, fill = sex))+
+  geom_boxplot(alpha = .5)
+  
+# subjects count by race and sex 
+demographics %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")
+```
 
 
 

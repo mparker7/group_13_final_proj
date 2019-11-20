@@ -11,6 +11,7 @@ library(tidyverse)
 library(viridis)
 library(rvest)
 library(httr)
+library(lubridate)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -31,36 +32,142 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 Read in and tidy the data
 
-Things to do:
+The following code:
 
-* ~~Read in data~~
-* ~~Subsample rows~~
-* ~~Select columns that we want~~
-* ~~Combine height into one column~~
-* Make sure columns are right data type
-* Rename columns to be more informative
-* Recode columns to be more informative
-* Format date, time
-* Check for missing
+* Reads in the data
+* Renames columns to be more informative
+* Combines height columns into a single height in inches
+* Converts date_stop to date data type
+* Converts time_stop to time data type
+* Recodes the values in categorical columns to be more informative
+* Selects column subset for further analysis
+
 ```{r, message=FALSE}
 # Read in data
 stop_frisk_df = 
+  # Read in data from internet
   GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
-  content("parsed") 
+  content("parsed") %>% 
+  
+  # Clean and fix names of columns
+  janitor::clean_names() %>% 
+  rename(
+    precinct = pct,
+    date_stop = datestop,
+    time_stop = timestop,
+    stop_in_out = inout,
+    obs_time_min = perobs,
+    stop_time_min = perstop,
+    arst_made = arstmade,
+    off_in_unif = offunif,
+    hair_col = haircolr,
+    eye_col = eyecolor,
+    other_feature = othfeatr,
+    boro = city
+  )  %>% 
+  mutate(
+    # Combine height columns
+    height_inch = ht_feet * 12 + ht_inch,
+    # Convert date to proper format
+    date_stop = mdy(date_stop),
+    # Convert time to proper format
+    time_stop = hm(time_stop / 100),
+    # Recode to be more informative
+    stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
+    race = recode(
+      race, 
+      "A" = "asian/pacific islander", 
+      "B" = "black", 
+      "I" = "american indian/alaska native",
+      "P" = "black-hispanic",
+      "Q" = "white-hispanic",
+      "W" = "white",
+      "U" = "unknown",
+      "Z" = "other"
+    ),
+    hair_col = recode(
+      hair_col,
+      "BA" = "bald",
+      "BK" = "black",
+      "BL" = "blond",
+      "BR" = "brown",
+      "DY" = "dyed",
+      "FR" = "frosted",
+      "GY" = "gray",
+      "RA" = "red",
+      "SN" = "sandy",
+      "SP" = "salt and pepper",
+      "WH" = "white",
+      "XX" = "unknown",
+      "ZZ" = "other",
+    ),
+    eye_col = recode(
+      eye_col,
+      "BK" = "black",
+      "BL" = "blue",
+      "BR" = "brown",
+      "DF" = "different",
+      "GR" = "green",
+      "GY" = "gray",
+      "HA" = "hazel",
+      "MA" = "maroon",
+      "PK" = "pink",
+      "VI" = "violet",
+      "XX" = "unknown",
+      "Z" = "other",      
+    ),
+    build = recode(
+      build,
+      "H" = "heavy",
+      "M" = "medium",
+      "T" = "thin",
+      "U" = "muscular",
+      "Z" = "unknown"
+    ),
+    # change boro columns to lowercase for consistency
+    boro = tolower(boro),
+    # change character datatypes to numeric
+    age = as.numeric(age),
+    obs_time_min = as.numeric(obs_time_min),
+  )  %>% 
+  # select columns for further analysis
+  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
+         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
+         rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
+  # change all columns that have Y/N to 1/0
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
+  # change binary columns to numeric instead of character
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.)))
+
+# convert to dataframe
+stop_frisk_df = as.data.frame(stop_frisk_df)
+
+# order all categorical variables with more than 2 levels as factors
+for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")) {
+  stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
+}
 ```
 
+
+Evaluating Missing Data and Categorical Data
 ```{r}
-# Subsample data to speed up calculation time
-# Select columns we want
-# Combine height into one column
-stop_frisk_tidy_df =
-  stop_frisk_df %>% 
-  sample_n(1000) %>% 
-  select(pct, datestop, timestop, inout, perobs, perstop, arstmade, offunif, frisked, searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, rf_bulg, sex, race, age:othfeatr, city, xcoord, ycoord) %>% 
-  mutate(
-    height_inch = ht_feet * 12 + ht_inch
-  )
+table(stop_frisk_df$race)
+table(stop_frisk_df$hair_col)
+table(stop_frisk_df$eye_col)
+table(stop_frisk_df$build)
+# we should consider consolidating categories
+
+colSums(is.na(stop_frisk_df))
+# we should consider removing variable other_feature (11637 missing obs)
+# age has 35 missing values, consider multiple imputation methods here
 ```
+
+
+
+
+
+
+
 
 
 

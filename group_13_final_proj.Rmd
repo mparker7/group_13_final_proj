@@ -5,6 +5,22 @@ date: '`r format(Sys.time(), "%Y-%m-%d")`'
 output: github_document
 ---
 
+Rough Outline of Project:
+
+* Describe the goal/motivation of the project; have some stats and facts to explain our purpose in investigating this dataset
+* Describe the dataset: where is it from, what does it contain
+* Review the questions we intend on answering 
+* Exploratory Data Analysis
+  * Give an overview of the demographics of our dataset, any conclusion we make is only relevant to those who were stopped which is why it is good to give an idea of who is represented
+    * histogram of race/build/etc.
+    * distribution of continuous variables
+  * Logistic Regression
+    * odds of frisked
+    * odds of arrest
+  * Trends over time
+    * could maybe find a way to test this, i.e. linear regression, is the slope equal to zero, or something of that nature. the plot shows a funnel pattern so maybe we could look into that more
+  * other things
+* Findings/Discussion
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -185,69 +201,59 @@ Logistic Regression Dataset
   - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
 ```{r}
 stop_frisk_log = stop_frisk_df %>% mutate(
-    recode(
+    race = recode(
       race, 
-      "A" = "asian/pacific islander", 
-      "B" = "black", 
-      "I" = "other",
-      "P" = "black-hispanic",
-      "Q" = "white-hispanic",
-      "W" = "white",
-      "U" = "other",
-      "Z" = "other"
+      "asian/pacific islander" = "other", 
+      "black" = "black", 
+      "american indian/alaska native" = "other",
+      "black-hispanic" = "black-hispanic",
+      "white-hispanic" = "white-hispanic",
+      "white" = "white",
+      "unknown" = "other",
+      "other" = "other"
     ),
     hair_col = recode(
       hair_col,
-      "BA" = "bald",
-      "BK" = "black",
-      "BL" = "blond",
-      "BR" = "brown",
-      "DY" = "other",
-      "FR" = "other",
-      "GY" = "other",
-      "RA" = "other",
-      "SN" = "other",
-      "SP" = "other",
-      "WH" = "other",
-      "XX" = "unknown",
-      "ZZ" = "other",
+      "dyed" = "other",
+      "frosted" = "other",
+      "gray" = "other",
+      "red" = "other",
+      "sandy" = "other",
+      "salt and pepper" = "other",
+      "white" ="other",
+      "unknown" = "other",
+      "ZZ" = "other"
     ),
     eye_col = recode(
       eye_col,
-      "BK" = "black",
-      "BL" = "blue",
-      "BR" = "brown",
-      "DF" = "other",
-      "GR" = "other",
-      "GY" = "other",
-      "HA" = "other",
-      "MA" = "other",
-      "PK" = "other",
-      "VI" = "other",
-      "XX" = "other",
-      "Z" = "other",      
+      "different" = "other",
+      "green" = "other",
+      "gray" = "other",
+      "hazel" = "other",
+      "maroon" = "other",
+      "pink" = "other",
+      "violet" = "other",
+      "unknown" = "other"
     ),
     build = recode(
       build,
-      "H" = "heavy",
-      "M" = "medium",
-      "T" = "thin",
-      "U" = "other",
-      "Z" = "other"
+      "muscular" = "other",
     ))
 ```
 
 
-Building a model using only characteristics, demographics, and location as predictors
+Building a model using only characteristics, demographics, and location as predictors for frisked
  - assess multicolinearity to determine if there are any variables that exhibit high correlation 
  - We will remove any variables that exhibit signs of multicollinearity 
+ - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors
+    - IMPORTANT: we cannot make any causal statements from this model 'i.e. you have a higher odds of getting stopped if you are X race' because everyone in this dataset was stopped
 ```{r}
-model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 car::vif(model_1)
 # Based on the GVIF, we will remove boro
 
-model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 car::vif(model_2)
 # no more collinearity problems
@@ -255,17 +261,38 @@ car::vif(model_2)
 summary(model_2)
 # Remove hair and eye color because all categories within them are highly unsignificant 
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
-
-car::vif(model_3)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_3)
-# keep weight? Although race is insignificant across all groups, should we still keep this in the model? Seems like an important predictor to me, we can see if there is any literature supporting this to validate why we will keep it in the model
+# keep weight? 
+```
+
+Building a model that uses characteristics, demographics, and location as predictors for arrest made
+```{r}
+model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_4)
+
+summary(model_4)
+
+# remove eye color
+model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_5)
+
+# remove hair color (rather large standard errors comparatively)
+model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_6)
 ```
 
 
-
-
+```{r}
+stop_frisk_log %>% group_by(frisked, searched, arst_made) %>% 
+  summarise(
+    n_obs = n()
+  )
+```
 
 
 

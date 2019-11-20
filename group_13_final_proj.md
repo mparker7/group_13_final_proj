@@ -1,7 +1,30 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-19
+2019-11-20
+
+Rough Outline of Project:
+
+  - Describe the goal/motivation of the project; have some stats and
+    facts to explain our purpose in investigating this dataset
+  - Describe the dataset: where is it from, what does it contain
+  - Review the questions we intend on answering
+  - Exploratory Data Analysis
+      - Give an overview of the demographics of our dataset, any
+        conclusion we make is only relevant to those who were stopped
+        which is why it is good to give an idea of who is represented
+          - histogram of race/build/etc.
+          - distribution of continuous variables
+      - Logistic Regression
+          - odds of frisked
+          - odds of arrest
+      - Trends over time
+          - could maybe find a way to test this, i.e. linear regression,
+            is the slope equal to zero, or something of that nature. the
+            plot shows a funnel pattern so maybe we could look into that
+            more
+      - other things
+  - Findings/Discussion
 
 Read in and tidy the data
 
@@ -229,102 +252,97 @@ asking everyone
 
 ``` r
 stop_frisk_log = stop_frisk_df %>% mutate(
-    recode(
+    race = recode(
       race, 
-      "A" = "asian/pacific islander", 
-      "B" = "black", 
-      "I" = "other",
-      "P" = "black-hispanic",
-      "Q" = "white-hispanic",
-      "W" = "white",
-      "U" = "other",
-      "Z" = "other"
+      "asian/pacific islander" = "other", 
+      "black" = "black", 
+      "american indian/alaska native" = "other",
+      "black-hispanic" = "black-hispanic",
+      "white-hispanic" = "white-hispanic",
+      "white" = "white",
+      "unknown" = "other",
+      "other" = "other"
     ),
     hair_col = recode(
       hair_col,
-      "BA" = "bald",
-      "BK" = "black",
-      "BL" = "blond",
-      "BR" = "brown",
-      "DY" = "other",
-      "FR" = "other",
-      "GY" = "other",
-      "RA" = "other",
-      "SN" = "other",
-      "SP" = "other",
-      "WH" = "other",
-      "XX" = "unknown",
-      "ZZ" = "other",
+      "dyed" = "other",
+      "frosted" = "other",
+      "gray" = "other",
+      "red" = "other",
+      "sandy" = "other",
+      "salt and pepper" = "other",
+      "white" ="other",
+      "unknown" = "other",
+      "ZZ" = "other"
     ),
     eye_col = recode(
       eye_col,
-      "BK" = "black",
-      "BL" = "blue",
-      "BR" = "brown",
-      "DF" = "other",
-      "GR" = "other",
-      "GY" = "other",
-      "HA" = "other",
-      "MA" = "other",
-      "PK" = "other",
-      "VI" = "other",
-      "XX" = "other",
-      "Z" = "other",      
+      "different" = "other",
+      "green" = "other",
+      "gray" = "other",
+      "hazel" = "other",
+      "maroon" = "other",
+      "pink" = "other",
+      "violet" = "other",
+      "unknown" = "other"
     ),
     build = recode(
       build,
-      "H" = "heavy",
-      "M" = "medium",
-      "T" = "thin",
-      "U" = "other",
-      "Z" = "other"
+      "muscular" = "other",
     ))
 ```
 
 Building a model using only characteristics, demographics, and location
-as predictors - assess multicolinearity to determine if there are any
-variables that exhibit high correlation - We will remove any variables
-that exhibit signs of
-multicollinearity
+as predictors for frisked - assess multicolinearity to determine if
+there are any variables that exhibit high correlation - We will remove
+any variables that exhibit signs of multicollinearity - From this model,
+we can assess of those who were stopped, what are the odds of getting
+frisked based on certain characteristics, demographics and location
+predictors - IMPORTANT: we cannot make any causal statements from this
+model ‘i.e. you have a higher odds of getting stopped if you are X race’
+because everyone in this dataset was
+stopped
 
 ``` r
-model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 car::vif(model_1)
 ```
 
     ##                  GVIF Df GVIF^(1/(2*Df))
-    ## sex          1.339717  2        1.075854
-    ## race         1.872930  7        1.045841
-    ## age          1.267911  1        1.126015
-    ## height_inch  1.332980  1        1.154547
-    ## weight       1.591692  1        1.261623
-    ## hair_col     1.825976 10        1.030563
-    ## eye_col      1.593795  8        1.029561
-    ## boro        28.452448  4        1.519725
-    ## build        1.466075  4        1.048986
-    ## stop_in_out  1.067662  1        1.033277
-    ## precinct    25.096664  1        5.009657
+    ## sex          1.179297  2        1.042091
+    ## race         1.561548  4        1.057291
+    ## age          1.222201  1        1.105532
+    ## height_inch  1.320364  1        1.149071
+    ## weight       1.567631  1        1.252051
+    ## hair_col     1.406664  4        1.043575
+    ## eye_col      1.235170  3        1.035828
+    ## boro        29.189812  4        1.524593
+    ## build        1.395551  4        1.042541
+    ## stop_in_out  1.074392  1        1.036529
+    ## precinct    25.307892  1        5.030695
+    ## off_in_unif  1.097859  1        1.047788
 
 ``` r
 # Based on the GVIF, we will remove boro
 
-model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 car::vif(model_2)
 ```
 
     ##                 GVIF Df GVIF^(1/(2*Df))
-    ## sex         1.337089  2        1.075326
-    ## race        1.689188  7        1.038156
-    ## age         1.265728  1        1.125046
-    ## height_inch 1.327902  1        1.152346
-    ## weight      1.585041  1        1.258984
-    ## hair_col    1.810621 10        1.030128
-    ## eye_col     1.581326  8        1.029056
-    ## build       1.450614  4        1.047596
-    ## stop_in_out 1.060845  1        1.029973
-    ## precinct    1.113389  1        1.055173
+    ## sex         1.173811  2        1.040877
+    ## race        1.433039  4        1.046001
+    ## age         1.219806  1        1.104448
+    ## height_inch 1.316565  1        1.147417
+    ## weight      1.564742  1        1.250896
+    ## hair_col    1.397985  4        1.042768
+    ## eye_col     1.230990  3        1.035243
+    ## build       1.384006  4        1.041459
+    ## stop_in_out 1.067664  1        1.033278
+    ## precinct    1.113891  1        1.055410
+    ## off_in_unif 1.059472  1        1.029307
 
 ``` r
 # no more collinearity problems
@@ -335,128 +353,294 @@ summary(model_2)
     ## 
     ## Call:
     ## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
-    ##     hair_col + eye_col + build + stop_in_out + precinct, family = binomial, 
-    ##     data = stop_frisk_log)
+    ##     hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, 
+    ##     family = binomial, data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.8758  -1.3228   0.8079   0.9182   2.0763  
+    ## -2.0482  -1.2804   0.7371   0.9372   1.9748  
     ## 
     ## Coefficients:
-    ##                              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)                -2.419e+00  5.467e-01  -4.425 9.63e-06 ***
-    ## sexM                        8.612e-01  7.728e-02  11.145  < 2e-16 ***
-    ## sexZ                        5.687e-01  2.997e-01   1.897 0.057779 .  
-    ## raceasian/pacific islander  1.565e-01  3.397e-01   0.461 0.644895    
-    ## raceblack                   4.744e-01  3.321e-01   1.428 0.153202    
-    ## raceblack-hispanic          5.003e-01  3.393e-01   1.475 0.140327    
-    ## raceother                   3.118e-01  3.825e-01   0.815 0.415043    
-    ## raceunknown                -1.226e-01  3.925e-01  -0.312 0.754788    
-    ## racewhite                  -9.734e-03  3.374e-01  -0.029 0.976985    
-    ## racewhite-hispanic          4.609e-01  3.337e-01   1.381 0.167192    
-    ## age                        -1.245e-02  1.808e-03  -6.888 5.67e-12 ***
-    ## height_inch                 2.964e-02  6.438e-03   4.605 4.13e-06 ***
-    ## weight                      3.577e-04  6.314e-04   0.566 0.571079    
-    ## hair_colblack               1.051e-01  1.111e-01   0.946 0.344058    
-    ## hair_colblond              -2.733e-01  2.130e-01  -1.283 0.199358    
-    ## hair_colbrown              -1.941e-02  1.177e-01  -0.165 0.869025    
-    ## hair_coldyed                9.460e-01  1.206e+00   0.784 0.432951    
-    ## hair_colgray                1.107e-01  2.135e-01   0.519 0.604029    
-    ## hair_colother              -5.286e-02  3.153e-01  -0.168 0.866885    
-    ## hair_colred                -6.790e-01  3.640e-01  -1.865 0.062147 .  
-    ## hair_colsalt and pepper     1.123e-01  2.631e-01   0.427 0.669506    
-    ## hair_colsandy              -1.198e+01  1.381e+02  -0.087 0.930908    
-    ## hair_colunknown            -1.442e-01  1.846e-01  -0.781 0.434787    
-    ## eye_colblue                 1.272e-01  1.694e-01   0.751 0.452832    
-    ## eye_colbrown                9.857e-03  7.228e-02   0.136 0.891526    
-    ## eye_coldifferent            1.051e+01  1.970e+02   0.053 0.957440    
-    ## eye_colgray                 2.409e-01  5.724e-01   0.421 0.673872    
-    ## eye_colgreen               -4.052e-02  2.188e-01  -0.185 0.853090    
-    ## eye_colhazel                1.254e-01  2.142e-01   0.586 0.558097    
-    ## eye_colother               -5.843e-01  3.189e-01  -1.832 0.066912 .  
-    ## eye_colunknown             -1.208e-01  2.082e-01  -0.580 0.561706    
-    ## buildmedium                -2.643e-01  7.545e-02  -3.503 0.000459 ***
-    ## buildmuscular              -5.137e-01  1.918e-01  -2.678 0.007396 ** 
-    ## buildthin                  -2.602e-01  8.036e-02  -3.238 0.001203 ** 
-    ## buildunknown               -5.373e-01  1.640e-01  -3.276 0.001052 ** 
-    ## stop_in_outoutside          4.334e-01  4.855e-02   8.927  < 2e-16 ***
-    ## precinct                   -1.551e-03  5.924e-04  -2.619 0.008831 ** 
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -1.7286908  0.4367304  -3.958 7.55e-05 ***
+    ## sexM                0.8342144  0.0775060  10.763  < 2e-16 ***
+    ## sexZ                0.6674880  0.2875712   2.321 0.020280 *  
+    ## raceblack           0.4450129  0.0739403   6.019 1.76e-09 ***
+    ## raceblack-hispanic  0.4535358  0.1011500   4.484 7.33e-06 ***
+    ## racewhite          -0.0454750  0.0932264  -0.488 0.625698    
+    ## racewhite-hispanic  0.4371895  0.0798993   5.472 4.46e-08 ***
+    ## age                -0.0108360  0.0017841  -6.074 1.25e-09 ***
+    ## height_inch         0.0274359  0.0064336   4.264 2.00e-05 ***
+    ## weight              0.0004723  0.0006257   0.755 0.450349    
+    ## hair_colblack       0.1138623  0.1116728   1.020 0.307915    
+    ## hair_colblond      -0.2342093  0.2132065  -1.099 0.271982    
+    ## hair_colbrown      -0.0075590  0.1183843  -0.064 0.949089    
+    ## hair_colother      -0.0427759  0.1417515  -0.302 0.762830    
+    ## eye_colblue         0.1284665  0.1700807   0.755 0.450053    
+    ## eye_colbrown       -0.0105313  0.0727950  -0.145 0.884971    
+    ## eye_colother       -0.0887821  0.1293596  -0.686 0.492511    
+    ## buildmedium        -0.2527791  0.0758386  -3.333 0.000859 ***
+    ## buildother         -0.4490363  0.1932803  -2.323 0.020166 *  
+    ## buildthin          -0.2165816  0.0807537  -2.682 0.007318 ** 
+    ## buildunknown       -0.5533496  0.1618418  -3.419 0.000628 ***
+    ## stop_in_outoutside  0.3561322  0.0489741   7.272 3.55e-13 ***
+    ## precinct           -0.0024775  0.0005978  -4.144 3.41e-05 ***
+    ## off_in_unif        -0.6270943  0.0438455 -14.302  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 16164  on 12369  degrees of freedom
-    ## Residual deviance: 15605  on 12333  degrees of freedom
+    ## Residual deviance: 15410  on 12346  degrees of freedom
     ##   (35 observations deleted due to missingness)
-    ## AIC: 15679
+    ## AIC: 15458
     ## 
-    ## Number of Fisher Scoring iterations: 10
+    ## Number of Fisher Scoring iterations: 4
 
 ``` r
 # Remove hair and eye color because all categories within them are highly unsignificant 
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-car::vif(model_3)
-```
-
-    ##                 GVIF Df GVIF^(1/(2*Df))
-    ## sex         1.313003  2        1.070450
-    ## race        1.317344  7        1.019882
-    ## age         1.101058  1        1.049313
-    ## height_inch 1.324459  1        1.150851
-    ## weight      1.591781  1        1.261658
-    ## build       1.371745  4        1.040301
-    ## stop_in_out 1.056536  1        1.027879
-    ## precinct    1.109287  1        1.053227
-
-``` r
 summary(model_3)
 ```
 
     ## 
     ## Call:
     ## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
-    ##     build + stop_in_out + precinct, family = binomial, data = stop_frisk_log)
+    ##     build + stop_in_out + precinct + off_in_unif, family = binomial, 
+    ##     data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.8699  -1.3239   0.8118   0.9192   1.8560  
+    ## -2.0497  -1.2793   0.7362   0.9364   1.8435  
     ## 
     ## Coefficients:
-    ##                              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)                -2.3825961  0.5279105  -4.513 6.38e-06 ***
-    ## sexM                        0.8826198  0.0764192  11.550  < 2e-16 ***
-    ## sexZ                        0.5760355  0.2978327   1.934 0.053102 .  
-    ## raceasian/pacific islander  0.1440443  0.3398116   0.424 0.671643    
-    ## raceblack                   0.4635452  0.3322957   1.395 0.163023    
-    ## raceblack-hispanic          0.4852423  0.3394002   1.430 0.152802    
-    ## raceother                   0.2533240  0.3818174   0.663 0.507030    
-    ## raceunknown                -0.1554355  0.3921855  -0.396 0.691860    
-    ## racewhite                  -0.0782296  0.3359615  -0.233 0.815876    
-    ## racewhite-hispanic          0.4249207  0.3336843   1.273 0.202869    
-    ## age                        -0.0127621  0.0016852  -7.573 3.65e-14 ***
-    ## height_inch                 0.0302614  0.0064042   4.725 2.30e-06 ***
-    ## weight                      0.0004239  0.0006351   0.668 0.504445    
-    ## buildmedium                -0.2619839  0.0753471  -3.477 0.000507 ***
-    ## buildmuscular              -0.5046812  0.1917848  -2.631 0.008501 ** 
-    ## buildthin                  -0.2576788  0.0803410  -3.207 0.001340 ** 
-    ## buildunknown               -0.6233291  0.1599760  -3.896 9.76e-05 ***
-    ## stop_in_outoutside          0.4308581  0.0483844   8.905  < 2e-16 ***
-    ## precinct                   -0.0015792  0.0005908  -2.673 0.007518 ** 
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -1.6409172  0.4165361  -3.939 8.17e-05 ***
+    ## sexM                0.8520890  0.0769262  11.077  < 2e-16 ***
+    ## sexZ                0.6679717  0.2863221   2.333 0.019651 *  
+    ## raceblack           0.4513006  0.0737944   6.116 9.62e-10 ***
+    ## raceblack-hispanic  0.4519143  0.1010787   4.471 7.79e-06 ***
+    ## racewhite          -0.1002964  0.0889673  -1.127 0.259598    
+    ## racewhite-hispanic  0.4188420  0.0794744   5.270 1.36e-07 ***
+    ## age                -0.0116504  0.0016961  -6.869 6.47e-12 ***
+    ## height_inch         0.0272573  0.0064278   4.241 2.23e-05 ***
+    ## weight              0.0005208  0.0006289   0.828 0.407667    
+    ## buildmedium        -0.2507412  0.0757687  -3.309 0.000935 ***
+    ## buildother         -0.4441811  0.1932429  -2.299 0.021530 *  
+    ## buildthin          -0.2159530  0.0807378  -2.675 0.007479 ** 
+    ## buildunknown       -0.5792819  0.1607148  -3.604 0.000313 ***
+    ## stop_in_outoutside  0.3541251  0.0489056   7.241 4.45e-13 ***
+    ## precinct           -0.0024976  0.0005971  -4.183 2.88e-05 ***
+    ## off_in_unif        -0.6294283  0.0437821 -14.376  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 16164  on 12369  degrees of freedom
-    ## Residual deviance: 15633  on 12351  degrees of freedom
+    ## Residual deviance: 15421  on 12353  degrees of freedom
     ##   (35 observations deleted due to missingness)
-    ## AIC: 15671
+    ## AIC: 15455
     ## 
     ## Number of Fisher Scoring iterations: 4
 
 ``` r
-# keep weight? Although race is insignificant across all groups, should we still keep this in the model? Seems like an important predictor to me, we can see if there is any literature supporting this to validate why we will keep it in the model
+# keep weight? 
 ```
+
+Building a model that uses characteristics, demographics, and location
+as predictors for arrest
+made
+
+``` r
+model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_4)
+```
+
+    ##                 GVIF Df GVIF^(1/(2*Df))
+    ## sex         1.196703  2        1.045915
+    ## race        1.415372  4        1.044381
+    ## age         1.231781  1        1.109856
+    ## height_inch 1.401760  1        1.183959
+    ## weight      1.834227  1        1.354336
+    ## hair_col    1.414977  4        1.044344
+    ## eye_col     1.229613  3        1.035050
+    ## build       1.511557  4        1.052999
+    ## stop_in_out 1.090944  1        1.044483
+    ## precinct    1.102226  1        1.049870
+    ## off_in_unif 1.071970  1        1.035360
+
+``` r
+summary(model_4)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+    ##     hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, 
+    ##     family = binomial, data = stop_frisk_log)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.3337  -0.6672  -0.5960  -0.5320   2.3977  
+    ## 
+    ## Coefficients:
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -0.2753004  0.5101078  -0.540 0.589410    
+    ## sexM               -0.0958075  0.0894681  -1.071 0.284234    
+    ## sexZ               -1.1158830  0.4836851  -2.307 0.021052 *  
+    ## raceblack           0.1099186  0.0940823   1.168 0.242676    
+    ## raceblack-hispanic  0.2672001  0.1210141   2.208 0.027244 *  
+    ## racewhite           0.1489332  0.1178790   1.263 0.206431    
+    ## racewhite-hispanic  0.4484804  0.0989071   4.534 5.78e-06 ***
+    ## age                 0.0040947  0.0020880   1.961 0.049872 *  
+    ## height_inch         0.0062616  0.0077051   0.813 0.416412    
+    ## weight             -0.0020124  0.0008738  -2.303 0.021278 *  
+    ## hair_colblack      -0.2528612  0.1246774  -2.028 0.042548 *  
+    ## hair_colblond      -0.0412048  0.2350139  -0.175 0.860821    
+    ## hair_colbrown      -0.2735991  0.1332351  -2.054 0.040023 *  
+    ## hair_colother      -0.3819523  0.1651091  -2.313 0.020704 *  
+    ## eye_colblue         0.0924858  0.1980772   0.467 0.640559    
+    ## eye_colbrown       -0.0182828  0.0850764  -0.215 0.829847    
+    ## eye_colother        0.0096141  0.1519707   0.063 0.949557    
+    ## buildmedium        -0.0307611  0.0892348  -0.345 0.730304    
+    ## buildother         -0.0898042  0.2391711  -0.375 0.707303    
+    ## buildthin           0.0371095  0.0966858   0.384 0.701116    
+    ## buildunknown        0.0793381  0.1940961   0.409 0.682718    
+    ## stop_in_outoutside -1.0190458  0.0521689 -19.534  < 2e-16 ***
+    ## precinct           -0.0022886  0.0006928  -3.303 0.000955 ***
+    ## off_in_unif        -0.2310383  0.0490876  -4.707 2.52e-06 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12305  on 12346  degrees of freedom
+    ##   (35 observations deleted due to missingness)
+    ## AIC: 12353
+    ## 
+    ## Number of Fisher Scoring iterations: 4
+
+``` r
+# remove eye color
+model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_5)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = searched ~ sex + race + age + height_inch + weight + 
+    ##     hair_col + build + stop_in_out + precinct + off_in_unif, 
+    ##     family = binomial, data = stop_frisk_log)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.0956  -0.7406  -0.6851  -0.5753   2.6475  
+    ## 
+    ## Coefficients:
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -1.5079808  0.4865210  -3.100  0.00194 ** 
+    ## sexM                0.2173352  0.0918411   2.366  0.01796 *  
+    ## sexZ               -1.5559078  0.6028911  -2.581  0.00986 ** 
+    ## raceblack          -0.0474152  0.0847120  -0.560  0.57567    
+    ## raceblack-hispanic  0.0740604  0.1118989   0.662  0.50807    
+    ## racewhite           0.0577154  0.1051628   0.549  0.58313    
+    ## racewhite-hispanic  0.1619246  0.0902518   1.794  0.07279 .  
+    ## age                 0.0003275  0.0020043   0.163  0.87021    
+    ## height_inch         0.0182448  0.0074023   2.465  0.01371 *  
+    ## weight             -0.0013262  0.0008100  -1.637  0.10160    
+    ## hair_colblack      -0.0978218  0.1226682  -0.797  0.42519    
+    ## hair_colblond       0.0435448  0.2295514   0.190  0.84955    
+    ## hair_colbrown      -0.1194190  0.1305177  -0.915  0.36021    
+    ## hair_colother      -0.1358024  0.1590867  -0.854  0.39331    
+    ## buildmedium        -0.1743754  0.0822891  -2.119  0.03409 *  
+    ## buildother         -0.1672609  0.2205362  -0.758  0.44819    
+    ## buildthin          -0.0877483  0.0892101  -0.984  0.32531    
+    ## buildunknown       -0.4120272  0.1990273  -2.070  0.03843 *  
+    ## stop_in_outoutside -0.6095756  0.0519269 -11.739  < 2e-16 ***
+    ## precinct           -0.0013180  0.0006563  -2.008  0.04462 *  
+    ## off_in_unif        -0.1897351  0.0461645  -4.110 3.96e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 13595  on 12369  degrees of freedom
+    ## Residual deviance: 13388  on 12349  degrees of freedom
+    ##   (35 observations deleted due to missingness)
+    ## AIC: 13430
+    ## 
+    ## Number of Fisher Scoring iterations: 5
+
+``` r
+# remove hair color (rather large standard errors comparatively)
+model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_6)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = searched ~ sex + race + age + height_inch + weight + 
+    ##     build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.0999  -0.7386  -0.6859  -0.5776   2.6347  
+    ## 
+    ## Coefficients:
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -1.6987278  0.4674650  -3.634 0.000279 ***
+    ## sexM                0.2151382  0.0910711   2.362 0.018161 *  
+    ## sexZ               -1.5334506  0.6024629  -2.545 0.010918 *  
+    ## raceblack          -0.0170533  0.0834669  -0.204 0.838109    
+    ## raceblack-hispanic  0.1099682  0.1104460   0.996 0.319409    
+    ## racewhite           0.0714074  0.1023932   0.697 0.485562    
+    ## racewhite-hispanic  0.1844860  0.0891015   2.071 0.038404 *  
+    ## age                 0.0006851  0.0019016   0.360 0.718628    
+    ## height_inch         0.0181116  0.0073964   2.449 0.014337 *  
+    ## weight             -0.0013603  0.0008086  -1.682 0.092488 .  
+    ## buildmedium        -0.1815325  0.0820977  -2.211 0.027024 *  
+    ## buildother         -0.1584978  0.2204756  -0.719 0.472209    
+    ## buildthin          -0.0937394  0.0890358  -1.053 0.292420    
+    ## buildunknown       -0.4196533  0.1987946  -2.111 0.034773 *  
+    ## stop_in_outoutside -0.6299365  0.0510415 -12.342  < 2e-16 ***
+    ## off_in_unif        -0.1805438  0.0458894  -3.934 8.34e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 13595  on 12369  degrees of freedom
+    ## Residual deviance: 13394  on 12354  degrees of freedom
+    ##   (35 observations deleted due to missingness)
+    ## AIC: 13426
+    ## 
+    ## Number of Fisher Scoring iterations: 5
+
+``` r
+stop_frisk_log %>% group_by(frisked, searched, arst_made) %>% 
+  summarise(
+    n_obs = n()
+  )
+```
+
+    ## # A tibble: 9 x 4
+    ## # Groups:   frisked, searched [5]
+    ##   frisked searched arst_made n_obs
+    ##     <dbl>    <dbl>     <dbl> <int>
+    ## 1       0        0         0  3638
+    ## 2       0        0         1   359
+    ## 3       0        1         0    84
+    ## 4       0        1         1   384
+    ## 5       1        0         0  4992
+    ## 6       1        0         1   457
+    ## 7       1        1         0  1047
+    ## 8       1        1         1  1443
+    ## 9      NA       NA        NA     1

@@ -222,8 +222,11 @@ stop_frisk_df %>%
 # Number of stops per day (broken down by boro)
 stop_frisk_df %>% 
   mutate(
+<<<<<<< HEAD
     height_inch = ht_feet * 12 + ht_inch,
     age = as.numeric(age),
+=======
+>>>>>>> 91aef29a7cea72f3474d142ee21934f5455d9aca
     month_stop = month(date_stop)
   ) %>% 
   filter(
@@ -380,12 +383,12 @@ Building a model using only characteristics, demographics, and location as predi
 ```{r}
 model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-car::vif(model_1)
+#car::vif(model_1)
 # Based on the GVIF, we will remove boro
 
 model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-car::vif(model_2)
+#car::vif(model_2)
 # no more collinearity problems
 
 summary(model_2)
@@ -401,7 +404,7 @@ Building a model that uses characteristics, demographics, and location as predic
 ```{r}
 model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-car::vif(model_4)
+#car::vif(model_4)
 
 summary(model_4)
 

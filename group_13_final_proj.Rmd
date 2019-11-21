@@ -222,10 +222,8 @@ stop_frisk_df %>%
 # Number of stops per day (broken down by boro)
 stop_frisk_df %>% 
   mutate(
-<<<<<<< HEAD
     height_inch = ht_feet * 12 + ht_inch,
-    age = as.numeric(age)
-=======
+    age = as.numeric(age),
     month_stop = month(date_stop)
   ) %>% 
   filter(
@@ -416,6 +414,7 @@ summary(model_5)
 model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
+
 ```
 
 
@@ -440,13 +439,14 @@ demographics %>%
   
 # distribution of age by sex
 demographics %>% 
-  ggplot(aes(x = sex, y = age, fill = sex))+
-  geom_violin(alpha = .5)
+  plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
+
   
 # subjects count by race, sex and frisked
 frisked_plot = 
-  demographics %>% 
+  stop_frisk_df %>% 
   drop_na() %>% 
+  mutate(race = fct_infreq(race)) %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
@@ -456,8 +456,9 @@ frisked_plot =
 
 # subjects count by race, sex and searched
 searched_plot = 
-  demographics %>% 
+  stop_frisk_df  %>% 
   drop_na() %>% 
+  mutate(race = fct_infreq(race)) %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
@@ -468,11 +469,22 @@ searched_plot =
 # devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 
-combined = (frisked_plot+searched_plot)
+(frisked_plot+searched_plot)
+
 ```
 
+Regression model for demographics
 
+```{r}
+dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_df)
+summary(dem_model)
+# nothing is sig
 
+arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
+summary(simple_model)
+
+# modeling log odds of no arrest. How to change the outcome to 1?
+```
 
 
 

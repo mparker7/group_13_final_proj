@@ -139,14 +139,6 @@ stop_frisk_df =
   mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
   # converts all character variables to factors (this does the same as the for loop)
   mutate_if(is.character, as.factor)
-
-# convert to dataframe
-stop_frisk_df = as.data.frame(stop_frisk_df)
-
-# order all categorical variables with more than 2 levels as factors
-for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")) {
-  stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
-}
 ```
 
 Evaluating Missing Data and Categorical Data
@@ -769,7 +761,7 @@ summary(dem_model)
 # nothing is sig
 
 arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
-summary(simple_model)
+summary(arrest_model)
 
 # modeling log odds of no arrest. How to change the outcome to 1?
 ```

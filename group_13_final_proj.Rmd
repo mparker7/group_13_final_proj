@@ -286,7 +286,7 @@ stop_frisk_df %>%
     "frisked" = "1_0",
     "searched" = "0_1",
     "frisk_and_search" = "1_1"
-  ) %>%
+  ) %>% 
   mutate(
     searched = replace_na(searched, 0),
     stopped = replace_na(stopped, 0),
@@ -417,17 +417,15 @@ summary(model_6)
 ```{r}
 stop_frisk_log %>% group_by(frisked, searched, arst_made) %>% 
   summarise(
-    n_obs = n()
->>>>>>> f4852b53e32a8d16d07de21222b06b47d3c54f08
-  )
+    n_obs = n())
 ```
 
 
 ```{r, demographics}
 
 # count per sex group
-demographics = stop_frisk_tidy_df %>% 
-  select(sex:build, height_inch, - ht_feet, -ht_inch) 
+demographics = stop_frisk_log %>% 
+  select(sex:build, height_inch, frisked, searched) 
 
 # count subjects by sex
 demographics %>% 
@@ -438,12 +436,34 @@ demographics %>%
 # distribution of age by sex
 demographics %>% 
   ggplot(aes(x = sex, y = age, fill = sex))+
-  geom_boxplot(alpha = .5)
+  geom_violin(alpha = .5)
   
-# subjects count by race and sex 
-demographics %>% 
+# subjects count by race, sex and frisked
+frisked_plot = 
+  demographics %>% 
+  drop_na() %>% 
   ggplot(aes(x = race, fill = sex))+
-  geom_bar(alpha = .5, position = "dodge")
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Frisked")+
+  facet_grid(~frisked) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count by race, sex and searched
+searched_plot = 
+  demographics %>% 
+  drop_na() %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Searched")+
+  facet_grid(~searched) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# devtools::install_github("thomasp85/patchwork")
+library(patchwork)
+
+combined = (frisked_plot+searched_plot)
 ```
 
 

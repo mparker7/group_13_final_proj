@@ -343,7 +343,7 @@ stop_frisk_log = stop_frisk_df %>% mutate(
       "red" = "other",
       "sandy" = "other",
       "salt and pepper" = "other",
-      "white" ="other",
+      "white" = "other",
       "unknown" = "other",
       "ZZ" = "other"
     ),
@@ -412,6 +412,7 @@ summary(model_5)
 model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
+
 ```
 
 
@@ -422,7 +423,7 @@ stop_frisk_log %>% group_by(frisked, searched, arst_made) %>%
 ```
 
 
-```{r, demographics}
+```{r, demographics , eval=FALSE}
 
 # count per sex group
 demographics = stop_frisk_log %>% 
@@ -431,18 +432,19 @@ demographics = stop_frisk_log %>%
 # count subjects by sex
 demographics %>% 
   group_by(sex) %>% 
-  summarize (count = n()) %>% 
+  summarize(count = n()) %>% 
   knitr::kable()
   
 # distribution of age by sex
 demographics %>% 
-  ggplot(aes(x = sex, y = age, fill = sex))+
-  geom_violin(alpha = .5)
+  plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
+
   
 # subjects count by race, sex and frisked
 frisked_plot = 
-  demographics %>% 
+  stop_frisk_df %>% 
   drop_na() %>% 
+  mutate(race = fct_infreq(race)) %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
@@ -452,8 +454,9 @@ frisked_plot =
 
 # subjects count by race, sex and searched
 searched_plot = 
-  demographics %>% 
+  stop_frisk_df  %>% 
   drop_na() %>% 
+  mutate(race = fct_infreq(race)) %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
@@ -464,11 +467,22 @@ searched_plot =
 # devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 
-combined = (frisked_plot+searched_plot)
+(frisked_plot+searched_plot)
+
 ```
 
+Regression model for demographics
 
+```{r, eval=FALSE}
+dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_df)
+summary(dem_model)
+# nothing is sig
 
+arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
+summary(simple_model)
+
+# modeling log odds of no arrest. How to change the outcome to 1?
+```
 
 
 
@@ -482,7 +496,7 @@ combined = (frisked_plot+searched_plot)
 
 Comparing the reason why people were stopped 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
   pivot_longer(
@@ -515,7 +529,7 @@ stop_frisk_df %>%
 
 total stops by ages
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
   pivot_longer(
@@ -544,7 +558,7 @@ stop_frisk_df %>%
 
 total stops by sex 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
   pivot_longer(
@@ -580,7 +594,7 @@ stop_frisk_df %>%
 
 total stops by race
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
   pivot_longer(
@@ -610,7 +624,7 @@ stop_frisk_df %>%
 
 total stops by date
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
   pivot_longer(
@@ -640,7 +654,7 @@ stop_frisk_df %>%
 
 total of stop by inside and outside 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
   pivot_longer(
@@ -670,7 +684,7 @@ stop_frisk_df %>%
 
 arrest made by total stops
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
   pivot_longer(
@@ -699,7 +713,7 @@ stop_frisk_df %>%
 
 total stops by boro 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
   pivot_longer(

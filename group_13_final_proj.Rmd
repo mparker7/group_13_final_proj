@@ -396,15 +396,20 @@ model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + e
 summary(model_4)
 
 # remove eye color
-model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_5)
 
-# remove hair color (rather large standard errors comparatively)
-model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
 
+
+# remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_7)
 ```
 
 

@@ -590,101 +590,147 @@ summary(model_4)
 
 ``` r
 # remove eye color
-model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_5)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = searched ~ sex + race + age + height_inch + weight + 
+    ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
     ##     hair_col + build + stop_in_out + precinct + off_in_unif, 
     ##     family = binomial, data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.0956  -0.7406  -0.6851  -0.5753   2.6475  
+    ## -1.3464  -0.6675  -0.5963  -0.5320   2.4055  
     ## 
     ## Coefficients:
     ##                      Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)        -1.5079808  0.4865210  -3.100  0.00194 ** 
-    ## sexM                0.2173352  0.0918411   2.366  0.01796 *  
-    ## sexZ               -1.5559078  0.6028911  -2.581  0.00986 ** 
-    ## raceblack          -0.0474152  0.0847120  -0.560  0.57567    
-    ## raceblack-hispanic  0.0740604  0.1118989   0.662  0.50807    
-    ## racewhite           0.0577154  0.1051628   0.549  0.58313    
-    ## racewhite-hispanic  0.1619246  0.0902518   1.794  0.07279 .  
-    ## age                 0.0003275  0.0020043   0.163  0.87021    
-    ## height_inch         0.0182448  0.0074023   2.465  0.01371 *  
-    ## weight             -0.0013262  0.0008100  -1.637  0.10160    
-    ## hair_colblack      -0.0978218  0.1226682  -0.797  0.42519    
-    ## hair_colblond       0.0435448  0.2295514   0.190  0.84955    
-    ## hair_colbrown      -0.1194190  0.1305177  -0.915  0.36021    
-    ## hair_colother      -0.1358024  0.1590867  -0.854  0.39331    
-    ## buildmedium        -0.1743754  0.0822891  -2.119  0.03409 *  
-    ## buildother         -0.1672609  0.2205362  -0.758  0.44819    
-    ## buildthin          -0.0877483  0.0892101  -0.984  0.32531    
-    ## buildunknown       -0.4120272  0.1990273  -2.070  0.03843 *  
-    ## stop_in_outoutside -0.6095756  0.0519269 -11.739  < 2e-16 ***
-    ## precinct           -0.0013180  0.0006563  -2.008  0.04462 *  
-    ## off_in_unif        -0.1897351  0.0461645  -4.110 3.96e-05 ***
+    ## (Intercept)        -0.2901413  0.5057784  -0.574 0.566203    
+    ## sexM               -0.0958134  0.0894755  -1.071 0.284245    
+    ## sexZ               -1.1155023  0.4836155  -2.307 0.021078 *  
+    ## raceblack           0.1087049  0.0940490   1.156 0.247750    
+    ## raceblack-hispanic  0.2659418  0.1209820   2.198 0.027935 *  
+    ## racewhite           0.1616558  0.1154173   1.401 0.161328    
+    ## racewhite-hispanic  0.4477819  0.0988082   4.532 5.85e-06 ***
+    ## age                 0.0040773  0.0020869   1.954 0.050734 .  
+    ## height_inch         0.0063178  0.0077066   0.820 0.412340    
+    ## weight             -0.0020183  0.0008739  -2.309 0.020920 *  
+    ## hair_colblack      -0.2552874  0.1245925  -2.049 0.040464 *  
+    ## hair_colblond      -0.0167779  0.2317412  -0.072 0.942284    
+    ## hair_colbrown      -0.2752952  0.1332020  -2.067 0.038758 *  
+    ## hair_colother      -0.3789820  0.1646885  -2.301 0.021380 *  
+    ## buildmedium        -0.0319966  0.0892178  -0.359 0.719868    
+    ## buildother         -0.0876892  0.2391380  -0.367 0.713851    
+    ## buildthin           0.0361099  0.0966727   0.374 0.708756    
+    ## buildunknown        0.0817591  0.1935233   0.422 0.672677    
+    ## stop_in_outoutside -1.0190000  0.0521582 -19.537  < 2e-16 ***
+    ## precinct           -0.0022871  0.0006928  -3.301 0.000962 ***
+    ## off_in_unif        -0.2303575  0.0490705  -4.694 2.67e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 13595  on 12369  degrees of freedom
-    ## Residual deviance: 13388  on 12349  degrees of freedom
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12305  on 12349  degrees of freedom
     ##   (35 observations deleted due to missingness)
-    ## AIC: 13430
+    ## AIC: 12347
     ## 
-    ## Number of Fisher Scoring iterations: 5
+    ## Number of Fisher Scoring iterations: 4
 
 ``` r
-# remove hair color (rather large standard errors comparatively)
-model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = searched ~ sex + race + age + height_inch + weight + 
-    ##     build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+    ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+    ##     hair_col + stop_in_out + off_in_unif, family = binomial, 
+    ##     data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.0999  -0.7386  -0.6859  -0.5776   2.6347  
+    ## -1.2975  -0.6635  -0.5931  -0.5415   2.4229  
     ## 
     ## Coefficients:
     ##                      Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)        -1.6987278  0.4674650  -3.634 0.000279 ***
-    ## sexM                0.2151382  0.0910711   2.362 0.018161 *  
-    ## sexZ               -1.5334506  0.6024629  -2.545 0.010918 *  
-    ## raceblack          -0.0170533  0.0834669  -0.204 0.838109    
-    ## raceblack-hispanic  0.1099682  0.1104460   0.996 0.319409    
-    ## racewhite           0.0714074  0.1023932   0.697 0.485562    
-    ## racewhite-hispanic  0.1844860  0.0891015   2.071 0.038404 *  
-    ## age                 0.0006851  0.0019016   0.360 0.718628    
-    ## height_inch         0.0181116  0.0073964   2.449 0.014337 *  
-    ## weight             -0.0013603  0.0008086  -1.682 0.092488 .  
-    ## buildmedium        -0.1815325  0.0820977  -2.211 0.027024 *  
-    ## buildother         -0.1584978  0.2204756  -0.719 0.472209    
-    ## buildthin          -0.0937394  0.0890358  -1.053 0.292420    
-    ## buildunknown       -0.4196533  0.1987946  -2.111 0.034773 *  
-    ## stop_in_outoutside -0.6299365  0.0510415 -12.342  < 2e-16 ***
-    ## off_in_unif        -0.1805438  0.0458894  -3.934 8.34e-05 ***
+    ## (Intercept)        -0.4293999  0.4986940  -0.861  0.38921    
+    ## sexM               -0.0921439  0.0888558  -1.037  0.29973    
+    ## sexZ               -1.0730364  0.4834979  -2.219  0.02646 *  
+    ## raceblack           0.1563236  0.0928705   1.683  0.09233 .  
+    ## raceblack-hispanic  0.3240457  0.1194968   2.712  0.00669 ** 
+    ## racewhite           0.1831512  0.1150179   1.592  0.11130    
+    ## racewhite-hispanic  0.4860926  0.0978721   4.967 6.81e-07 ***
+    ## age                 0.0040368  0.0020779   1.943  0.05205 .  
+    ## height_inch         0.0064726  0.0076985   0.841  0.40048    
+    ## weight             -0.0023204  0.0007529  -3.082  0.00206 ** 
+    ## hair_colblack      -0.2583725  0.1243414  -2.078  0.03772 *  
+    ## hair_colblond      -0.0263750  0.2313251  -0.114  0.90922    
+    ## hair_colbrown      -0.2825310  0.1329109  -2.126  0.03353 *  
+    ## hair_colother      -0.3653675  0.1642454  -2.225  0.02611 *  
+    ## stop_in_outoutside -1.0501850  0.0512621 -20.487  < 2e-16 ***
+    ## off_in_unif        -0.2119237  0.0487338  -4.349 1.37e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 13595  on 12369  degrees of freedom
-    ## Residual deviance: 13394  on 12354  degrees of freedom
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12319  on 12354  degrees of freedom
     ##   (35 observations deleted due to missingness)
-    ## AIC: 13426
+    ## AIC: 12351
     ## 
-    ## Number of Fisher Scoring iterations: 5
+    ## Number of Fisher Scoring iterations: 4
+
+``` r
+# remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_7)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = arst_made ~ sex + race + age + weight + hair_col + 
+    ##     stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.3023  -0.6630  -0.5931  -0.5420   2.4217  
+    ## 
+    ## Coefficients:
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -0.0484123  0.2091060  -0.232  0.81691    
+    ## sexM               -0.0710071  0.0852080  -0.833  0.40465    
+    ## sexZ               -1.0543000  0.4829617  -2.183  0.02904 *  
+    ## raceblack           0.1630594  0.0925216   1.762  0.07800 .  
+    ## raceblack-hispanic  0.3245760  0.1194966   2.716  0.00660 ** 
+    ## racewhite           0.1875979  0.1148896   1.633  0.10250    
+    ## racewhite-hispanic  0.4838087  0.0978299   4.945 7.60e-07 ***
+    ## age                 0.0040270  0.0020764   1.939  0.05245 .  
+    ## weight             -0.0020816  0.0006851  -3.038  0.00238 ** 
+    ## hair_colblack      -0.2572458  0.1243320  -2.069  0.03854 *  
+    ## hair_colblond      -0.0228738  0.2312852  -0.099  0.92122    
+    ## hair_colbrown      -0.2799264  0.1328703  -2.107  0.03514 *  
+    ## hair_colother      -0.3670896  0.1642374  -2.235  0.02541 *  
+    ## stop_in_outoutside -1.0500310  0.0512612 -20.484  < 2e-16 ***
+    ## off_in_unif        -0.2130833  0.0487153  -4.374 1.22e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12319  on 12355  degrees of freedom
+    ##   (35 observations deleted due to missingness)
+    ## AIC: 12349
+    ## 
+    ## Number of Fisher Scoring iterations: 4
 
 ``` r
 stop_frisk_log %>% group_by(frisked, searched, arst_made) %>% 

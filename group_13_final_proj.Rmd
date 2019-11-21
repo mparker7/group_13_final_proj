@@ -343,7 +343,7 @@ stop_frisk_log = stop_frisk_df %>% mutate(
       "red" = "other",
       "sandy" = "other",
       "salt and pepper" = "other",
-      "white" ="other",
+      "white" = "other",
       "unknown" = "other",
       "ZZ" = "other"
     ),
@@ -423,7 +423,7 @@ stop_frisk_log %>% group_by(frisked, searched, arst_made) %>%
 ```
 
 
-```{r, demographics}
+```{r, demographics , eval=FALSE}
 
 # count per sex group
 demographics = stop_frisk_log %>% 
@@ -432,7 +432,7 @@ demographics = stop_frisk_log %>%
 # count subjects by sex
 demographics %>% 
   group_by(sex) %>% 
-  summarize (count = n()) %>% 
+  summarize(count = n()) %>% 
   knitr::kable()
   
 # distribution of age by sex
@@ -473,7 +473,7 @@ library(patchwork)
 
 Regression model for demographics
 
-```{r}
+```{r, eval=FALSE}
 dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_df)
 summary(dem_model)
 # nothing is sig
@@ -496,7 +496,7 @@ summary(arrest_model)
 
 Comparing the reason why people were stopped 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
   pivot_longer(
@@ -529,7 +529,7 @@ stop_frisk_df %>%
 
 total stops by ages
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
   pivot_longer(
@@ -558,7 +558,7 @@ stop_frisk_df %>%
 
 total stops by sex 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
   pivot_longer(
@@ -594,7 +594,7 @@ stop_frisk_df %>%
 
 total stops by race
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
   pivot_longer(
@@ -624,7 +624,7 @@ stop_frisk_df %>%
 
 total stops by date
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
   pivot_longer(
@@ -654,7 +654,7 @@ stop_frisk_df %>%
 
 total of stop by inside and outside 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
   pivot_longer(
@@ -684,7 +684,7 @@ stop_frisk_df %>%
 
 arrest made by total stops
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
   pivot_longer(
@@ -713,7 +713,7 @@ stop_frisk_df %>%
 
 total stops by boro 
 
-```{r}
+```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
   pivot_longer(

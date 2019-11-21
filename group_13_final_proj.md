@@ -34,6 +34,17 @@ Read in and tidy the data
 
 The following code:
 
+<<<<<<< HEAD
+-   ~~Read in data~~
+-   ~~Subsample rows~~
+-   ~~Select columns that we want~~
+-   ~~Combine height into one column~~
+-   Make sure columns are right data type
+-   Rename columns to be more informative
+-   Recode columns to be more informative
+-   Format date, time
+-   Check for missing
+=======
   - Reads in the data
   - Renames columns to be more informative
   - Combines height columns into a single height in inches
@@ -43,6 +54,7 @@ The following code:
   - Selects column subset for further analysis
 
 <!-- end list -->
+>>>>>>> 3593e3786fe02a845a81df2c933b048f4bfcef22
 
 ``` r
 # Read in data

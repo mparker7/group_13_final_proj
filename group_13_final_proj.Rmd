@@ -31,6 +31,7 @@ library(viridis)
 library(rvest)
 library(httr)
 library(lubridate)
+library(plotly)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -191,6 +192,7 @@ Looking at stops over time
 
 * Over a year
 * By time of day
+
 ```{r, message=FALSE}
 # Number of stops per day
 stop_frisk_df %>% 
@@ -267,6 +269,7 @@ stop_frisk_df %>%
 ```
 
 This code chunk looks at the number of people stopped, frisked, frisked & searched, and searched over a single day
+
 ```{r, message=FALSE}
 stop_frisk_df %>% 
   filter(date_stop != is.na(date_stop)) %>% 
@@ -322,6 +325,7 @@ stop_frisk_df %>%
 
 Logistic Regression Dataset
   - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
+  
 ```{r}
 stop_frisk_log = stop_frisk_df %>% mutate(
     race = recode(
@@ -374,6 +378,7 @@ Building a model using only characteristics, demographics, and location as predi
  - We will remove any variables that exhibit signs of multicollinearity 
  - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors
     - IMPORTANT: we cannot make any causal statements from this model 'i.e. you have a higher odds of getting stopped if you are X race' because everyone in this dataset was stopped
+    
 ```{r}
 model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
@@ -468,4 +473,260 @@ combined = (frisked_plot+searched_plot)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+Comparing the reason why people were stopped 
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
+  
+```
+
+
+
+total stops by ages
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped, age) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~age, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+total stops by sex 
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+   mutate(
+     sex = recode(
+    sex,
+    "F" = "female",
+    "M" = "male",
+    "Z" = "other"
+  ), 
+  reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+   filter(stops == 1) %>% 
+  group_by(reason_stopped, sex) %>% 
+  summarize(total =n()) %>%
+  plot_ly(x = ~sex, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+total stops by race
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+   filter(stops == 1) %>% 
+  group_by(reason_stopped, race) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+
+total stops by date
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+   filter(stops == 1) %>% 
+  group_by(reason_stopped, date_stop) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~date_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+
+total of stop by inside and outside 
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+   filter(stops == 1) %>% 
+  group_by(reason_stopped, stop_in_out) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~stop_in_out, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+
+arrest made by total stops
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+   filter(stops == 1) %>% 
+  group_by(reason_stopped, arst_made) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+total stops by boro 
+
+```{r}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+   filter(stops == 1) %>% 
+  group_by(reason_stopped, boro) %>% 
+  summarize(total =n()) %>% 
+  plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
+```
 

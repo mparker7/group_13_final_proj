@@ -769,7 +769,7 @@ summary(dem_model)
 # nothing is sig
 
 arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
-summary(simple_model)
+summary(arrest_model)
 
 # modeling log odds of no arrest. How to change the outcome to 1?
 ```

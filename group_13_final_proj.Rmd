@@ -161,14 +161,6 @@ stop_frisk_df =
   mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
   # converts all character variables to factors (this does the same as the for loop)
   mutate_if(is.character, as.factor)
-
-# convert to dataframe
-stop_frisk_df = as.data.frame(stop_frisk_df)
-
-# order all categorical variables with more than 2 levels as factors
-for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")) {
-  stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
-}
 ```
 
 
@@ -404,15 +396,20 @@ model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + e
 summary(model_4)
 
 # remove eye color
-model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_5)
 
-# remove hair color (rather large standard errors comparatively)
-model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
 
+
+# remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_7)
 ```
 
 
@@ -423,7 +420,7 @@ stop_frisk_log %>% group_by(frisked, searched, arst_made) %>%
 ```
 
 
-```{r, demographics , eval=FALSE}
+```{r, demographics, eval = FALSE}
 
 # count per sex group
 demographics = stop_frisk_log %>% 
@@ -528,7 +525,6 @@ stop_frisk_df %>%
 
 
 total stops by ages
-
 ```{r, eval=FALSE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 

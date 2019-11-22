@@ -740,3 +740,42 @@ stop_frisk_df %>%
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Converting X Y Coordinates
+```{r}
+library(rgdal)
+library(sp)
+
+test_df= 
+  stop_frisk_df %>% 
+  select(xcoord, ycoord) %>% 
+  drop_na()
+
+coordinates(test_df) <- c("xcoord","ycoord")
+proj4string(test_df) <- CRS("+init=epsg:2263")
+CRS.new <- CRS("+init=epsg:4326") 
+test_df_new <- spTransform(test_df, CRS.new)
+test_df_new <- data.frame(longitude = coordinates(test_df_new)[,1], latitude = coordinates(test_df_new)[,2])
+```
+
+```{r}
+
+```
+
+
+

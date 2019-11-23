@@ -713,7 +713,7 @@ stop_frisk_df %>%
 
 total stops by boro 
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
   pivot_longer(

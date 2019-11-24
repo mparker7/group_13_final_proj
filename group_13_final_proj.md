@@ -132,21 +132,15 @@ stop_frisk_df =
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
          searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
-         rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %>% 
   # change all columns that have Y/N to 1/0
   mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
   # change binary columns to numeric instead of character
   mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
   # converts all character variables to factors (this does the same as the for loop)
-  mutate_if(is.character, as.factor)
-
-# convert to dataframe
-stop_frisk_df = as.data.frame(stop_frisk_df)
-
-# order all categorical variables with more than 2 levels as factors
-for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")) {
-  stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
-}
+  mutate_if(is.character, as.factor) %>% 
+  # remove the single row of NAs
+  filter(!is.na(build))
 ```
 
 Evaluating Missing Data and Categorical Data
@@ -202,25 +196,23 @@ colSums(is.na(stop_frisk_df))
 ```
 
     ##      precinct     date_stop     time_stop   stop_in_out  obs_time_min 
-    ##             1             1             1             1             1 
+    ##             0             0             0             0             0 
     ## stop_time_min     arst_made   off_in_unif       frisked      searched 
-    ##            24             1             1             1             1 
+    ##            23             0             0             0             0 
     ##      rf_vcrim      rf_othsw      rf_attir      cs_objcs      cs_descr 
-    ##             1             1             1             1             1 
+    ##             0             0             0             0             0 
     ##      cs_casng      cs_lkout      rf_vcact      cs_cloth      cs_drgtr 
-    ##             1             1             1             1             1 
+    ##             0             0             0             0             0 
     ##      ac_evasv      cs_furtv      rf_rfcmp      ac_cgdir      rf_verbl 
-    ##             1             1             1             1             1 
+    ##             0             0             0             0             0 
     ##      cs_vcrim      cs_bulge      cs_other      rf_knowl      sb_hdobj 
-    ##             1             1             1             1             1 
+    ##             0             0             0             0             0 
     ##      sb_outln      sb_admis       rf_furt       rf_bulg           sex 
-    ##             1             1             1             1             1 
+    ##             0             0             0             0             0 
     ##          race           age   height_inch        weight      hair_col 
-    ##             1            35             1             1             1 
-    ##       eye_col         build other_feature          boro        xcoord 
-    ##             1             1         11637             1           352 
-    ##        ycoord 
-    ##           352
+    ##             0            34             0             0             0 
+    ##       eye_col         build          boro        xcoord        ycoord 
+    ##             0             0             0           351           351
 
 ``` r
 # we should consider removing variable other_feature (11637 missing obs)
@@ -424,12 +416,45 @@ stopped
 ``` r
 model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_1)
+car::vif(model_1)
+```
+
+    ##                  GVIF Df GVIF^(1/(2*Df))
+    ## sex          1.179297  2        1.042091
+    ## race         1.561548  4        1.057291
+    ## age          1.222201  1        1.105532
+    ## height_inch  1.320364  1        1.149071
+    ## weight       1.567631  1        1.252051
+    ## hair_col     1.406664  4        1.043575
+    ## eye_col      1.235170  3        1.035828
+    ## boro        29.189812  4        1.524593
+    ## build        1.395551  4        1.042541
+    ## stop_in_out  1.074392  1        1.036529
+    ## precinct    25.307892  1        5.030695
+    ## off_in_unif  1.097859  1        1.047788
+
+``` r
 # Based on the GVIF, we will remove boro
 
 model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_2)
+car::vif(model_2)
+```
+
+    ##                 GVIF Df GVIF^(1/(2*Df))
+    ## sex         1.173811  2        1.040877
+    ## race        1.433039  4        1.046001
+    ## age         1.219806  1        1.104448
+    ## height_inch 1.316565  1        1.147417
+    ## weight      1.564742  1        1.250896
+    ## hair_col    1.397985  4        1.042768
+    ## eye_col     1.230990  3        1.035243
+    ## build       1.384006  4        1.041459
+    ## stop_in_out 1.067664  1        1.033278
+    ## precinct    1.113891  1        1.055410
+    ## off_in_unif 1.059472  1        1.029307
+
+``` r
 # no more collinearity problems
 
 summary(model_2)
@@ -478,7 +503,7 @@ summary(model_2)
     ## 
     ##     Null deviance: 16164  on 12369  degrees of freedom
     ## Residual deviance: 15410  on 12346  degrees of freedom
-    ##   (35 observations deleted due to missingness)
+    ##   (34 observations deleted due to missingness)
     ## AIC: 15458
     ## 
     ## Number of Fisher Scoring iterations: 4
@@ -527,7 +552,7 @@ summary(model_3)
     ## 
     ##     Null deviance: 16164  on 12369  degrees of freedom
     ## Residual deviance: 15421  on 12353  degrees of freedom
-    ##   (35 observations deleted due to missingness)
+    ##   (34 observations deleted due to missingness)
     ## AIC: 15455
     ## 
     ## Number of Fisher Scoring iterations: 4
@@ -543,8 +568,23 @@ made
 ``` r
 model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_4)
+car::vif(model_4)
+```
 
+    ##                 GVIF Df GVIF^(1/(2*Df))
+    ## sex         1.196703  2        1.045915
+    ## race        1.415372  4        1.044381
+    ## age         1.231781  1        1.109856
+    ## height_inch 1.401760  1        1.183959
+    ## weight      1.834227  1        1.354336
+    ## hair_col    1.414977  4        1.044344
+    ## eye_col     1.229613  3        1.035050
+    ## build       1.511557  4        1.052999
+    ## stop_in_out 1.090944  1        1.044483
+    ## precinct    1.102226  1        1.049870
+    ## off_in_unif 1.071970  1        1.035360
+
+``` r
 summary(model_4)
 ```
 
@@ -591,108 +631,154 @@ summary(model_4)
     ## 
     ##     Null deviance: 12821  on 12369  degrees of freedom
     ## Residual deviance: 12305  on 12346  degrees of freedom
-    ##   (35 observations deleted due to missingness)
+    ##   (34 observations deleted due to missingness)
     ## AIC: 12353
     ## 
     ## Number of Fisher Scoring iterations: 4
 
 ``` r
 # remove eye color
-model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_5)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = searched ~ sex + race + age + height_inch + weight + 
+    ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
     ##     hair_col + build + stop_in_out + precinct + off_in_unif, 
     ##     family = binomial, data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.0956  -0.7406  -0.6851  -0.5753   2.6475  
+    ## -1.3464  -0.6675  -0.5963  -0.5320   2.4055  
     ## 
     ## Coefficients:
     ##                      Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)        -1.5079808  0.4865210  -3.100  0.00194 ** 
-    ## sexM                0.2173352  0.0918411   2.366  0.01796 *  
-    ## sexZ               -1.5559078  0.6028911  -2.581  0.00986 ** 
-    ## raceblack          -0.0474152  0.0847120  -0.560  0.57567    
-    ## raceblack-hispanic  0.0740604  0.1118989   0.662  0.50807    
-    ## racewhite           0.0577154  0.1051628   0.549  0.58313    
-    ## racewhite-hispanic  0.1619246  0.0902518   1.794  0.07279 .  
-    ## age                 0.0003275  0.0020043   0.163  0.87021    
-    ## height_inch         0.0182448  0.0074023   2.465  0.01371 *  
-    ## weight             -0.0013262  0.0008100  -1.637  0.10160    
-    ## hair_colblack      -0.0978218  0.1226682  -0.797  0.42519    
-    ## hair_colblond       0.0435448  0.2295514   0.190  0.84955    
-    ## hair_colbrown      -0.1194190  0.1305177  -0.915  0.36021    
-    ## hair_colother      -0.1358024  0.1590867  -0.854  0.39331    
-    ## buildmedium        -0.1743754  0.0822891  -2.119  0.03409 *  
-    ## buildother         -0.1672609  0.2205362  -0.758  0.44819    
-    ## buildthin          -0.0877483  0.0892101  -0.984  0.32531    
-    ## buildunknown       -0.4120272  0.1990273  -2.070  0.03843 *  
-    ## stop_in_outoutside -0.6095756  0.0519269 -11.739  < 2e-16 ***
-    ## precinct           -0.0013180  0.0006563  -2.008  0.04462 *  
-    ## off_in_unif        -0.1897351  0.0461645  -4.110 3.96e-05 ***
+    ## (Intercept)        -0.2901413  0.5057784  -0.574 0.566203    
+    ## sexM               -0.0958134  0.0894755  -1.071 0.284245    
+    ## sexZ               -1.1155023  0.4836155  -2.307 0.021078 *  
+    ## raceblack           0.1087049  0.0940490   1.156 0.247750    
+    ## raceblack-hispanic  0.2659418  0.1209820   2.198 0.027935 *  
+    ## racewhite           0.1616558  0.1154173   1.401 0.161328    
+    ## racewhite-hispanic  0.4477819  0.0988082   4.532 5.85e-06 ***
+    ## age                 0.0040773  0.0020869   1.954 0.050734 .  
+    ## height_inch         0.0063178  0.0077066   0.820 0.412340    
+    ## weight             -0.0020183  0.0008739  -2.309 0.020920 *  
+    ## hair_colblack      -0.2552874  0.1245925  -2.049 0.040464 *  
+    ## hair_colblond      -0.0167779  0.2317412  -0.072 0.942284    
+    ## hair_colbrown      -0.2752952  0.1332020  -2.067 0.038758 *  
+    ## hair_colother      -0.3789820  0.1646885  -2.301 0.021380 *  
+    ## buildmedium        -0.0319966  0.0892178  -0.359 0.719868    
+    ## buildother         -0.0876892  0.2391380  -0.367 0.713851    
+    ## buildthin           0.0361099  0.0966727   0.374 0.708756    
+    ## buildunknown        0.0817591  0.1935233   0.422 0.672677    
+    ## stop_in_outoutside -1.0190000  0.0521582 -19.537  < 2e-16 ***
+    ## precinct           -0.0022871  0.0006928  -3.301 0.000962 ***
+    ## off_in_unif        -0.2303575  0.0490705  -4.694 2.67e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 13595  on 12369  degrees of freedom
-    ## Residual deviance: 13388  on 12349  degrees of freedom
-    ##   (35 observations deleted due to missingness)
-    ## AIC: 13430
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12305  on 12349  degrees of freedom
+    ##   (34 observations deleted due to missingness)
+    ## AIC: 12347
     ## 
-    ## Number of Fisher Scoring iterations: 5
+    ## Number of Fisher Scoring iterations: 4
 
 ``` r
-# remove hair color (rather large standard errors comparatively)
-model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = searched ~ sex + race + age + height_inch + weight + 
-    ##     build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+    ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+    ##     hair_col + stop_in_out + off_in_unif, family = binomial, 
+    ##     data = stop_frisk_log)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.0999  -0.7386  -0.6859  -0.5776   2.6347  
+    ## -1.2975  -0.6635  -0.5931  -0.5415   2.4229  
     ## 
     ## Coefficients:
     ##                      Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)        -1.6987278  0.4674650  -3.634 0.000279 ***
-    ## sexM                0.2151382  0.0910711   2.362 0.018161 *  
-    ## sexZ               -1.5334506  0.6024629  -2.545 0.010918 *  
-    ## raceblack          -0.0170533  0.0834669  -0.204 0.838109    
-    ## raceblack-hispanic  0.1099682  0.1104460   0.996 0.319409    
-    ## racewhite           0.0714074  0.1023932   0.697 0.485562    
-    ## racewhite-hispanic  0.1844860  0.0891015   2.071 0.038404 *  
-    ## age                 0.0006851  0.0019016   0.360 0.718628    
-    ## height_inch         0.0181116  0.0073964   2.449 0.014337 *  
-    ## weight             -0.0013603  0.0008086  -1.682 0.092488 .  
-    ## buildmedium        -0.1815325  0.0820977  -2.211 0.027024 *  
-    ## buildother         -0.1584978  0.2204756  -0.719 0.472209    
-    ## buildthin          -0.0937394  0.0890358  -1.053 0.292420    
-    ## buildunknown       -0.4196533  0.1987946  -2.111 0.034773 *  
-    ## stop_in_outoutside -0.6299365  0.0510415 -12.342  < 2e-16 ***
-    ## off_in_unif        -0.1805438  0.0458894  -3.934 8.34e-05 ***
+    ## (Intercept)        -0.4293999  0.4986940  -0.861  0.38921    
+    ## sexM               -0.0921439  0.0888558  -1.037  0.29973    
+    ## sexZ               -1.0730364  0.4834979  -2.219  0.02646 *  
+    ## raceblack           0.1563236  0.0928705   1.683  0.09233 .  
+    ## raceblack-hispanic  0.3240457  0.1194968   2.712  0.00669 ** 
+    ## racewhite           0.1831512  0.1150179   1.592  0.11130    
+    ## racewhite-hispanic  0.4860926  0.0978721   4.967 6.81e-07 ***
+    ## age                 0.0040368  0.0020779   1.943  0.05205 .  
+    ## height_inch         0.0064726  0.0076985   0.841  0.40048    
+    ## weight             -0.0023204  0.0007529  -3.082  0.00206 ** 
+    ## hair_colblack      -0.2583725  0.1243414  -2.078  0.03772 *  
+    ## hair_colblond      -0.0263750  0.2313251  -0.114  0.90922    
+    ## hair_colbrown      -0.2825310  0.1329109  -2.126  0.03353 *  
+    ## hair_colother      -0.3653675  0.1642454  -2.225  0.02611 *  
+    ## stop_in_outoutside -1.0501850  0.0512621 -20.487  < 2e-16 ***
+    ## off_in_unif        -0.2119237  0.0487338  -4.349 1.37e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 13595  on 12369  degrees of freedom
-    ## Residual deviance: 13394  on 12354  degrees of freedom
-    ##   (35 observations deleted due to missingness)
-    ## AIC: 13426
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12319  on 12354  degrees of freedom
+    ##   (34 observations deleted due to missingness)
+    ## AIC: 12351
     ## 
-    ## Number of Fisher Scoring iterations: 5
+    ## Number of Fisher Scoring iterations: 4
+
+``` r
+# remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_7)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = arst_made ~ sex + race + age + weight + hair_col + 
+    ##     stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.3023  -0.6630  -0.5931  -0.5420   2.4217  
+    ## 
+    ## Coefficients:
+    ##                      Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)        -0.0484123  0.2091060  -0.232  0.81691    
+    ## sexM               -0.0710071  0.0852080  -0.833  0.40465    
+    ## sexZ               -1.0543000  0.4829617  -2.183  0.02904 *  
+    ## raceblack           0.1630594  0.0925216   1.762  0.07800 .  
+    ## raceblack-hispanic  0.3245760  0.1194966   2.716  0.00660 ** 
+    ## racewhite           0.1875979  0.1148896   1.633  0.10250    
+    ## racewhite-hispanic  0.4838087  0.0978299   4.945 7.60e-07 ***
+    ## age                 0.0040270  0.0020764   1.939  0.05245 .  
+    ## weight             -0.0020816  0.0006851  -3.038  0.00238 ** 
+    ## hair_colblack      -0.2572458  0.1243320  -2.069  0.03854 *  
+    ## hair_colblond      -0.0228738  0.2312852  -0.099  0.92122    
+    ## hair_colbrown      -0.2799264  0.1328703  -2.107  0.03514 *  
+    ## hair_colother      -0.3670896  0.1642374  -2.235  0.02541 *  
+    ## stop_in_outoutside -1.0500310  0.0512612 -20.484  < 2e-16 ***
+    ## off_in_unif        -0.2130833  0.0487153  -4.374 1.22e-05 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 12821  on 12369  degrees of freedom
+    ## Residual deviance: 12319  on 12355  degrees of freedom
+    ##   (34 observations deleted due to missingness)
+    ## AIC: 12349
+    ## 
+    ## Number of Fisher Scoring iterations: 4
 
 ``` r
 stop_frisk_log %>% group_by(frisked, searched, arst_made) %>% 
@@ -700,8 +786,8 @@ stop_frisk_log %>% group_by(frisked, searched, arst_made) %>%
     n_obs = n())
 ```
 
-    ## # A tibble: 9 x 4
-    ## # Groups:   frisked, searched [5]
+    ## # A tibble: 8 x 4
+    ## # Groups:   frisked, searched [4]
     ##   frisked searched arst_made n_obs
     ##     <dbl>    <dbl>     <dbl> <int>
     ## 1       0        0         0  3638
@@ -712,7 +798,6 @@ stop_frisk_log %>% group_by(frisked, searched, arst_made) %>%
     ## 6       1        0         1   457
     ## 7       1        1         0  1047
     ## 8       1        1         1  1443
-    ## 9      NA       NA        NA     1
 
 ``` r
 # count per sex group
@@ -786,10 +871,15 @@ summary(dem_model)
 car::vif(dem_model)
 # nothing is sig
 
+<<<<<<< HEAD
 arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_log)
 summary(arrest_model)
 __________________________
 # did not want to change the whole dataset. Releveles arst_made, so regression models outcome arrested 
+=======
+arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
+summary(arrest_model)
+>>>>>>> d70783d801ebd983a9cde44d93267b0055d4ce91
 
 stop_frisk_relevel = 
   stop_frisk_log %>% 
@@ -805,6 +895,7 @@ summary(arrest_model_2)
 Comparing the reason why people were stopped
 
 ``` r
+stops_total =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
   pivot_longer(
@@ -829,12 +920,19 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
   summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stops_total %>% 
   plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_total %>% 
+ plot_ly(x = ~reason_stopped, y= ~prob, type = "bar" , color = ~reason_stopped) 
 ```
 
 total stops by ages
 
 ``` r
+stops_by_age = 
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
   pivot_longer(
@@ -858,13 +956,68 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped, age) %>% 
   summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stops_by_age %>% 
+  plot_ly(x = ~age, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stops_by_age %>% 
   plot_ly(x = ~age, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+total stop by age group
+
+``` r
+stop_age_group =
+  stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age) %>% 
+  mutate(
+    age_group = case_when(
+      age < '18' ~ "18-",
+      age >= '18' & age < '30' ~ "18-30",
+      age >= '30' & age < '40' ~ "30s",
+      age >= '40' & age < '50' ~ "40s",
+      age >= '50' & age < '60' ~ "50s",
+      age >= '60' & age < '70' ~ "60s",
+      age >= 70 ~"70+"
+    )
+    ) %>% 
+   pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped, age_group) %>% 
+  summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stop_age_group %>% 
+  plot_ly(x = ~age_group, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stop_age_group %>% 
+ plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped) 
 ```
 
 total stops by sex
 
 ``` r
-stop_frisk_df %>% 
+stops_by_sex = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -894,13 +1047,20 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, sex) %>% 
   summarize(total =n()) %>%
-  plot_ly(x = ~sex, y= ~total, type = "bar" , color = ~reason_stopped)
+  mutate(prop = total/sum(total)) 
+
+stops_by_sex %>% 
+  plot_ly(x = ~sex, y= ~prop, type = "bar" , color = ~reason_stopped)
+
+stops_by_sex %>% 
+  plot_ly(x = ~sex, y = ~total, type = "bar", color = ~reason_stopped)
 ```
 
 total stops by race
 
 ``` r
-stop_frisk_df %>% 
+stop_by_race = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -923,14 +1083,22 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, race) %>% 
   summarize(total =n()) %>% 
+  mutate(prop = total/sum(total)) 
+
+stop_by_race %>% 
+  plot_ly(x = ~race, y= ~prop, type = "bar" , color = ~reason_stopped)
+
+stop_by_race %>% 
   plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
 total stops by date
 
 ``` r
+stops_by_month =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
+  mutate( month_stop = month(date_stop)) %>% 
   pivot_longer(
     cs_objcs:cs_other,
     names_to = "reason_stopped",
@@ -950,14 +1118,21 @@ stop_frisk_df %>%
     "cs_other" = "other"
   )) %>% 
    filter(stops == 1) %>% 
-  group_by(reason_stopped, date_stop) %>% 
+  group_by(reason_stopped, month_stop) %>% 
   summarize(total =n()) %>% 
-  plot_ly(x = ~date_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+  mutate( prob = total/sum(total))
+
+stops_by_month %>% 
+  plot_ly(x = ~month_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_by_month %>% 
+  plot_ly(x = ~month_stop, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 total of stop by inside and outside
 
 ``` r
+in_out_stops = 
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
   pivot_longer(
@@ -981,12 +1156,19 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, stop_in_out) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+in_out_stops %>% 
   plot_ly(x = ~stop_in_out, y= ~total, type = "bar" , color = ~reason_stopped)
+
+in_out_stops %>% 
+   plot_ly(x = ~stop_in_out, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 arrest made by total stops
 
 ``` r
+stops_arrest =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
   pivot_longer(
@@ -1007,16 +1189,30 @@ stop_frisk_df %>%
     "cs_bulge" = "suspcious bulge",
     "cs_other" = "other"
   )) %>% 
+  mutate(
+    arst_made = recode(
+      arst_made,
+      '0' = "outside",
+      '1' = "inside"
+    )
+  ) %>% 
    filter(stops == 1) %>% 
   group_by(reason_stopped, arst_made) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+stops_arrest %>% 
   plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_arrest %>% 
+  plot_ly(x = ~arst_made, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 total stops by boro
 
 ``` r
-stop_frisk_df %>% 
+stop_by_boro = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -1039,5 +1235,11 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, boro) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+stop_by_boro %>% 
+  plot_ly(x = ~boro, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stop_by_boro %>% 
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```

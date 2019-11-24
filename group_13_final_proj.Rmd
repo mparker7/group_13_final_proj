@@ -154,21 +154,15 @@ stop_frisk_df =
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
          searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
-         rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %>% 
   # change all columns that have Y/N to 1/0
   mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
   # change binary columns to numeric instead of character
   mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
   # converts all character variables to factors (this does the same as the for loop)
-  mutate_if(is.character, as.factor)
-
-# convert to dataframe
-stop_frisk_df = as.data.frame(stop_frisk_df)
-
-# order all categorical variables with more than 2 levels as factors
-for (i in c("sex", "race", "hair_col", "eye_col", "build", "stop_in_out", "boro")) {
-  stop_frisk_df[,i] = as.factor(stop_frisk_df[,i])
-}
+  mutate_if(is.character, as.factor) %>% 
+  # remove the single row of NAs
+  filter(!is.na(build))
 ```
 
 
@@ -378,12 +372,12 @@ Building a model using only characteristics, demographics, and location as predi
 ```{r}
 model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_1)
+car::vif(model_1)
 # Based on the GVIF, we will remove boro
 
 model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_2)
+car::vif(model_2)
 # no more collinearity problems
 
 summary(model_2)
@@ -399,20 +393,25 @@ Building a model that uses characteristics, demographics, and location as predic
 ```{r}
 model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_4)
+car::vif(model_4)
 
 summary(model_4)
 
 # remove eye color
-model_5 = glm(searched ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_5)
 
-# remove hair color (rather large standard errors comparatively)
-model_6 = glm(searched ~ sex + race + age + height_inch + weight + build + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
 
+
+# remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_7)
 ```
 
 
@@ -423,7 +422,7 @@ stop_frisk_log %>% group_by(frisked, searched, arst_made) %>%
 ```
 
 
-```{r, demographics , eval=FALSE}
+```{r, demographics, eval = FALSE}
 
 # count per sex group
 demographics = stop_frisk_log %>% 
@@ -524,6 +523,7 @@ summary(arrest_model_2)
 Comparing the reason why people were stopped 
 
 ```{r, eval=FALSE}
+stops_total =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
   pivot_longer(
@@ -548,15 +548,21 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
   summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stops_total %>% 
   plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_total %>% 
+ plot_ly(x = ~reason_stopped, y= ~prob, type = "bar" , color = ~reason_stopped) 
   
 ```
-
 
 
 total stops by ages
 
 ```{r, eval=FALSE}
+stops_by_age = 
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
   pivot_longer(
@@ -580,13 +586,70 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped, age) %>% 
   summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stops_by_age %>% 
+  plot_ly(x = ~age, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stops_by_age %>% 
   plot_ly(x = ~age, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+
+total stop by age group 
+
+```{r, eval=FALSE}
+stop_age_group =
+  stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age) %>% 
+  mutate(
+    age_group = case_when(
+      age < '18' ~ "18-",
+      age >= '18' & age < '30' ~ "18-30",
+      age >= '30' & age < '40' ~ "30s",
+      age >= '40' & age < '50' ~ "40s",
+      age >= '50' & age < '60' ~ "50s",
+      age >= '60' & age < '70' ~ "60s",
+      age >= 70 ~"70+"
+    )
+    ) %>% 
+   pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped, age_group) %>% 
+  summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stop_age_group %>% 
+  plot_ly(x = ~age_group, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stop_age_group %>% 
+ plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped) 
+  
 ```
 
 total stops by sex 
 
 ```{r, eval=FALSE}
-stop_frisk_df %>% 
+stops_by_sex = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -616,13 +679,20 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, sex) %>% 
   summarize(total =n()) %>%
-  plot_ly(x = ~sex, y= ~total, type = "bar" , color = ~reason_stopped)
+  mutate(prop = total/sum(total)) 
+
+stops_by_sex %>% 
+  plot_ly(x = ~sex, y= ~prop, type = "bar" , color = ~reason_stopped)
+
+stops_by_sex %>% 
+  plot_ly(x = ~sex, y = ~total, type = "bar", color = ~reason_stopped)
 ```
 
 total stops by race
 
 ```{r, eval=FALSE}
-stop_frisk_df %>% 
+stop_by_race = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -645,6 +715,12 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, race) %>% 
   summarize(total =n()) %>% 
+  mutate(prop = total/sum(total)) 
+
+stop_by_race %>% 
+  plot_ly(x = ~race, y= ~prop, type = "bar" , color = ~reason_stopped)
+
+stop_by_race %>% 
   plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
@@ -652,8 +728,10 @@ stop_frisk_df %>%
 total stops by date
 
 ```{r, eval=FALSE}
+stops_by_month =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
+  mutate( month_stop = month(date_stop)) %>% 
   pivot_longer(
     cs_objcs:cs_other,
     names_to = "reason_stopped",
@@ -673,15 +751,22 @@ stop_frisk_df %>%
     "cs_other" = "other"
   )) %>% 
    filter(stops == 1) %>% 
-  group_by(reason_stopped, date_stop) %>% 
+  group_by(reason_stopped, month_stop) %>% 
   summarize(total =n()) %>% 
-  plot_ly(x = ~date_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+  mutate( prob = total/sum(total))
+
+stops_by_month %>% 
+  plot_ly(x = ~month_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_by_month %>% 
+  plot_ly(x = ~month_stop, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 
 total of stop by inside and outside 
 
 ```{r, eval=FALSE}
+in_out_stops = 
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
   pivot_longer(
@@ -705,13 +790,20 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, stop_in_out) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+in_out_stops %>% 
   plot_ly(x = ~stop_in_out, y= ~total, type = "bar" , color = ~reason_stopped)
+
+in_out_stops %>% 
+   plot_ly(x = ~stop_in_out, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 
 arrest made by total stops
 
 ```{r, eval=FALSE}
+stops_arrest =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
   pivot_longer(
@@ -732,16 +824,30 @@ stop_frisk_df %>%
     "cs_bulge" = "suspcious bulge",
     "cs_other" = "other"
   )) %>% 
+  mutate(
+    arst_made = recode(
+      arst_made,
+      '0' = "outside",
+      '1' = "inside"
+    )
+  ) %>% 
    filter(stops == 1) %>% 
   group_by(reason_stopped, arst_made) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+stops_arrest %>% 
   plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_arrest %>% 
+  plot_ly(x = ~arst_made, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 total stops by boro 
 
 ```{r, eval=FALSE}
-stop_frisk_df %>% 
+stop_by_boro = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -764,6 +870,31 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, boro) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+stop_by_boro %>% 
+  plot_ly(x = ~boro, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stop_by_boro %>% 
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

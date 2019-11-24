@@ -1,7 +1,7 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-21
+2019-11-24
 
 Rough Outline of Project:
 
@@ -730,48 +730,76 @@ demographics %>%
   plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
 
   
-# subjects count by race, sex and frisked
+# subjects count of frisked subjects by race, sex 
 frisked_plot = 
   stop_frisk_df %>% 
   drop_na() %>% 
-  mutate(race = fct_infreq(race)) %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  filter( 
+    frisked == '1') %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
     title = "Frisked")+
-  facet_grid(~frisked) + 
   theme(axis.text.x = element_text(angle = 80, hjust = 1))
 
-# subjects count by race, sex and searched
+# subjects count of searched subjects by race, sex
 searched_plot = 
   stop_frisk_df  %>% 
   drop_na() %>% 
-  mutate(race = fct_infreq(race)) %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter(searched =='1') %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
     title = "Searched")+
-  facet_grid(~searched) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count of arrested subjects by race, sex
+arrested_plot = 
+  stop_frisk_df  %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter(arst_made =='1') %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Arrested")+
   theme(axis.text.x = element_text(angle = 80, hjust = 1))
 
 # devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 
-(frisked_plot+searched_plot)
+(frisked_plot+searched_plot + arrested_plot)
 ```
 
 Regression model for
 demographics
 
 ``` r
-dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_df)
+dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_log)
 summary(dem_model)
+car::vif(dem_model)
 # nothing is sig
 
-arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
-summary(simple_model)
+arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_log)
+summary(arrest_model)
+__________________________
+# did not want to change the whole dataset. Releveles arst_made, so regression models outcome arrested 
 
-# modeling log odds of no arrest. How to change the outcome to 1?
+stop_frisk_relevel = 
+  stop_frisk_log %>% 
+  mutate(
+    arst_made = as.factor(arst_made),
+    arst_made = fct_relevel(arst_made, '1'))
+  
+arrest_model_2 = 
+  glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_relevel)
+summary(arrest_model_2)
 ```
 
 Comparing the reason why people were stopped

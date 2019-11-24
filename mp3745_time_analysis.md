@@ -150,3 +150,30 @@ stop_frisk_df %>%
 ```
 
 <img src="mp3745_time_analysis_files/figure-gfm/unnamed-chunk-3-1.png" width="90%" />
+
+Animated
+
+``` r
+# Number of stops per hour over the day (broken down by boro)
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(hour_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  transition_states(
+    boro,
+    transition_length = 2,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ease_aes('sine-in-out')
+```
+
+    ## NULL

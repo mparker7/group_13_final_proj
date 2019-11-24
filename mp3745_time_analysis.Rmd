@@ -2,7 +2,7 @@
 title: "mp3745_time_analysis"
 author: "mp3745"
 date: '`r format(Sys.time(), "%Y-%m-%d")`'
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +11,9 @@ library(viridis)
 library(rvest)
 library(httr)
 library(lubridate)
-library(plotly)
+library(gganimate)
+library(transformr)
+library(gifski)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -256,3 +258,35 @@ stop_frisk_df %>%
   geom_smooth(aes(y = searched, color = 'green'), se = FALSE) +
   geom_smooth(aes(y = frisk_and_search, color = 'yellow'), se = FALSE) 
 ```
+
+Animated 
+```{r}
+# Number of stops per hour over the day (broken down by boro)
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(hour_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = boro)) + 
+  geom_point(alpha = 0.7, size = 2) +
+  geom_smooth(se = FALSE, alpha = 0.7) +
+  transition_states(
+    boro,
+    transition_length = 1,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle('{closest_state}')
+  
+```
+
+
+
+
+
+
+

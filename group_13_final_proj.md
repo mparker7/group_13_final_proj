@@ -1,44 +1,36 @@
 Group 13 Final Project
 ================
 cs3779, kd2640, ob2305, mp3745, lef2147
-2019-11-21
+2019-11-23
 
 Rough Outline of Project:
 
-  - Describe the goal/motivation of the project; have some stats and
-    facts to explain our purpose in investigating this dataset
-  - Describe the dataset: where is it from, what does it contain
-  - Review the questions we intend on answering
-  - Exploratory Data Analysis
-      - Give an overview of the demographics of our dataset, any
-        conclusion we make is only relevant to those who were stopped
-        which is why it is good to give an idea of who is represented
-          - histogram of race/build/etc.
-          - distribution of continuous variables
-      - Logistic Regression
-          - odds of frisked
-          - odds of arrest
-      - Trends over time
-          - could maybe find a way to test this, i.e. linear regression,
-            is the slope equal to zero, or something of that nature. the
-            plot shows a funnel pattern so maybe we could look into that
-            more
-      - other things
-  - Findings/Discussion
+-   Describe the goal/motivation of the project; have some stats and facts to explain our purpose in investigating this dataset
+-   Describe the dataset: where is it from, what does it contain
+-   Review the questions we intend on answering
+-   Exploratory Data Analysis
+-   Give an overview of the demographics of our dataset, any conclusion we make is only relevant to those who were stopped which is why it is good to give an idea of who is represented
+    -   histogram of race/build/etc.
+    -   distribution of continuous variables
+-   Logistic Regression
+    -   odds of frisked
+    -   odds of arrest
+-   Trends over time
+    -   could maybe find a way to test this, i.e. linear regression, is the slope equal to zero, or something of that nature. the plot shows a funnel pattern so maybe we could look into that more
+-   other things
+-   Findings/Discussion
 
 Read in and tidy the data
 
 The following code:
 
-  - Reads in the data
-  - Renames columns to be more informative
-  - Combines height columns into a single height in inches
-  - Converts date\_stop to date data type
-  - Converts time\_stop to time data type
-  - Recodes the values in categorical columns to be more informative
-  - Selects column subset for further analysis
-
-<!-- end list -->
+-   Reads in the data
+-   Renames columns to be more informative
+-   Combines height columns into a single height in inches
+-   Converts date\_stop to date data type
+-   Converts time\_stop to time data type
+-   Recodes the values in categorical columns to be more informative
+-   Selects column subset for further analysis
 
 ``` r
 # Read in data
@@ -223,10 +215,8 @@ colSums(is.na(stop_frisk_df))
 
 Looking at stops over time
 
-  - Over a year
-  - By time of day
-
-<!-- end list -->
+-   Over a year
+-   By time of day
 
 ``` r
 # Number of stops per day
@@ -240,7 +230,7 @@ stop_frisk_df %>%
   geom_smooth(se = FALSE)
 ```
 
-<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-3-1.png" width="90%" />
+<img src="group_13_final_proj_files/figure-markdown_github/unnamed-chunk-3-1.png" width="90%" />
 
 ``` r
 # Number of stops per month
@@ -259,7 +249,7 @@ stop_frisk_df %>%
   geom_bar(stat = "Identity") 
 ```
 
-<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-3-2.png" width="90%" />
+<img src="group_13_final_proj_files/figure-markdown_github/unnamed-chunk-3-2.png" width="90%" />
 
 ``` r
 # Number of stops per day (broken down by boro)
@@ -279,7 +269,7 @@ stop_frisk_df %>%
   geom_smooth(se = FALSE) 
 ```
 
-<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-3-3.png" width="90%" />
+<img src="group_13_final_proj_files/figure-markdown_github/unnamed-chunk-3-3.png" width="90%" />
 
 ``` r
 # Number of stops per hour over the day
@@ -298,7 +288,7 @@ stop_frisk_df %>%
   geom_smooth(se = FALSE)
 ```
 
-<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-3-4.png" width="90%" />
+<img src="group_13_final_proj_files/figure-markdown_github/unnamed-chunk-3-4.png" width="90%" />
 
 ``` r
 # Number of stops per hour over the day (broken down by boro)
@@ -315,10 +305,9 @@ stop_frisk_df %>%
   geom_smooth(se = FALSE)
 ```
 
-<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-3-5.png" width="90%" />
+<img src="group_13_final_proj_files/figure-markdown_github/unnamed-chunk-3-5.png" width="90%" />
 
-This code chunk looks at the number of people stopped, frisked, frisked
-& searched, and searched over a single day
+This code chunk looks at the number of people stopped, frisked, frisked & searched, and searched over a single day
 
 ``` r
 stop_frisk_df %>% 
@@ -354,11 +343,9 @@ stop_frisk_df %>%
   geom_smooth(aes(y = frisk_and_search, color = 'yellow'), se = FALSE) 
 ```
 
-<img src="group_13_final_proj_files/figure-gfm/unnamed-chunk-4-1.png" width="90%" />
+<img src="group_13_final_proj_files/figure-markdown_github/unnamed-chunk-4-1.png" width="90%" />
 
-Logistic Regression Dataset - not sure if we want to use this for
-overall but didnt want to completely change the code above without
-asking everyone
+Logistic Regression Dataset - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
 
 ``` r
 stop_frisk_log = stop_frisk_df %>% mutate(
@@ -402,26 +389,50 @@ stop_frisk_log = stop_frisk_df %>% mutate(
     ))
 ```
 
-Building a model using only characteristics, demographics, and location
-as predictors for frisked - assess multicolinearity to determine if
-there are any variables that exhibit high correlation - We will remove
-any variables that exhibit signs of multicollinearity - From this model,
-we can assess of those who were stopped, what are the odds of getting
-frisked based on certain characteristics, demographics and location
-predictors - IMPORTANT: we cannot make any causal statements from this
-model ‘i.e. you have a higher odds of getting stopped if you are X race’
-because everyone in this dataset was
-stopped
+Building a model using only characteristics, demographics, and location as predictors for frisked - assess multicolinearity to determine if there are any variables that exhibit high correlation - We will remove any variables that exhibit signs of multicollinearity - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors - IMPORTANT: we cannot make any causal statements from this model 'i.e. you have a higher odds of getting stopped if you are X race' because everyone in this dataset was stopped
 
 ``` r
 model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_1)
+car::vif(model_1)
+```
+
+    ##                  GVIF Df GVIF^(1/(2*Df))
+    ## sex          1.179297  2        1.042091
+    ## race         1.561548  4        1.057291
+    ## age          1.222201  1        1.105532
+    ## height_inch  1.320364  1        1.149071
+    ## weight       1.567631  1        1.252051
+    ## hair_col     1.406664  4        1.043575
+    ## eye_col      1.235170  3        1.035828
+    ## boro        29.189812  4        1.524593
+    ## build        1.395551  4        1.042541
+    ## stop_in_out  1.074392  1        1.036529
+    ## precinct    25.307892  1        5.030695
+    ## off_in_unif  1.097859  1        1.047788
+
+``` r
 # Based on the GVIF, we will remove boro
 
 model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_2)
+car::vif(model_2)
+```
+
+    ##                 GVIF Df GVIF^(1/(2*Df))
+    ## sex         1.173811  2        1.040877
+    ## race        1.433039  4        1.046001
+    ## age         1.219806  1        1.104448
+    ## height_inch 1.316565  1        1.147417
+    ## weight      1.564742  1        1.250896
+    ## hair_col    1.397985  4        1.042768
+    ## eye_col     1.230990  3        1.035243
+    ## build       1.384006  4        1.041459
+    ## stop_in_out 1.067664  1        1.033278
+    ## precinct    1.113891  1        1.055410
+    ## off_in_unif 1.059472  1        1.029307
+
+``` r
 # no more collinearity problems
 
 summary(model_2)
@@ -528,15 +539,28 @@ summary(model_3)
 # keep weight? 
 ```
 
-Building a model that uses characteristics, demographics, and location
-as predictors for arrest
-made
+Building a model that uses characteristics, demographics, and location as predictors for arrest made
 
 ``` r
 model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_4)
+car::vif(model_4)
+```
 
+    ##                 GVIF Df GVIF^(1/(2*Df))
+    ## sex         1.196703  2        1.045915
+    ## race        1.415372  4        1.044381
+    ## age         1.231781  1        1.109856
+    ## height_inch 1.401760  1        1.183959
+    ## weight      1.834227  1        1.354336
+    ## hair_col    1.414977  4        1.044344
+    ## eye_col     1.229613  3        1.035050
+    ## build       1.511557  4        1.052999
+    ## stop_in_out 1.090944  1        1.044483
+    ## precinct    1.102226  1        1.049870
+    ## off_in_unif 1.071970  1        1.035360
+
+``` r
 summary(model_4)
 ```
 
@@ -798,8 +822,7 @@ library(patchwork)
 (frisked_plot+searched_plot)
 ```
 
-Regression model for
-demographics
+Regression model for demographics
 
 ``` r
 dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_df)
@@ -815,6 +838,7 @@ summary(arrest_model)
 Comparing the reason why people were stopped
 
 ``` r
+stops_total =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
   pivot_longer(
@@ -839,12 +863,19 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
   summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stops_total %>% 
   plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_total %>% 
+ plot_ly(x = ~reason_stopped, y= ~prob, type = "bar" , color = ~reason_stopped) 
 ```
 
 total stops by ages
 
 ``` r
+stops_by_age = 
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
   pivot_longer(
@@ -868,13 +899,68 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped, age) %>% 
   summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stops_by_age %>% 
+  plot_ly(x = ~age, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stops_by_age %>% 
   plot_ly(x = ~age, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+total stop by age group
+
+``` r
+stop_age_group =
+  stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age) %>% 
+  mutate(
+    age_group = case_when(
+      age < '18' ~ "18-",
+      age >= '18' & age < '30' ~ "18-30",
+      age >= '30' & age < '40' ~ "30s",
+      age >= '40' & age < '50' ~ "40s",
+      age >= '50' & age < '60' ~ "50s",
+      age >= '60' & age < '70' ~ "60s",
+      age >= 70 ~"70+"
+    )
+    ) %>% 
+   pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped, age_group) %>% 
+  summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+
+stop_age_group %>% 
+  plot_ly(x = ~age_group, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stop_age_group %>% 
+ plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped) 
 ```
 
 total stops by sex
 
 ``` r
-stop_frisk_df %>% 
+stops_by_sex = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -904,13 +990,20 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, sex) %>% 
   summarize(total =n()) %>%
-  plot_ly(x = ~sex, y= ~total, type = "bar" , color = ~reason_stopped)
+  mutate(prop = total/sum(total)) 
+
+stops_by_sex %>% 
+  plot_ly(x = ~sex, y= ~prop, type = "bar" , color = ~reason_stopped)
+
+stops_by_sex %>% 
+  plot_ly(x = ~sex, y = ~total, type = "bar", color = ~reason_stopped)
 ```
 
 total stops by race
 
 ``` r
-stop_frisk_df %>% 
+stop_by_race = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -933,14 +1026,22 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, race) %>% 
   summarize(total =n()) %>% 
+  mutate(prop = total/sum(total)) 
+
+stop_by_race %>% 
+  plot_ly(x = ~race, y= ~prop, type = "bar" , color = ~reason_stopped)
+
+stop_by_race %>% 
   plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
 total stops by date
 
 ``` r
+stops_by_month =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
+  mutate( month_stop = month(date_stop)) %>% 
   pivot_longer(
     cs_objcs:cs_other,
     names_to = "reason_stopped",
@@ -960,14 +1061,21 @@ stop_frisk_df %>%
     "cs_other" = "other"
   )) %>% 
    filter(stops == 1) %>% 
-  group_by(reason_stopped, date_stop) %>% 
+  group_by(reason_stopped, month_stop) %>% 
   summarize(total =n()) %>% 
-  plot_ly(x = ~date_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+  mutate( prob = total/sum(total))
+
+stops_by_month %>% 
+  plot_ly(x = ~month_stop, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_by_month %>% 
+  plot_ly(x = ~month_stop, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 total of stop by inside and outside
 
 ``` r
+in_out_stops = 
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
   pivot_longer(
@@ -991,12 +1099,19 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, stop_in_out) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+in_out_stops %>% 
   plot_ly(x = ~stop_in_out, y= ~total, type = "bar" , color = ~reason_stopped)
+
+in_out_stops %>% 
+   plot_ly(x = ~stop_in_out, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 arrest made by total stops
 
 ``` r
+stops_arrest =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
   pivot_longer(
@@ -1017,16 +1132,30 @@ stop_frisk_df %>%
     "cs_bulge" = "suspcious bulge",
     "cs_other" = "other"
   )) %>% 
+  mutate(
+    arst_made = recode(
+      arst_made,
+      '0' = "outside",
+      '1' = "inside"
+    )
+  ) %>% 
    filter(stops == 1) %>% 
   group_by(reason_stopped, arst_made) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+stops_arrest %>% 
   plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
+
+stops_arrest %>% 
+  plot_ly(x = ~arst_made, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
 total stops by boro
 
 ``` r
-stop_frisk_df %>% 
+stop_by_boro = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -1049,5 +1178,11 @@ stop_frisk_df %>%
    filter(stops == 1) %>% 
   group_by(reason_stopped, boro) %>% 
   summarize(total =n()) %>% 
+  mutate( prob = total/sum(total))
+
+stop_by_boro %>% 
+  plot_ly(x = ~boro, y= ~prob, type = "bar" , color = ~reason_stopped)
+
+stop_by_boro %>% 
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```

@@ -8,7 +8,7 @@ output:
 ---
 
 # STOP AND FRISK
-
+ 
 ![](images/cartoon.jpeg)
 ![](images/stop_and_frisk.jpg)
 ![](images/image1.jpeg)

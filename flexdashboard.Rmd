@@ -174,7 +174,7 @@ stop_frisk_df %>%
   mutate(prob = total/sum(total)) 
 ```
 
-Column {data-width=650}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
 ### Number of stops per day (broken down by boro)
@@ -195,7 +195,7 @@ hour_stop %>%
   geom_smooth(se = FALSE)
 ```
 
-Column {data-width=350}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
 ### distribution of age by sex

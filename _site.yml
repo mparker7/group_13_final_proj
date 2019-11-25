@@ -13,4 +13,4 @@ navbar:
       href: http://github.com/mparker7/group_13_final_proj/
 output:
   html_document:
-    theme: cerulean
+    theme: journal

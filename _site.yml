@@ -8,7 +8,7 @@ navbar:
     - icon: fa-envelope fa-lg
       href: mailto:<mp3745@cumc.columbia.edu>
     - icon: fa-github fa-lg
-      href: http://github.com/<mparker7/group_13_final_proj>/
+      href: http://github.com/mparker7/group_13_final_proj/
 output:
   html_document:
     theme: cerulean

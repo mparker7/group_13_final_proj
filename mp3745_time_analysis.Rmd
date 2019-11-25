@@ -283,6 +283,56 @@ stop_frisk_df %>%
   ggtitle('{closest_state}')
 ```
 
+Animated 2 (option #1)
+```{r}
+# Number of stops per day
+stop_frisk_df %>% 
+  mutate(
+    month = month(date_stop),
+    day = day(date_stop)
+  ) %>% 
+  group_by(month, day) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = day, y = count, color = month)) + 
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(se = FALSE, alpha = 0.7) + 
+  transition_states(
+    month,
+    transition_length = 2,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle('Month: {closest_state}')
+```
+
+Animated 2 (option #2)
+```{r}
+# Number of stops per day
+stop_frisk_df %>% 
+  mutate(
+    month = month(date_stop)
+  ) %>% 
+  group_by(month, date_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = date_stop, y = count, color = month)) + 
+  geom_point(size = 2, alpha = 0.7) +
+  geom_smooth(se = FALSE, alpha = 0.7) + 
+  transition_states(
+    month,
+    transition_length = 1,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle('Month: {closest_state}') 
+```
+
+
 
 
 

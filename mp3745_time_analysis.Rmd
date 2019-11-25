@@ -281,7 +281,6 @@ stop_frisk_df %>%
   enter_fade() +
   exit_shrink() +
   ggtitle('{closest_state}')
-  
 ```
 
 

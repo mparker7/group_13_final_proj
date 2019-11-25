@@ -3,6 +3,8 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
+    - text: "Analysis"
+      href: flexdashboard.html
     - text: "Project Report"
       href: project_report.html
     - icon: fa-envelope fa-lg

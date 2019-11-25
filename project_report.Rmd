@@ -1,5 +1,13 @@
 ---
 title: "Stop! You are being frisked!"
+author: "Lauren, Olya, Matt, Cj, & Keyanna"
+date: "December 5, 2019"
+output:
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    code_folding: hide
+      
 ---
 
 

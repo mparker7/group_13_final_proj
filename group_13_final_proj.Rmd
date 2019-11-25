@@ -511,6 +511,60 @@ summary(arrest_model_2)
 ```
 
 
+Stops of subjects below 18
+```{r}
+stop_frisk_log %>% 
+  filter(
+    age < '18') %>% 
+  group_by(sex, race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
+
+# frisked under 18 by race
+stop_frisk_log %>% 
+  filter(
+    age < '18',
+    frisked == '1') %>% 
+  group_by( race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
+
+#searched under 18
+stop_frisk_log %>% 
+  filter(
+    age < '18',
+    searched == '1') %>% 
+  group_by( race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
+
+#arrested under 18
+stop_frisk_log %>% 
+  filter(
+    age < '18',
+    arst_made =='1') %>% 
+  group_by(race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
+
+# bar chart for age below 18 for each race
+stop_frisk_log %>% 
+  filter(
+    age < '18') %>%
+  ggplot(aes(x = race, fill = race))+
+  geom_bar()
+
+
+#violin plot of age below 18 for each race
+stop_frisk_log %>% 
+  filter(
+    age < '18') %>%
+  plot_ly(y = ~age, color = ~race, type = "violin", colors = "Set2")
+
+# weapon found on a child (<18)
+# top reasons for stopping children
+  
+```
 
 
 

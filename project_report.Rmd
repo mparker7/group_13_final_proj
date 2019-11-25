@@ -24,8 +24,15 @@ Anything that inspired you, such as a paper, a website, or something we discusse
 # Initial Questions
 What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?
 
+Questions of Interest:
+We are interested in determining if there is a predictive nature to this dataset. We also want to describe the scope of the dataset, detail the different trends overtime, and visualize... We strive to answer the following questions:
+-	What is the distribution of demographics in the dataset? 
+-	After being stopped, can demographics, characteristics, and location of stop predict whether or not the individual will be frisked or arrested? 
+-	Are there any difference between stops made over the course of the year? Week? Time of day? 
+-	What question are we going to answer with the map? 
+
 # Data
-Sourc, scraping method, cleaning, etc.
+Our dataset is from the New York Police Department and was obtained through the NYC Open Data resource. It contains data from r nrows(data) stops that occurred during 2016. The original dataset contained 112 variables, however to narrow our focus, the dataset was reduced down to ___ categorical, binary, and numerical variables that describe each stop and are relevant to the questions at hand. The data cleaning and tidying process recoded variables, implemented understandable variable names, and converted categorical variables to factors and binary variables into ‘0’ and ‘1’ within R. The outcome variables that we are interested in building models for are FRISKED and ARST_MADE. These variables are binary in nature and describe whether the stopped individual was frisked, and whether the individual was arrested. Below is the distribution of the data for both of these variables. The dataset contains __ individuals who were frisked (##%) , and ___ individuals who were arrested (##%).  
 
 # Exploratory Analysis
 Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.

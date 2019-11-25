@@ -12,12 +12,13 @@
 
 <meta name="author" content="Lauren, Olya, Matt, Cj, &amp; Keyanna" />
 
+<meta name="date" content="2019-12-05" />
 
 <title>Stop! You are being frisked!</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -110,33 +111,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 51px;
+  padding-top: 61px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 66px;
+  margin-top: -66px;
 }
 .dropdown-submenu {
   position: relative;
@@ -352,6 +353,9 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="flexdashboard.html">Analysis</a>
+</li>
+<li>
   <a href="project_report.html">Project Report</a>
 </li>
 <li>
@@ -401,10 +405,11 @@ div.tocify {
 <div id="initial-questions" class="section level1">
 <h1>Initial Questions</h1>
 <p>What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?</p>
+<p>Questions of Interest: We are interested in determining if there is a predictive nature to this dataset. We also want to describe the scope of the dataset, detail the different trends overtime, and visualize… We strive to answer the following questions: - What is the distribution of demographics in the dataset? - After being stopped, can demographics, characteristics, and location of stop predict whether or not the individual will be frisked or arrested? - Are there any difference between stops made over the course of the year? Week? Time of day? - What question are we going to answer with the map?</p>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<p>Sourc, scraping method, cleaning, etc.</p>
+<p>Our dataset is from the New York Police Department and was obtained through the NYC Open Data resource. It contains data from r nrows(data) stops that occurred during 2016. The original dataset contained 112 variables, however to narrow our focus, the dataset was reduced down to ___ categorical, binary, and numerical variables that describe each stop and are relevant to the questions at hand. The data cleaning and tidying process recoded variables, implemented understandable variable names, and converted categorical variables to factors and binary variables into ‘0’ and ‘1’ within R. The outcome variables that we are interested in building models for are FRISKED and ARST_MADE. These variables are binary in nature and describe whether the stopped individual was frisked, and whether the individual was arrested. Below is the distribution of the data for both of these variables. The dataset contains __ individuals who were frisked (##%) , and ___ individuals who were arrested (##%).</p>
 </div>
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory Analysis</h1>

@@ -1,0 +1,34 @@
+---
+title: "Stop! You are being frisked!"
+---
+
+
+
+
+
+# Motivation
+Provide an overview of the project goals and motivation
+
+
+# Related Work
+Anything that inspired you, such as a paper, a website, or something we discussed in class?
+
+# Initial Questions
+What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?
+
+# Data
+Sourc, scraping method, cleaning, etc.
+
+# Exploratory Analysis
+Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.
+
+# Additional Analysis
+If you undertake formal statistical analyses, describe these in detail
+
+# Discussion
+What were you findings? Are they what you expected? What insights into the data can you make?
+  
+
+  
+
+

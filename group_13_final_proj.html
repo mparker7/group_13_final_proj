@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="cs3779, kd2640, ob2305, mp3745, lef2147" />
+
+<meta name="date" content="2019-11-25" />
+
+<title>Group 13 Final Project</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.49.4/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.49.4/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="flexdashboard.html">Analysis</a>
+</li>
+<li>
+  <a href="project_report.html">Project Report</a>
+</li>
+<li>
+  <a href="mailto:&lt;mp3745@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/mparker7/group_13_final_proj/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Group 13 Final Project</h1>
+<h4 class="author">cs3779, kd2640, ob2305, mp3745, lef2147</h4>
+<h4 class="date">2019-11-25</h4>
+
+</div>
+
+
+<p>Rough Outline of Project:</p>
+<ul>
+<li>Describe the goal/motivation of the project; have some stats and facts to explain our purpose in investigating this dataset</li>
+<li>Describe the dataset: where is it from, what does it contain</li>
+<li>Review the questions we intend on answering</li>
+<li>Exploratory Data Analysis
+<ul>
+<li>Give an overview of the demographics of our dataset, any conclusion we make is only relevant to those who were stopped which is why it is good to give an idea of who is represented
+<ul>
+<li>histogram of race/build/etc.</li>
+<li>distribution of continuous variables</li>
+</ul></li>
+<li>Logistic Regression
+<ul>
+<li>odds of frisked</li>
+<li>odds of arrest</li>
+</ul></li>
+<li>Trends over time
+<ul>
+<li>could maybe find a way to test this, i.e. linear regression, is the slope equal to zero, or something of that nature. the plot shows a funnel pattern so maybe we could look into that more</li>
+</ul></li>
+<li>other things</li>
+</ul></li>
+<li>Findings/Discussion</li>
+</ul>
+<p>Read in and tidy the data</p>
+<p>The following code:</p>
+<ul>
+<li>Reads in the data</li>
+<li>Renames columns to be more informative</li>
+<li>Combines height columns into a single height in inches</li>
+<li>Converts date_stop to date data type</li>
+<li>Converts time_stop to time data type</li>
+<li>Recodes the values in categorical columns to be more informative</li>
+<li>Selects column subset for further analysis</li>
+</ul>
+<pre class="r"><code># Read in data
+stop_frisk_df = 
+  # Read in data from internet
+  GET(&quot;https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv&quot;) %&gt;% 
+  content(&quot;parsed&quot;) %&gt;% 
+  
+  # Clean and fix names of columns
+  janitor::clean_names() %&gt;% 
+  rename(
+    precinct = pct,
+    date_stop = datestop,
+    time_stop = timestop,
+    stop_in_out = inout,
+    obs_time_min = perobs,
+    stop_time_min = perstop,
+    arst_made = arstmade,
+    off_in_unif = offunif,
+    hair_col = haircolr,
+    eye_col = eyecolor,
+    other_feature = othfeatr,
+    boro = city
+  )  %&gt;% 
+  mutate(
+    # Combine height columns
+    height_inch = ht_feet * 12 + ht_inch,
+    # Convert date to proper format
+    date_stop = mdy(date_stop),
+    # Convert time to proper format
+    time_stop = hm(time_stop / 100),
+    # Recode to be more informative
+    stop_in_out = recode(stop_in_out, &quot;I&quot; = &quot;inside&quot;, &quot;O&quot; = &quot;outside&quot;),
+    race = recode(
+      race, 
+      &quot;A&quot; = &quot;asian/pacific islander&quot;, 
+      &quot;B&quot; = &quot;black&quot;, 
+      &quot;I&quot; = &quot;american indian/alaska native&quot;,
+      &quot;P&quot; = &quot;black-hispanic&quot;,
+      &quot;Q&quot; = &quot;white-hispanic&quot;,
+      &quot;W&quot; = &quot;white&quot;,
+      &quot;U&quot; = &quot;unknown&quot;,
+      &quot;Z&quot; = &quot;other&quot;
+    ),
+    hair_col = recode(
+      hair_col,
+      &quot;BA&quot; = &quot;bald&quot;,
+      &quot;BK&quot; = &quot;black&quot;,
+      &quot;BL&quot; = &quot;blond&quot;,
+      &quot;BR&quot; = &quot;brown&quot;,
+      &quot;DY&quot; = &quot;dyed&quot;,
+      &quot;FR&quot; = &quot;frosted&quot;,
+      &quot;GY&quot; = &quot;gray&quot;,
+      &quot;RA&quot; = &quot;red&quot;,
+      &quot;SN&quot; = &quot;sandy&quot;,
+      &quot;SP&quot; = &quot;salt and pepper&quot;,
+      &quot;WH&quot; = &quot;white&quot;,
+      &quot;XX&quot; = &quot;unknown&quot;,
+      &quot;ZZ&quot; = &quot;other&quot;,
+    ),
+    eye_col = recode(
+      eye_col,
+      &quot;BK&quot; = &quot;black&quot;,
+      &quot;BL&quot; = &quot;blue&quot;,
+      &quot;BR&quot; = &quot;brown&quot;,
+      &quot;DF&quot; = &quot;different&quot;,
+      &quot;GR&quot; = &quot;green&quot;,
+      &quot;GY&quot; = &quot;gray&quot;,
+      &quot;HA&quot; = &quot;hazel&quot;,
+      &quot;MA&quot; = &quot;maroon&quot;,
+      &quot;PK&quot; = &quot;pink&quot;,
+      &quot;VI&quot; = &quot;violet&quot;,
+      &quot;XX&quot; = &quot;unknown&quot;,
+      &quot;Z&quot; = &quot;other&quot;,      
+    ),
+    build = recode(
+      build,
+      &quot;H&quot; = &quot;heavy&quot;,
+      &quot;M&quot; = &quot;medium&quot;,
+      &quot;T&quot; = &quot;thin&quot;,
+      &quot;U&quot; = &quot;muscular&quot;,
+      &quot;Z&quot; = &quot;unknown&quot;
+    ),
+    # change boro columns to lowercase for consistency
+    boro = tolower(boro),
+    # change character datatypes to numeric
+    age = as.numeric(age),
+    obs_time_min = as.numeric(obs_time_min),
+    stop_time_min = as.numeric(stop_time_min)
+  )  %&gt;% 
+  # select columns for further analysis
+  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
+         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %&gt;% 
+  # change all columns that have Y/N to 1/0
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., &quot;Y&quot; = &quot;1&quot;, &quot;N&quot; = &quot;0&quot;))) %&gt;% 
+  # change binary columns to numeric instead of character
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %&gt;% 
+  # converts all character variables to factors (this does the same as the for loop)
+  mutate_if(is.character, as.factor) %&gt;% 
+  # remove the single row of NAs
+  filter(!is.na(build))</code></pre>
+<p>Evaluating Missing Data and Categorical Data</p>
+<pre class="r"><code>table(stop_frisk_df$race)</code></pre>
+<pre><code>## 
+## american indian/alaska native        asian/pacific islander 
+##                            38                           737 
+##                         black                black-hispanic 
+##                          6498                           873 
+##                         other                       unknown 
+##                           140                            95 
+##                         white                white-hispanic 
+##                          1270                          2753</code></pre>
+<pre class="r"><code>table(stop_frisk_df$hair_col)</code></pre>
+<pre><code>## 
+##            bald           black           blond           brown 
+##             391            9046             143            2323 
+##            dyed            gray           other             red 
+##               4             125              59              39 
+## salt and pepper           sandy         unknown 
+##              74               2             198</code></pre>
+<pre class="r"><code>table(stop_frisk_df$eye_col)</code></pre>
+<pre><code>## 
+##     black      blue     brown different      gray     green     hazel 
+##       955       206     10839         1        14       103       113 
+##     other   unknown 
+##        54       119</code></pre>
+<pre class="r"><code>table(stop_frisk_df$build)</code></pre>
+<pre><code>## 
+##    heavy   medium muscular     thin  unknown 
+##     1209     5470      133     5382      210</code></pre>
+<pre class="r"><code># we should consider consolidating categories
+
+colSums(is.na(stop_frisk_df))</code></pre>
+<pre><code>##      precinct     date_stop     time_stop   stop_in_out  obs_time_min 
+##             0             0             0             0             0 
+## stop_time_min     arst_made   off_in_unif       frisked      searched 
+##            23             0             0             0             0 
+##      rf_vcrim      rf_othsw      rf_attir      cs_objcs      cs_descr 
+##             0             0             0             0             0 
+##      cs_casng      cs_lkout      rf_vcact      cs_cloth      cs_drgtr 
+##             0             0             0             0             0 
+##      ac_evasv      cs_furtv      rf_rfcmp      ac_cgdir      rf_verbl 
+##             0             0             0             0             0 
+##      cs_vcrim      cs_bulge      cs_other      rf_knowl      sb_hdobj 
+##             0             0             0             0             0 
+##      sb_outln      sb_admis       rf_furt       rf_bulg           sex 
+##             0             0             0             0             0 
+##          race           age   height_inch        weight      hair_col 
+##             0            34             0             0             0 
+##       eye_col         build          boro        xcoord        ycoord 
+##             0             0             0           351           351</code></pre>
+<pre class="r"><code># we should consider removing variable other_feature (11637 missing obs)
+# age has 35 missing values, consider multiple imputation methods here
+
+# Looks like there is also an entire row of NA&#39;s</code></pre>
+<p>Looking at stops over time</p>
+<ul>
+<li>Over a year</li>
+<li>By time of day</li>
+</ul>
+<pre class="r"><code># Number of stops per day
+stop_frisk_df %&gt;% 
+  group_by(date_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)</code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per month
+stop_frisk_df %&gt;% 
+  mutate(
+    month_stop = factor(month(date_stop))
+  ) %&gt;% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %&gt;% 
+  group_by(month_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = month_stop, y = count)) + 
+  geom_bar(stat = &quot;Identity&quot;) </code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-3-2.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per day (broken down by boro)
+stop_frisk_df %&gt;% 
+  mutate(
+    month_stop = month(date_stop)
+  ) %&gt;% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %&gt;%   
+  group_by(month_stop, boro) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) </code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-3-3.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per hour over the day
+stop_frisk_df %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c(&quot;Night&quot;, &quot;Morning&quot;, &quot;Afternoon&quot;, &quot;Evening&quot;, &quot;Night&quot;), right = FALSE)
+  ) %&gt;% 
+  select(hour_stop, part_of_day) %&gt;% 
+  group_by(hour_stop, part_of_day) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = &quot;Identity&quot;, aes(fill = part_of_day)) +
+  geom_smooth(se = FALSE)</code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-3-4.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per hour over the day (broken down by boro)
+stop_frisk_df %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %&gt;% 
+  group_by(hour_stop, boro) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)</code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-3-5.png" width="90%" /></p>
+<p>This code chunk looks at the number of people stopped, frisked, frisked &amp; searched, and searched over a single day</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  filter(date_stop != is.na(date_stop)) %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %&gt;% 
+  group_by(hour_stop, frisked, searched) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  pivot_wider(
+    names_from = frisked:searched,
+    values_from = count
+  ) %&gt;% 
+  rename(
+    &quot;stopped&quot; = &quot;0_0&quot;,
+    &quot;frisked&quot; = &quot;1_0&quot;,
+    &quot;searched&quot; = &quot;0_1&quot;,
+    &quot;frisk_and_search&quot; = &quot;1_1&quot;
+  ) %&gt;% 
+  mutate(
+    searched = replace_na(searched, 0),
+    stopped = replace_na(stopped, 0),
+    frisked = replace_na(frisked, 0),
+    frisk_and_search = replace_na(frisk_and_search, 0),
+    stopped = stopped + searched + frisked + frisk_and_search
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = stopped)) +
+  geom_smooth(se = FALSE, color = &#39;red&#39;) +
+  geom_smooth(aes(y = frisked, color = &#39;blue&#39;), se = FALSE) +
+  geom_smooth(aes(y = searched, color = &#39;green&#39;), se = FALSE) +
+  geom_smooth(aes(y = frisk_and_search, color = &#39;yellow&#39;), se = FALSE) </code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>Logistic Regression Dataset - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone</p>
+<pre class="r"><code>stop_frisk_log = stop_frisk_df %&gt;% mutate(
+    race = recode(
+      race, 
+      &quot;asian/pacific islander&quot; = &quot;other&quot;, 
+      &quot;black&quot; = &quot;black&quot;, 
+      &quot;american indian/alaska native&quot; = &quot;other&quot;,
+      &quot;black-hispanic&quot; = &quot;black-hispanic&quot;,
+      &quot;white-hispanic&quot; = &quot;white-hispanic&quot;,
+      &quot;white&quot; = &quot;white&quot;,
+      &quot;unknown&quot; = &quot;other&quot;,
+      &quot;other&quot; = &quot;other&quot;
+    ),
+    hair_col = recode(
+      hair_col,
+      &quot;dyed&quot; = &quot;other&quot;,
+      &quot;frosted&quot; = &quot;other&quot;,
+      &quot;gray&quot; = &quot;other&quot;,
+      &quot;red&quot; = &quot;other&quot;,
+      &quot;sandy&quot; = &quot;other&quot;,
+      &quot;salt and pepper&quot; = &quot;other&quot;,
+      &quot;white&quot; = &quot;other&quot;,
+      &quot;unknown&quot; = &quot;other&quot;,
+      &quot;ZZ&quot; = &quot;other&quot;
+    ),
+    eye_col = recode(
+      eye_col,
+      &quot;different&quot; = &quot;other&quot;,
+      &quot;green&quot; = &quot;other&quot;,
+      &quot;gray&quot; = &quot;other&quot;,
+      &quot;hazel&quot; = &quot;other&quot;,
+      &quot;maroon&quot; = &quot;other&quot;,
+      &quot;pink&quot; = &quot;other&quot;,
+      &quot;violet&quot; = &quot;other&quot;,
+      &quot;unknown&quot; = &quot;other&quot;
+    ),
+    build = recode(
+      build,
+      &quot;muscular&quot; = &quot;other&quot;,
+    ))</code></pre>
+<p>Building a model using only characteristics, demographics, and location as predictors for frisked - assess multicolinearity to determine if there are any variables that exhibit high correlation - We will remove any variables that exhibit signs of multicollinearity - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors - IMPORTANT: we cannot make any causal statements from this model ‘i.e. you have a higher odds of getting stopped if you are X race’ because everyone in this dataset was stopped</p>
+<pre class="r"><code>model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_1)</code></pre>
+<pre><code>##                  GVIF Df GVIF^(1/(2*Df))
+## sex          1.179297  2        1.042091
+## race         1.561548  4        1.057291
+## age          1.222201  1        1.105532
+## height_inch  1.320364  1        1.149071
+## weight       1.567631  1        1.252051
+## hair_col     1.406664  4        1.043575
+## eye_col      1.235170  3        1.035828
+## boro        29.189812  4        1.524593
+## build        1.395551  4        1.042541
+## stop_in_out  1.074392  1        1.036529
+## precinct    25.307892  1        5.030695
+## off_in_unif  1.097859  1        1.047788</code></pre>
+<pre class="r"><code># Based on the GVIF, we will remove boro
+
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_2)</code></pre>
+<pre><code>##                 GVIF Df GVIF^(1/(2*Df))
+## sex         1.173811  2        1.040877
+## race        1.433039  4        1.046001
+## age         1.219806  1        1.104448
+## height_inch 1.316565  1        1.147417
+## weight      1.564742  1        1.250896
+## hair_col    1.397985  4        1.042768
+## eye_col     1.230990  3        1.035243
+## build       1.384006  4        1.041459
+## stop_in_out 1.067664  1        1.033278
+## precinct    1.113891  1        1.055410
+## off_in_unif 1.059472  1        1.029307</code></pre>
+<pre class="r"><code># no more collinearity problems
+
+summary(model_2)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
+##     hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, 
+##     family = binomial, data = stop_frisk_log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0482  -1.2804   0.7371   0.9372   1.9748  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -1.7286908  0.4367304  -3.958 7.55e-05 ***
+## sexM                0.8342144  0.0775060  10.763  &lt; 2e-16 ***
+## sexZ                0.6674880  0.2875712   2.321 0.020280 *  
+## raceblack           0.4450129  0.0739403   6.019 1.76e-09 ***
+## raceblack-hispanic  0.4535358  0.1011500   4.484 7.33e-06 ***
+## racewhite          -0.0454750  0.0932264  -0.488 0.625698    
+## racewhite-hispanic  0.4371895  0.0798993   5.472 4.46e-08 ***
+## age                -0.0108360  0.0017841  -6.074 1.25e-09 ***
+## height_inch         0.0274359  0.0064336   4.264 2.00e-05 ***
+## weight              0.0004723  0.0006257   0.755 0.450349    
+## hair_colblack       0.1138623  0.1116728   1.020 0.307915    
+## hair_colblond      -0.2342093  0.2132065  -1.099 0.271982    
+## hair_colbrown      -0.0075590  0.1183843  -0.064 0.949089    
+## hair_colother      -0.0427759  0.1417515  -0.302 0.762830    
+## eye_colblue         0.1284665  0.1700807   0.755 0.450053    
+## eye_colbrown       -0.0105313  0.0727950  -0.145 0.884971    
+## eye_colother       -0.0887821  0.1293596  -0.686 0.492511    
+## buildmedium        -0.2527791  0.0758386  -3.333 0.000859 ***
+## buildother         -0.4490363  0.1932803  -2.323 0.020166 *  
+## buildthin          -0.2165816  0.0807537  -2.682 0.007318 ** 
+## buildunknown       -0.5533496  0.1618418  -3.419 0.000628 ***
+## stop_in_outoutside  0.3561322  0.0489741   7.272 3.55e-13 ***
+## precinct           -0.0024775  0.0005978  -4.144 3.41e-05 ***
+## off_in_unif        -0.6270943  0.0438455 -14.302  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 16164  on 12369  degrees of freedom
+## Residual deviance: 15410  on 12346  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 15458
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># Remove hair and eye color because all categories within them are highly unsignificant 
+
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_3)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
+##     build + stop_in_out + precinct + off_in_unif, family = binomial, 
+##     data = stop_frisk_log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0497  -1.2793   0.7362   0.9364   1.8435  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -1.6409172  0.4165361  -3.939 8.17e-05 ***
+## sexM                0.8520890  0.0769262  11.077  &lt; 2e-16 ***
+## sexZ                0.6679717  0.2863221   2.333 0.019651 *  
+## raceblack           0.4513006  0.0737944   6.116 9.62e-10 ***
+## raceblack-hispanic  0.4519143  0.1010787   4.471 7.79e-06 ***
+## racewhite          -0.1002964  0.0889673  -1.127 0.259598    
+## racewhite-hispanic  0.4188420  0.0794744   5.270 1.36e-07 ***
+## age                -0.0116504  0.0016961  -6.869 6.47e-12 ***
+## height_inch         0.0272573  0.0064278   4.241 2.23e-05 ***
+## weight              0.0005208  0.0006289   0.828 0.407667    
+## buildmedium        -0.2507412  0.0757687  -3.309 0.000935 ***
+## buildother         -0.4441811  0.1932429  -2.299 0.021530 *  
+## buildthin          -0.2159530  0.0807378  -2.675 0.007479 ** 
+## buildunknown       -0.5792819  0.1607148  -3.604 0.000313 ***
+## stop_in_outoutside  0.3541251  0.0489056   7.241 4.45e-13 ***
+## precinct           -0.0024976  0.0005971  -4.183 2.88e-05 ***
+## off_in_unif        -0.6294283  0.0437821 -14.376  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 16164  on 12369  degrees of freedom
+## Residual deviance: 15421  on 12353  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 15455
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># keep weight? </code></pre>
+<p>Building a model that uses characteristics, demographics, and location as predictors for arrest made</p>
+<pre class="r"><code>model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+car::vif(model_4)</code></pre>
+<pre><code>##                 GVIF Df GVIF^(1/(2*Df))
+## sex         1.196703  2        1.045915
+## race        1.415372  4        1.044381
+## age         1.231781  1        1.109856
+## height_inch 1.401760  1        1.183959
+## weight      1.834227  1        1.354336
+## hair_col    1.414977  4        1.044344
+## eye_col     1.229613  3        1.035050
+## build       1.511557  4        1.052999
+## stop_in_out 1.090944  1        1.044483
+## precinct    1.102226  1        1.049870
+## off_in_unif 1.071970  1        1.035360</code></pre>
+<pre class="r"><code>summary(model_4)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+##     hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, 
+##     family = binomial, data = stop_frisk_log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3337  -0.6672  -0.5960  -0.5320   2.3977  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -0.2753004  0.5101078  -0.540 0.589410    
+## sexM               -0.0958075  0.0894681  -1.071 0.284234    
+## sexZ               -1.1158830  0.4836851  -2.307 0.021052 *  
+## raceblack           0.1099186  0.0940823   1.168 0.242676    
+## raceblack-hispanic  0.2672001  0.1210141   2.208 0.027244 *  
+## racewhite           0.1489332  0.1178790   1.263 0.206431    
+## racewhite-hispanic  0.4484804  0.0989071   4.534 5.78e-06 ***
+## age                 0.0040947  0.0020880   1.961 0.049872 *  
+## height_inch         0.0062616  0.0077051   0.813 0.416412    
+## weight             -0.0020124  0.0008738  -2.303 0.021278 *  
+## hair_colblack      -0.2528612  0.1246774  -2.028 0.042548 *  
+## hair_colblond      -0.0412048  0.2350139  -0.175 0.860821    
+## hair_colbrown      -0.2735991  0.1332351  -2.054 0.040023 *  
+## hair_colother      -0.3819523  0.1651091  -2.313 0.020704 *  
+## eye_colblue         0.0924858  0.1980772   0.467 0.640559    
+## eye_colbrown       -0.0182828  0.0850764  -0.215 0.829847    
+## eye_colother        0.0096141  0.1519707   0.063 0.949557    
+## buildmedium        -0.0307611  0.0892348  -0.345 0.730304    
+## buildother         -0.0898042  0.2391711  -0.375 0.707303    
+## buildthin           0.0371095  0.0966858   0.384 0.701116    
+## buildunknown        0.0793381  0.1940961   0.409 0.682718    
+## stop_in_outoutside -1.0190458  0.0521689 -19.534  &lt; 2e-16 ***
+## precinct           -0.0022886  0.0006928  -3.303 0.000955 ***
+## off_in_unif        -0.2310383  0.0490876  -4.707 2.52e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 12821  on 12369  degrees of freedom
+## Residual deviance: 12305  on 12346  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 12353
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># remove eye color
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_5)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+##     hair_col + build + stop_in_out + precinct + off_in_unif, 
+##     family = binomial, data = stop_frisk_log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3464  -0.6675  -0.5963  -0.5320   2.4055  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -0.2901413  0.5057784  -0.574 0.566203    
+## sexM               -0.0958134  0.0894755  -1.071 0.284245    
+## sexZ               -1.1155023  0.4836155  -2.307 0.021078 *  
+## raceblack           0.1087049  0.0940490   1.156 0.247750    
+## raceblack-hispanic  0.2659418  0.1209820   2.198 0.027935 *  
+## racewhite           0.1616558  0.1154173   1.401 0.161328    
+## racewhite-hispanic  0.4477819  0.0988082   4.532 5.85e-06 ***
+## age                 0.0040773  0.0020869   1.954 0.050734 .  
+## height_inch         0.0063178  0.0077066   0.820 0.412340    
+## weight             -0.0020183  0.0008739  -2.309 0.020920 *  
+## hair_colblack      -0.2552874  0.1245925  -2.049 0.040464 *  
+## hair_colblond      -0.0167779  0.2317412  -0.072 0.942284    
+## hair_colbrown      -0.2752952  0.1332020  -2.067 0.038758 *  
+## hair_colother      -0.3789820  0.1646885  -2.301 0.021380 *  
+## buildmedium        -0.0319966  0.0892178  -0.359 0.719868    
+## buildother         -0.0876892  0.2391380  -0.367 0.713851    
+## buildthin           0.0361099  0.0966727   0.374 0.708756    
+## buildunknown        0.0817591  0.1935233   0.422 0.672677    
+## stop_in_outoutside -1.0190000  0.0521582 -19.537  &lt; 2e-16 ***
+## precinct           -0.0022871  0.0006928  -3.301 0.000962 ***
+## off_in_unif        -0.2303575  0.0490705  -4.694 2.67e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 12821  on 12369  degrees of freedom
+## Residual deviance: 12305  on 12349  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 12347
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_6)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+##     hair_col + stop_in_out + off_in_unif, family = binomial, 
+##     data = stop_frisk_log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.2975  -0.6635  -0.5931  -0.5415   2.4229  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -0.4293999  0.4986940  -0.861  0.38921    
+## sexM               -0.0921439  0.0888558  -1.037  0.29973    
+## sexZ               -1.0730364  0.4834979  -2.219  0.02646 *  
+## raceblack           0.1563236  0.0928705   1.683  0.09233 .  
+## raceblack-hispanic  0.3240457  0.1194968   2.712  0.00669 ** 
+## racewhite           0.1831512  0.1150179   1.592  0.11130    
+## racewhite-hispanic  0.4860926  0.0978721   4.967 6.81e-07 ***
+## age                 0.0040368  0.0020779   1.943  0.05205 .  
+## height_inch         0.0064726  0.0076985   0.841  0.40048    
+## weight             -0.0023204  0.0007529  -3.082  0.00206 ** 
+## hair_colblack      -0.2583725  0.1243414  -2.078  0.03772 *  
+## hair_colblond      -0.0263750  0.2313251  -0.114  0.90922    
+## hair_colbrown      -0.2825310  0.1329109  -2.126  0.03353 *  
+## hair_colother      -0.3653675  0.1642454  -2.225  0.02611 *  
+## stop_in_outoutside -1.0501850  0.0512621 -20.487  &lt; 2e-16 ***
+## off_in_unif        -0.2119237  0.0487338  -4.349 1.37e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 12821  on 12369  degrees of freedom
+## Residual deviance: 12319  on 12354  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 12351
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+
+summary(model_7)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = arst_made ~ sex + race + age + weight + hair_col + 
+##     stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3023  -0.6630  -0.5931  -0.5420   2.4217  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -0.0484123  0.2091060  -0.232  0.81691    
+## sexM               -0.0710071  0.0852080  -0.833  0.40465    
+## sexZ               -1.0543000  0.4829617  -2.183  0.02904 *  
+## raceblack           0.1630594  0.0925216   1.762  0.07800 .  
+## raceblack-hispanic  0.3245760  0.1194966   2.716  0.00660 ** 
+## racewhite           0.1875979  0.1148896   1.633  0.10250    
+## racewhite-hispanic  0.4838087  0.0978299   4.945 7.60e-07 ***
+## age                 0.0040270  0.0020764   1.939  0.05245 .  
+## weight             -0.0020816  0.0006851  -3.038  0.00238 ** 
+## hair_colblack      -0.2572458  0.1243320  -2.069  0.03854 *  
+## hair_colblond      -0.0228738  0.2312852  -0.099  0.92122    
+## hair_colbrown      -0.2799264  0.1328703  -2.107  0.03514 *  
+## hair_colother      -0.3670896  0.1642374  -2.235  0.02541 *  
+## stop_in_outoutside -1.0500310  0.0512612 -20.484  &lt; 2e-16 ***
+## off_in_unif        -0.2130833  0.0487153  -4.374 1.22e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 12821  on 12369  degrees of freedom
+## Residual deviance: 12319  on 12355  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 12349
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>stop_frisk_log %&gt;% group_by(frisked, searched, arst_made) %&gt;% 
+  summarise(
+    n_obs = n())</code></pre>
+<pre><code>## # A tibble: 8 x 4
+## # Groups:   frisked, searched [4]
+##   frisked searched arst_made n_obs
+##     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
+## 1       0        0         0  3638
+## 2       0        0         1   359
+## 3       0        1         0    84
+## 4       0        1         1   384
+## 5       1        0         0  4992
+## 6       1        0         1   457
+## 7       1        1         0  1047
+## 8       1        1         1  1443</code></pre>
+<pre class="r"><code># count per sex group
+demographics = stop_frisk_log %&gt;% 
+  select(sex:build, height_inch, frisked, searched) 
+
+# count subjects by sex
+demographics %&gt;% 
+  group_by(sex) %&gt;% 
+  summarize(count = n()) %&gt;% 
+  knitr::kable()
+  
+# distribution of age by sex
+demographics %&gt;% 
+  plot_ly(y = ~ age, color = ~sex, type = &quot;violin&quot;, colors = &quot;Set2&quot;)
+
+  
+# subjects count of frisked subjects by race, sex 
+frisked_plot = 
+  stop_frisk_df %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)
+    ) %&gt;% 
+  filter( 
+    frisked == &#39;1&#39;) %&gt;% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Frisked&quot;)+
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count of searched subjects by race, sex
+searched_plot = 
+  stop_frisk_df  %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)) %&gt;% 
+  filter(searched ==&#39;1&#39;) %&gt;% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Searched&quot;)+
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count of arrested subjects by race, sex
+arrested_plot = 
+  stop_frisk_df  %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)) %&gt;% 
+  filter(arst_made ==&#39;1&#39;) %&gt;% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Arrested&quot;)+
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# devtools::install_github(&quot;thomasp85/patchwork&quot;)
+library(patchwork)
+
+(frisked_plot+searched_plot + arrested_plot)</code></pre>
+<p>Regression model for demographics</p>
+<pre class="r"><code>dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_log)
+summary(dem_model)
+car::vif(dem_model)
+# nothing is sig
+
+arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_log)
+summary(arrest_model)
+__________________________
+# did not want to change the whole dataset. Releveles arst_made, so regression models outcome arrested 
+
+stop_frisk_relevel = 
+  stop_frisk_log %&gt;% 
+  mutate(
+    arst_made = as.factor(arst_made),
+    arst_made = fct_relevel(arst_made, &#39;1&#39;))
+  
+arrest_model_2 = 
+  glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_relevel)
+summary(arrest_model_2)</code></pre>
+<p>Stops of subjects below 18</p>
+<pre class="r"><code>stop_frisk_log %&gt;% 
+  filter(
+    age &lt; &#39;18&#39;) %&gt;% 
+  group_by(sex, race) %&gt;% 
+  summarize(count = n()) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">sex</th>
+<th align="left">race</th>
+<th align="right">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">F</td>
+<td align="left">other</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">F</td>
+<td align="left">black</td>
+<td align="right">90</td>
+</tr>
+<tr class="odd">
+<td align="left">F</td>
+<td align="left">black-hispanic</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">F</td>
+<td align="left">white</td>
+<td align="right">12</td>
+</tr>
+<tr class="odd">
+<td align="left">F</td>
+<td align="left">white-hispanic</td>
+<td align="right">32</td>
+</tr>
+<tr class="even">
+<td align="left">M</td>
+<td align="left">other</td>
+<td align="right">123</td>
+</tr>
+<tr class="odd">
+<td align="left">M</td>
+<td align="left">black</td>
+<td align="right">969</td>
+</tr>
+<tr class="even">
+<td align="left">M</td>
+<td align="left">black-hispanic</td>
+<td align="right">137</td>
+</tr>
+<tr class="odd">
+<td align="left">M</td>
+<td align="left">white</td>
+<td align="right">101</td>
+</tr>
+<tr class="even">
+<td align="left">M</td>
+<td align="left">white-hispanic</td>
+<td align="right">344</td>
+</tr>
+<tr class="odd">
+<td align="left">Z</td>
+<td align="left">other</td>
+<td align="right">12</td>
+</tr>
+<tr class="even">
+<td align="left">Z</td>
+<td align="left">black</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Z</td>
+<td align="left">white</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">Z</td>
+<td align="left">white-hispanic</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># frisked under 18 by race
+stop_frisk_log %&gt;% 
+  filter(
+    age &lt; &#39;18&#39;,
+    frisked == &#39;1&#39;) %&gt;% 
+  group_by( race) %&gt;% 
+  summarize(count = n()) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">race</th>
+<th align="right">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">other</td>
+<td align="right">82</td>
+</tr>
+<tr class="even">
+<td align="left">black</td>
+<td align="right">659</td>
+</tr>
+<tr class="odd">
+<td align="left">black-hispanic</td>
+<td align="right">106</td>
+</tr>
+<tr class="even">
+<td align="left">white</td>
+<td align="right">52</td>
+</tr>
+<tr class="odd">
+<td align="left">white-hispanic</td>
+<td align="right">243</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#searched under 18
+stop_frisk_log %&gt;% 
+  filter(
+    age &lt; &#39;18&#39;,
+    searched == &#39;1&#39;) %&gt;% 
+  group_by( race) %&gt;% 
+  summarize(count = n()) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">race</th>
+<th align="right">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">other</td>
+<td align="right">41</td>
+</tr>
+<tr class="even">
+<td align="left">black</td>
+<td align="right">245</td>
+</tr>
+<tr class="odd">
+<td align="left">black-hispanic</td>
+<td align="right">35</td>
+</tr>
+<tr class="even">
+<td align="left">white</td>
+<td align="right">25</td>
+</tr>
+<tr class="odd">
+<td align="left">white-hispanic</td>
+<td align="right">99</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#arrested under 18
+stop_frisk_log %&gt;% 
+  filter(
+    age &lt; &#39;18&#39;,
+    arst_made ==&#39;1&#39;) %&gt;% 
+  group_by(race) %&gt;% 
+  summarize(count = n()) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">race</th>
+<th align="right">count</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">other</td>
+<td align="right">31</td>
+</tr>
+<tr class="even">
+<td align="left">black</td>
+<td align="right">185</td>
+</tr>
+<tr class="odd">
+<td align="left">black-hispanic</td>
+<td align="right">36</td>
+</tr>
+<tr class="even">
+<td align="left">white</td>
+<td align="right">19</td>
+</tr>
+<tr class="odd">
+<td align="left">white-hispanic</td>
+<td align="right">90</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># bar chart for age below 18 for each race
+stop_frisk_log %&gt;% 
+  filter(
+    age &lt; &#39;18&#39;) %&gt;%
+  ggplot(aes(x = race, fill = race))+
+  geom_bar()</code></pre>
+<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<pre class="r"><code>#violin plot of age below 18 for each race
+stop_frisk_log %&gt;% 
+  filter(
+    age &lt; &#39;18&#39;) %&gt;%
+  plot_ly(y = ~age, color = ~race, type = &quot;violin&quot;, colors = &quot;Set2&quot;)</code></pre>
+<div id="htmlwidget-0c6cd9176ad6d9537eca" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0c6cd9176ad6d9537eca">{"x":{"visdat":{"113f2d147444":["function () ","plotlyVisDat"]},"cur_data":"113f2d147444","attrs":{"113f2d147444":{"y":{},"color":{},"colors":"Set2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"violin"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"age"},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"fillcolor":"rgba(102,194,165,0.5)","y":[16,17,16,17,16,17,16,16,17,15,15,15,15,17,17,17,17,16,17,17,11,13,16,17,16,16,16,16,16,15,16,16,13,16,17,17,14,17,16,14,15,14,1,1,16,16,17,16,16,16,15,15,15,15,16,1,17,17,16,17,17,17,17,17,17,15,17,16,16,17,16,17,15,13,17,16,16,16,16,17,16,16,17,17,16,17,17,16,16,16,16,17,17,15,14,12,15,15,16,16,15,16,17,17,16,15,16,17,16,14,16,16,14,16,15,14,1,13,13,13,13,17,12,17,12,13,10,17,16,14,17,15,14,17,17,17,1,17,17,15,17,16,16],"type":"violin","name":"other","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(252,141,98,0.5)","y":[14,17,17,15,16,14,16,14,17,16,16,15,17,16,16,16,17,12,15,15,16,14,14,15,15,16,15,17,16,14,15,1,15,1,1,17,16,17,16,17,17,14,15,15,17,15,17,17,16,16,15,17,15,12,13,17,17,16,14,15,15,17,17,16,14,17,16,15,17,16,17,17,17,17,16,16,17,16,16,16,17,11,16,16,16,16,16,17,13,14,13,13,17,16,14,11,15,15,15,16,14,16,17,13,16,17,16,17,17,17,16,17,16,16,17,17,17,14,17,16,17,15,15,15,14,17,14,14,16,17,15,15,15,16,17,16,17,17,16,17,16,17,17,17,17,16,17,15,16,14,17,16,15,17,16,16,17,15,17,17,15,16,17,17,16,13,16,15,16,17,12,10,17,17,17,17,16,17,15,15,1,15,14,16,16,16,17,17,15,15,15,16,17,17,17,15,17,15,15,16,16,16,17,16,17,17,17,14,15,14,14,17,17,15,16,16,16,17,17,17,16,16,16,17,16,16,16,15,15,17,12,16,16,16,16,14,16,15,16,15,16,16,17,16,17,15,16,15,15,15,15,15,15,17,16,17,15,15,17,17,17,16,15,16,17,17,16,17,15,16,16,15,17,17,17,12,16,14,15,14,17,15,16,12,14,1,1,16,17,14,16,14,15,15,14,1,1,14,17,16,16,17,13,16,15,16,17,17,16,17,15,14,15,15,16,15,16,17,17,17,17,16,15,15,17,17,16,14,14,14,17,16,16,16,15,15,17,15,16,16,17,17,16,17,16,16,16,16,15,16,15,17,16,16,14,16,16,16,17,14,15,16,17,16,17,17,16,17,16,15,15,16,17,16,17,14,14,13,17,17,16,12,13,13,17,14,17,15,15,16,15,15,15,16,14,15,15,14,16,16,17,14,17,14,17,16,15,15,12,17,16,14,17,17,17,16,1,16,16,16,16,16,17,13,15,17,15,17,16,16,16,14,16,15,17,17,17,17,17,16,17,17,17,17,17,15,16,15,14,15,17,13,15,13,17,16,16,17,17,17,13,15,13,15,12,13,11,12,13,12,16,16,16,16,17,15,17,17,17,17,15,15,15,17,15,15,14,15,15,13,16,14,17,15,14,15,15,17,16,17,17,17,15,15,16,15,13,13,13,13,14,15,16,15,17,14,1,17,17,15,16,16,16,16,15,15,17,16,15,17,17,16,16,16,15,13,15,17,17,15,15,15,16,17,17,17,15,15,13,12,13,16,17,15,16,16,17,16,17,1,17,13,16,17,17,16,16,15,15,15,16,1,16,15,16,15,15,15,16,16,16,16,16,14,17,15,17,17,17,16,17,17,17,16,15,17,13,17,17,16,17,17,17,17,17,16,15,16,17,17,16,15,16,16,17,16,17,15,16,16,17,11,15,14,16,16,14,17,15,15,15,12,14,16,13,16,17,14,15,16,14,15,16,1,1,1,13,15,13,17,16,17,16,17,16,16,17,17,17,15,17,16,15,13,15,15,16,17,17,17,17,15,16,15,12,15,15,17,16,15,16,16,17,14,15,17,16,17,14,14,17,16,17,17,17,16,15,17,14,16,15,17,16,17,15,16,17,17,17,15,15,17,15,16,15,16,16,16,13,15,15,16,16,16,15,16,15,15,16,15,17,17,16,14,14,15,14,16,15,14,16,13,13,15,12,12,14,14,13,14,13,12,16,16,17,17,16,14,17,16,16,16,17,17,15,14,17,17,15,16,15,16,15,17,17,16,13,14,17,16,14,13,14,16,1,13,14,13,16,17,13,16,17,15,16,14,16,17,1,14,14,14,12,1,15,14,16,15,16,17,17,15,14,16,16,14,14,14,16,17,15,17,15,16,14,17,15,17,16,16,15,15,15,15,15,16,17,17,16,16,16,1,1,16,16,16,16,13,16,16,14,15,15,1,12,12,16,16,14,1,1,16,15,16,15,15,15,16,15,16,15,17,17,13,15,14,16,16,16,16,13,17,16,16,17,16,15,14,13,15,16,17,15,17,1,14,17,17,17,15,15,17,15,15,14,15,15,17,14,15,16,14,17,17,16,17,17,16,14,13,17,17,17,17,17,15,13,16,16,16,17,17,17,15,17,17,15,16,17,17,16,16,14,17,16,15,16,17,15,15,14,16,17,16,17,17,17,17,15,16,14,16,16,15,16,17,17,16,16,15,13,15,15,14,12,15,17,17,14,16,14,16,15,15,15,15,16,17,14,15,15,16,16,13,13,10,10,17,17,17,14,16,17,14,13,14,13,15,13,12,15,15,14,14,16,17,16,17,17,17,17,17,17,16,14,16,15,17,16,1,14,14,17,14,17,17,14,17,15,17,17,15,17,16,16,17,17,15,17,16,16,15,15,14,11,15,15,16,16,14,16],"type":"violin","name":"black","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"line":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(141,160,203,0.5)","y":[15,16,16,16,15,16,17,16,14,15,15,17,17,15,16,15,15,16,17,17,15,17,13,17,16,13,16,16,17,17,15,17,17,16,17,17,17,17,14,16,17,17,15,16,14,15,16,16,14,15,15,15,15,16,16,14,15,15,15,10,16,17,17,16,15,17,16,15,16,16,17,16,15,15,16,17,17,17,16,16,15,17,16,17,16,15,14,15,17,16,17,15,17,15,15,16,17,17,17,15,17,13,16,16,17,16,16,15,15,17,16,17,16,17,16,15,15,15,16,16,14,13,14,13,16,17,17,17,15,14,16,16,14,15,17,15,15,12,16,13,13,16,17,17,1,15,17,16,14,14,15],"type":"violin","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"line":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(231,138,195,0.5)","y":[17,17,16,1,15,16,16,16,16,15,16,15,15,15,15,15,16,15,16,16,16,15,15,15,14,17,16,16,17,17,16,16,16,14,15,14,14,14,14,14,15,16,17,14,16,16,17,16,12,16,16,16,16,16,16,16,15,14,17,15,14,15,17,16,15,15,14,17,16,16,16,16,17,17,17,17,15,16,15,14,13,16,14,17,17,16,16,15,16,13,17,14,17,15,16,17,17,14,16,15,12,16,15,16,16,16,17,17,17,17,14,16,17,15,14],"type":"violin","name":"white","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"line":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(166,216,84,0.5)","y":[17,12,17,14,16,17,15,16,17,16,16,17,16,17,16,14,16,16,17,17,17,17,17,17,17,17,17,16,17,17,16,15,16,16,13,13,17,17,16,17,17,17,13,15,16,17,17,17,14,17,15,16,16,17,17,16,17,17,17,16,14,17,16,16,17,16,15,16,16,17,17,16,15,16,15,14,15,16,15,15,16,15,16,17,13,15,16,16,17,15,15,16,17,17,15,15,15,16,17,17,13,17,16,16,15,17,15,14,15,15,16,17,17,15,15,16,16,15,17,13,15,16,17,16,16,17,16,16,17,17,17,17,17,16,15,17,17,16,17,17,16,15,14,15,15,16,15,16,16,17,16,15,17,16,16,16,16,16,15,17,17,17,17,17,14,16,17,15,16,17,17,1,16,16,17,16,17,17,17,17,17,15,16,16,14,16,15,17,16,16,17,17,16,15,17,17,16,16,16,14,17,16,16,15,17,15,17,15,16,17,17,17,16,16,15,16,17,14,17,16,17,17,16,16,15,16,17,17,14,15,16,1,17,17,15,17,17,13,17,16,16,17,17,15,16,16,14,15,16,16,17,15,17,12,15,15,17,17,15,12,16,16,14,17,15,1,17,17,15,15,17,14,17,17,15,15,14,17,16,16,16,16,16,17,17,17,16,15,17,13,17,17,17,15,17,15,14,16,16,13,17,17,17,15,14,15,16,17,1,1,14,14,14,16,15,17,16,17,17,15,16,17,14,15,16,16,15,16,14,16,17,16,17,16,16,16,16,16,16,15,16,16,16,15,15,14,17,17,17,17,17,16,17,17,17,16,16,17,12,12,16,15,17,17,15,15,17,17,15,15,15,15,15,13,14,14,16],"type":"violin","name":"white-hispanic","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"line":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># weapon found on a child (&lt;18)
+# top reasons for stopping children</code></pre>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

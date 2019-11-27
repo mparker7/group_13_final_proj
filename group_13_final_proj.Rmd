@@ -156,13 +156,15 @@ stop_frisk_df =
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
          searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
-         rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %>% 
   # change all columns that have Y/N to 1/0
   mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
   # change binary columns to numeric instead of character
   mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
   # converts all character variables to factors (this does the same as the for loop)
-  mutate_if(is.character, as.factor)
+  mutate_if(is.character, as.factor) %>% 
+  # remove the single row of NAs
+  filter(!is.na(build))
 ```
 
 
@@ -372,12 +374,12 @@ Building a model using only characteristics, demographics, and location as predi
 ```{r}
 model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_1)
+car::vif(model_1)
 # Based on the GVIF, we will remove boro
 
 model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_2)
+car::vif(model_2)
 # no more collinearity problems
 
 summary(model_2)
@@ -393,7 +395,7 @@ Building a model that uses characteristics, demographics, and location as predic
 ```{r}
 model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-#car::vif(model_4)
+car::vif(model_4)
 
 summary(model_4)
 
@@ -439,303 +441,131 @@ demographics %>%
   plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
 
   
-# subjects count by race, sex and frisked
+# subjects count of frisked subjects by race, sex 
 frisked_plot = 
   stop_frisk_df %>% 
   drop_na() %>% 
-  mutate(race = fct_infreq(race)) %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  filter( 
+    frisked == '1') %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
     title = "Frisked")+
-  facet_grid(~frisked) + 
   theme(axis.text.x = element_text(angle = 80, hjust = 1))
 
-# subjects count by race, sex and searched
+# subjects count of searched subjects by race, sex
 searched_plot = 
   stop_frisk_df  %>% 
   drop_na() %>% 
-  mutate(race = fct_infreq(race)) %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter(searched =='1') %>% 
   ggplot(aes(x = race, fill = sex))+
   geom_bar(alpha = .5, position = "dodge")+
   labs(
     title = "Searched")+
-  facet_grid(~searched) + 
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count of arrested subjects by race, sex
+arrested_plot = 
+  stop_frisk_df  %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter(arst_made =='1') %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Arrested")+
   theme(axis.text.x = element_text(angle = 80, hjust = 1))
 
 # devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 
-(frisked_plot+searched_plot)
-
+(frisked_plot+searched_plot + arrested_plot)
 ```
 
 Regression model for demographics
 
 ```{r, eval=FALSE}
-dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_df)
+dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_log)
 summary(dem_model)
+car::vif(dem_model)
 # nothing is sig
 
-arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_df)
+arrest_model = glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_log)
 summary(arrest_model)
+__________________________
+# did not want to change the whole dataset. Releveles arst_made, so regression models outcome arrested 
 
-# modeling log odds of no arrest. How to change the outcome to 1?
-```
-
-
-
-
-
-
-
-
-
-
-
-Comparing the reason why people were stopped 
-
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% 
+stop_frisk_relevel = 
+  stop_frisk_log %>% 
   mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-  filter(stops == 1) %>% 
-  group_by(reason_stopped) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
+    arst_made = as.factor(arst_made),
+    arst_made = fct_relevel(arst_made, '1'))
   
+arrest_model_2 = 
+  glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_relevel)
+summary(arrest_model_2)
 ```
 
 
+Stops of subjects below 18
+```{r}
+stop_frisk_log %>% 
+  filter(
+    age < '18') %>% 
+  group_by(sex, race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
 
-total stops by ages
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-  filter(stops == 1) %>% 
-  group_by(reason_stopped, age) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~age, y= ~total, type = "bar" , color = ~reason_stopped)
-```
+# frisked under 18 by race
+stop_frisk_log %>% 
+  filter(
+    age < '18',
+    frisked == '1') %>% 
+  group_by( race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
 
-total stops by sex 
+#searched under 18
+stop_frisk_log %>% 
+  filter(
+    age < '18',
+    searched == '1') %>% 
+  group_by( race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
 
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% 
-   mutate(
-     sex = recode(
-    sex,
-    "F" = "female",
-    "M" = "male",
-    "Z" = "other"
-  ), 
-  reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, sex) %>% 
-  summarize(total =n()) %>%
-  plot_ly(x = ~sex, y= ~total, type = "bar" , color = ~reason_stopped)
-```
+#arrested under 18
+stop_frisk_log %>% 
+  filter(
+    age < '18',
+    arst_made =='1') %>% 
+  group_by(race) %>% 
+  summarize(count = n()) %>% 
+  knitr::kable()
 
-total stops by race
-
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, race) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
-```
+# bar chart for age below 18 for each race
+stop_frisk_log %>% 
+  filter(
+    age < '18') %>%
+  ggplot(aes(x = race, fill = race))+
+  geom_bar()
 
 
-total stops by date
+#violin plot of age below 18 for each race
+stop_frisk_log %>% 
+  filter(
+    age < '18') %>%
+  plot_ly(y = ~age, color = ~race, type = "violin", colors = "Set2")
 
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, date_stop) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~date_stop, y= ~total, type = "bar" , color = ~reason_stopped)
-```
-
-
-total of stop by inside and outside 
-
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, stop_in_out) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~stop_in_out, y= ~total, type = "bar" , color = ~reason_stopped)
-```
-
-
-arrest made by total stops
-
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, arst_made) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
-```
-
-total stops by boro 
-
-```{r, eval=FALSE}
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, boro) %>% 
-  summarize(total =n()) %>% 
-  plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
+# weapon found on a child (<18)
+# top reasons for stopping children
+  
 ```
 
 

@@ -1,0 +1,216 @@
+---
+title: "Visualizations"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(viridis)
+library(rvest)
+library(httr)
+library(lubridate)
+library(plotly)
+```
+
+```{r, include=FALSE}
+# Read in data
+stop_frisk_df = 
+  # Read in data from internet
+  GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
+  content("parsed") %>% 
+  
+  # Clean and fix names of columns
+  janitor::clean_names() %>% 
+  rename(
+    precinct = pct,
+    date_stop = datestop,
+    time_stop = timestop,
+    stop_in_out = inout,
+    obs_time_min = perobs,
+    stop_time_min = perstop,
+    arst_made = arstmade,
+    off_in_unif = offunif,
+    hair_col = haircolr,
+    eye_col = eyecolor,
+    other_feature = othfeatr,
+    boro = city
+  )  %>% 
+  mutate(
+    # Combine height columns
+    height_inch = ht_feet * 12 + ht_inch,
+    # Convert date to proper format
+    date_stop = mdy(date_stop),
+    # Convert time to proper format
+    time_stop = hm(time_stop / 100),
+    # Recode to be more informative
+    stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
+    race = recode(
+      race, 
+      "A" = "asian/pacific islander", 
+      "B" = "black", 
+      "I" = "american indian/alaska native",
+      "P" = "black-hispanic",
+      "Q" = "white-hispanic",
+      "W" = "white",
+      "U" = "unknown",
+      "Z" = "other"
+    ),
+    hair_col = recode(
+      hair_col,
+      "BA" = "bald",
+      "BK" = "black",
+      "BL" = "blond",
+      "BR" = "brown",
+      "DY" = "dyed",
+      "FR" = "frosted",
+      "GY" = "gray",
+      "RA" = "red",
+      "SN" = "sandy",
+      "SP" = "salt and pepper",
+      "WH" = "white",
+      "XX" = "unknown",
+      "ZZ" = "other",
+    ),
+    eye_col = recode(
+      eye_col,
+      "BK" = "black",
+      "BL" = "blue",
+      "BR" = "brown",
+      "DF" = "different",
+      "GR" = "green",
+      "GY" = "gray",
+      "HA" = "hazel",
+      "MA" = "maroon",
+      "PK" = "pink",
+      "VI" = "violet",
+      "XX" = "unknown",
+      "Z" = "other",      
+    ),
+    build = recode(
+      build,
+      "H" = "heavy",
+      "M" = "medium",
+      "T" = "thin",
+      "U" = "muscular",
+      "Z" = "unknown"
+    ),
+    # change boro columns to lowercase for consistency
+    boro = tolower(boro),
+    # change character datatypes to numeric
+    age = as.numeric(age),
+    obs_time_min = as.numeric(obs_time_min),
+    stop_time_min = as.numeric(stop_time_min)
+  )  %>% 
+  # select columns for further analysis
+  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
+         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %>% 
+  # change all columns that have Y/N to 1/0
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
+  # change binary columns to numeric instead of character
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
+  # converts all character variables to factors (this does the same as the for loop)
+  mutate_if(is.character, as.factor) %>% 
+  # remove the single row of NAs
+  filter(!is.na(build))
+
+hour_stop = 
+  stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE)
+  ) %>% 
+  select(hour_stop, part_of_day) %>% 
+  group_by(hour_stop, part_of_day) %>% 
+  summarize(
+    count = n()
+  ) 
+
+month_frisk = 
+  stop_frisk_df %>% 
+  mutate(
+    month_stop = month(date_stop)
+  ) %>% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %>%   
+  group_by(month_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) 
+
+demographics = stop_frisk_df %>% 
+  select(sex:build, height_inch, frisked, searched)
+
+stops_total =
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped) %>% 
+  summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) 
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Number of stops per day (broken down by boro)
+
+```{r}
+month_frisk %>% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) 
+```
+
+### Number of stops per hour over the day
+```{r}
+
+hour_stop %>% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = "Identity", aes(fill = part_of_day)) +
+  geom_smooth(se = FALSE)
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### distribution of age by sex
+
+```{r}
+
+demographics %>% 
+  plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
+```
+
+### proportions of reason why people were frisked 
+
+```{r}
+
+stops_total %>% 
+ plot_ly(x = ~reason_stopped, y= ~prob, type = "bar" , color = ~reason_stopped) 
+```
+

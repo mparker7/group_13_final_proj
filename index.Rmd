@@ -1,0 +1,33 @@
+---
+title: "Stop! You are being frisked!"
+---
+
+
+
+<center>
+ 
+<img src = "images/cartoon.jpeg" width = "300px" height = "auto")
+
+</center>
+
+
+<h2> The motivation for this project </h2>
+
+Stop and Frisk has been a controversial police tactic used for years as a way to briefly stop and search civilians who are of suspect. Police must have "reasonable suspicion" according to the fourth amendment to legally stop a person. Utilizing NYC Stop and Frisk data, we want to give insight into the most influential factors of those who are targeted by the Stop and Frisk tactic.
+
+<h2> The intended final products </h2>
+Our final products will include a report summarizing our final results, and our entire analytical process of the 2016 Stop & Frisk Data Set, as well as a complimentary website that will provide access and curate the final report; creating visualizations and interactional displays to help guide readers through our report's findings. 
+
+<h2> Data sources </h2>
+Our anticipated data source is going to be the publicly available data from NYC/the NYPD located [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page)
+
+We intend on using the data set published from 2016 since the only complete data dictionary we could locate is from the 2016 data set.
+
+If we should need any additional data (like neighborhood demographics, etc.), we will most likely get them from NYC's public database [additional data](https://opendata.cityofnewyork.us/).
+
+<h2> The planned analyses/visualizations/coding challenges </h2>
+  
+
+  
+
+

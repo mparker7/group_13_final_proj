@@ -151,6 +151,7 @@ Looking at stops over time
 
 * Over a year
 * By time of day
+* By day of week
 
 ```{r, message=FALSE}
 # Number of stops per day
@@ -221,11 +222,37 @@ stop_frisk_df %>%
   ggplot(aes(x = hour_stop, y = count, color = boro)) + 
   geom_point() +
   geom_smooth(se = FALSE)
+
+# Number of stops per day of week
+stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE)
+  ) %>% 
+  group_by(dow_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
+  geom_bar(stat = "Identity") 
+
+# Number of stops per hour by day of week
+stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE),
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(dow_stop, hour_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = dow_stop)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
 ```
 
 This code chunk looks at the number of people stopped, frisked, frisked & searched, and searched over a single day
 
-```{r, message=FALSE}
+```{r, message=FALSE, eval=FALSE}
 stop_frisk_df %>% 
   filter(date_stop != is.na(date_stop)) %>% 
   mutate(
@@ -260,7 +287,7 @@ stop_frisk_df %>%
 ```
 
 Animated 
-```{r}
+```{r, eval=FALSE}
 # Number of stops per hour over the day (broken down by boro)
 stop_frisk_df %>% 
   mutate(
@@ -284,7 +311,7 @@ stop_frisk_df %>%
 ```
 
 Animated 2 (option #1)
-```{r}
+```{r, eval=FALSE}
 # Number of stops per day
 stop_frisk_df %>% 
   mutate(
@@ -309,7 +336,7 @@ stop_frisk_df %>%
 ```
 
 Animated 2 (option #2)
-```{r}
+```{r,eval=FALSE}
 # Number of stops per day
 stop_frisk_df %>% 
   mutate(
@@ -330,6 +357,30 @@ stop_frisk_df %>%
   enter_fade() +
   exit_shrink() +
   ggtitle('Month: {closest_state}') 
+```
+
+Animated
+```{r, eval=FALSE}
+stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE),
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(dow_stop, hour_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = dow_stop)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE) +
+  transition_states(
+    dow_stop,
+    transition_length = 1,
+    state_length = 1
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle('Day: {closest_state}') 
 ```
 
 

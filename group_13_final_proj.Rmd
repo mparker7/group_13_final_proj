@@ -32,6 +32,8 @@ library(rvest)
 library(httr)
 library(lubridate)
 library(plotly)
+library(rgdal)
+library(sp)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -739,8 +741,32 @@ stop_frisk_df %>%
 
 
 
+## Converting X Y Coordinates
+```{r}
+test_df= 
+  stop_frisk_df %>% 
+  select(xcoord, ycoord) %>% 
+  drop_na()
 
+coordinates(test_df) <- c("xcoord","ycoord")
+proj4string(test_df) <- CRS("+init=epsg:2263")
+CRS.new <- CRS("+init=epsg:4326") 
+test_df_new <- spTransform(test_df, CRS.new)
+test_df_new <- data.frame(longitude = coordinates(test_df_new)[,1], latitude = coordinates(test_df_new)[,2])
+```
 
+# Simplifying code
+```{r}
+long_lat_df =
+  stop_frisk_df %>% 
+  select(xcoord, ycoord) %>% 
+  drop_na()
+
+coordinates(long_lat_df) <- c("xcoord", "ycoord")
+proj4string(long_lat_df) <- CRS("+init=epsg:2263")
+long_lat_df <- spTransform(long_lat_df, CRS("+init=epsg:4326"))
+long_lat_df <- data.frame(longitude = coordinates(long_lat_df)[,1], latitude = coordinates(long_lat_df)[,2])
+```
 
 
 

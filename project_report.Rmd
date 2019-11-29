@@ -66,7 +66,9 @@ We also used LASSO to determine if machine learning could build a model that can
 
 # Discussion
 *What were you findings? Are they what you expected? What insights into the data can you make?*
-  
+The models created for FRISKED and ARST_MADE were not successful at predicting who would be frisked or arrested. These models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested than taking a guess. While we were hoping to make a good predictive model, this points to the fact that officers are not basing their decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. 
+
+
 
   
 

@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Keyanna Davis" />
+
+<meta name="date" content="2019-11-30" />
+
+<title>Plots</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="flexdashboard.html">Analysis</a>
+</li>
+<li>
+  <a href="project_report.html">Project Report</a>
+</li>
+<li>
+  <a href="mailto:&lt;mp3745@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/mparker7/group_13_final_proj/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Plots</h1>
+<h4 class="author">Keyanna Davis</h4>
+<h4 class="date">11/30/2019</h4>
+
+</div>
+
+
+<pre class="r"><code>stop_frisk_df = 
+  # Read in data from internet
+  GET(&quot;https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv&quot;) %&gt;% 
+  content(&quot;parsed&quot;) %&gt;% 
+  
+  # Clean and fix names of columns
+  janitor::clean_names() %&gt;% 
+  rename(
+    precinct = pct,
+    date_stop = datestop,
+    time_stop = timestop,
+    stop_in_out = inout,
+    obs_time_min = perobs,
+    stop_time_min = perstop,
+    arst_made = arstmade,
+    off_in_unif = offunif,
+    hair_col = haircolr,
+    eye_col = eyecolor,
+    other_feature = othfeatr,
+    boro = city
+  )  %&gt;% 
+  mutate(
+    # Combine height columns
+    height_inch = ht_feet * 12 + ht_inch,
+    # Convert date to proper format
+    date_stop = mdy(date_stop),
+    # Convert time to proper format
+    time_stop = hm(time_stop / 100),
+    # Recode to be more informative
+    stop_in_out = recode(stop_in_out, &quot;I&quot; = &quot;inside&quot;, &quot;O&quot; = &quot;outside&quot;),
+    race = recode(
+      race, 
+      &quot;A&quot; = &quot;asian/pacific islander&quot;, 
+      &quot;B&quot; = &quot;black&quot;, 
+      &quot;I&quot; = &quot;american indian/alaska native&quot;,
+      &quot;P&quot; = &quot;black-hispanic&quot;,
+      &quot;Q&quot; = &quot;white-hispanic&quot;,
+      &quot;W&quot; = &quot;white&quot;,
+      &quot;U&quot; = &quot;unknown&quot;,
+      &quot;Z&quot; = &quot;other&quot;
+    ),
+    hair_col = recode(
+      hair_col,
+      &quot;BA&quot; = &quot;bald&quot;,
+      &quot;BK&quot; = &quot;black&quot;,
+      &quot;BL&quot; = &quot;blond&quot;,
+      &quot;BR&quot; = &quot;brown&quot;,
+      &quot;DY&quot; = &quot;dyed&quot;,
+      &quot;FR&quot; = &quot;frosted&quot;,
+      &quot;GY&quot; = &quot;gray&quot;,
+      &quot;RA&quot; = &quot;red&quot;,
+      &quot;SN&quot; = &quot;sandy&quot;,
+      &quot;SP&quot; = &quot;salt and pepper&quot;,
+      &quot;WH&quot; = &quot;white&quot;,
+      &quot;XX&quot; = &quot;unknown&quot;,
+      &quot;ZZ&quot; = &quot;other&quot;,
+    ),
+    eye_col = recode(
+      eye_col,
+      &quot;BK&quot; = &quot;black&quot;,
+      &quot;BL&quot; = &quot;blue&quot;,
+      &quot;BR&quot; = &quot;brown&quot;,
+      &quot;DF&quot; = &quot;different&quot;,
+      &quot;GR&quot; = &quot;green&quot;,
+      &quot;GY&quot; = &quot;gray&quot;,
+      &quot;HA&quot; = &quot;hazel&quot;,
+      &quot;MA&quot; = &quot;maroon&quot;,
+      &quot;PK&quot; = &quot;pink&quot;,
+      &quot;VI&quot; = &quot;violet&quot;,
+      &quot;XX&quot; = &quot;unknown&quot;,
+      &quot;Z&quot; = &quot;other&quot;,      
+    ),
+    build = recode(
+      build,
+      &quot;H&quot; = &quot;heavy&quot;,
+      &quot;M&quot; = &quot;medium&quot;,
+      &quot;T&quot; = &quot;thin&quot;,
+      &quot;U&quot; = &quot;muscular&quot;,
+      &quot;Z&quot; = &quot;unknown&quot;
+    ),
+    # change boro columns to lowercase for consistency
+    boro = tolower(boro),
+    # change character datatypes to numeric
+    age = as.numeric(age),
+    obs_time_min = as.numeric(obs_time_min),
+    stop_time_min = as.numeric(stop_time_min)
+  )  %&gt;% 
+  # select columns for further analysis
+  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
+         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %&gt;% 
+  # change all columns that have Y/N to 1/0
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., &quot;Y&quot; = &quot;1&quot;, &quot;N&quot; = &quot;0&quot;))) %&gt;% 
+  # change binary columns to numeric instead of character
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %&gt;% 
+  # converts all character variables to factors (this does the same as the for loop)
+  mutate_if(is.character, as.factor) %&gt;% 
+  # remove the single row of NAs
+  filter(!is.na(build))</code></pre>
+<pre><code>## No encoding supplied: defaulting to UTF-8.</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   year = col_double(),
+##   pct = col_double(),
+##   ser_num = col_double(),
+##   datestop = col_double(),
+##   timestop = col_double(),
+##   perobs = col_double(),
+##   compyear = col_double(),
+##   comppct = col_double(),
+##   repcmd = col_double(),
+##   revcmd = col_double(),
+##   dob = col_logical(),
+##   ht_feet = col_double(),
+##   ht_inch = col_double(),
+##   weight = col_double(),
+##   addrtyp = col_logical(),
+##   rescode = col_logical(),
+##   premtype = col_logical(),
+##   aptnum = col_logical(),
+##   state = col_logical(),
+##   zip = col_logical()
+##   # ... with 7 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>PLOTS</p>
+<p>PLOT 1: Percentage of reported stops/frisks by race</p>
+<pre class="r"><code>stop =
+  stop_frisk_df %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)
+    ) %&gt;% 
+  ggplot(aes(race, fill = race))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Percentages of Reported Stops by Race&quot;,
+    y= &quot;percentage&quot;) +
+    theme(legend.position = &quot;none&quot;)
+
+frisk =
+  stop_frisk_df %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)
+    ) %&gt;% 
+  filter(frisked == &#39;1&#39;) %&gt;% 
+  ggplot(aes(race, fill = race))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Percentages of Reported Stops Resulting in a Frisk by Race&quot;,
+    y= &quot;percentage&quot;) +
+    theme(legend.position = &quot;none&quot;)
+
+(stop/frisk)</code></pre>
+<p><img src="plots_files/figure-html/plot1-1.png" width="90%" /></p>
+<p>Plot 2: THe percentages of frisks by race</p>
+<pre class="r"><code>  male=stop_frisk_df %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)
+    ) %&gt;% 
+  filter( 
+    frisked == &#39;1&#39;) %&gt;% 
+  filter(sex == &quot;M&quot;) %&gt;% 
+  ggplot(aes(race, fill = sex))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Percentage of Reported Stops Resulting in a Frisk&quot;,
+    y= &quot;percentage&quot;)
+ 
+ female = stop_frisk_df %&gt;% 
+  drop_na() %&gt;% 
+  mutate(
+    race = fct_infreq(race)) %&gt;% 
+  filter( 
+    frisked == &#39;1&#39;) %&gt;% 
+  filter(sex == &quot;F&quot;) %&gt;% 
+  ggplot(aes(race, fill = sex))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Percentage of Reported Stops Resulting in a Frisk&quot;,
+    y= &quot;percentage&quot;)
+ 
+ (male/female)</code></pre>
+<p><img src="plots_files/figure-html/plot2-1.png" width="90%" /></p>
+<p>PLOT 3: Percentage of Reported Stops Resulting in a Frisk by Age</p>
+<pre class="r"><code>stop_age_group  =
+  stop_frisk_df %&gt;% 
+  select(frisked, age) %&gt;% 
+  mutate(
+    age_group = case_when(
+      age &lt; &#39;18&#39; ~ &quot;18-&quot;,
+      age &gt;= &#39;18&#39; &amp; age &lt; &#39;30&#39; ~ &quot;18-30&quot;,
+      age &gt;= &#39;30&#39; &amp; age &lt; &#39;40&#39; ~ &quot;30s&quot;,
+      age &gt;= &#39;40&#39; &amp; age &lt; &#39;50&#39; ~ &quot;40s&quot;,
+      age &gt;= &#39;50&#39; &amp; age &lt; &#39;60&#39; ~ &quot;50s&quot;,
+      age &gt;= &#39;60&#39; ~&quot;60+&quot;
+    )
+    )
+stop_age_group %&gt;% 
+   filter( 
+    frisked == &#39;1&#39;) %&gt;% 
+  ggplot(aes(age_group, fill = age_group))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Percentage of Reported Stops Resulting in a Frisk by Age&quot;,
+    y= &quot;percentage&quot;,
+    x = &quot;age&quot;) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="plots_files/figure-html/plot3-1.png" width="90%" /></p>
+<p>PLOT 4: Percentage of Reported Stops Resulting in a Frisk by Borough</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  ggplot(aes(boro, fill = boro))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = &quot;dodge&quot;)+
+  labs(
+    title = &quot;Percentage of Reported Stops Resulting in a Frisk by Borough&quot;,
+    y= &quot;percentage&quot;,
+    x = &quot;borough&quot;) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="plots_files/figure-html/plot4-1.png" width="90%" /></p>
+<p>PLOT 5: Total number of reasons for being stopped</p>
+<pre class="r"><code>frisks_total =
+stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+  filter(stops == 1) %&gt;% 
+  group_by(reason_stopped) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate(prop = total/sum(total)) 
+
+frisks_total %&gt;% 
+ plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped) </code></pre>
+<p>PLOT 6: The proportion of reasons being stopped by age group</p>
+<pre class="r"><code>stop_age_group  =
+  stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age) %&gt;% 
+  mutate(
+    age_group = case_when(
+      age &lt; &#39;18&#39; ~ &quot;18-&quot;,
+      age &gt;= &#39;18&#39; &amp; age &lt; &#39;30&#39; ~ &quot;18-30&quot;,
+      age &gt;= &#39;30&#39; &amp; age &lt; &#39;40&#39; ~ &quot;30s&quot;,
+      age &gt;= &#39;40&#39; &amp; age &lt; &#39;50&#39; ~ &quot;40s&quot;,
+      age &gt;= &#39;50&#39; &amp; age &lt; &#39;60&#39; ~ &quot;50s&quot;,
+      age &gt;= &#39;60&#39; ~&quot;60+&quot;
+    )
+    ) %&gt;% 
+   pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+  filter(stops == 1) %&gt;% 
+  group_by(reason_stopped, age_group) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate(prob = total/sum(total)) %&gt;% 
+  drop_na
+
+stop_age_group %&gt;% 
+  plot_ly(x = ~age_group, y= ~prob, type = &quot;bar&quot; , color = ~reason_stopped) </code></pre>
+<pre><code>## This version of Shiny is designed to work with &#39;htmlwidgets&#39; &gt;= 1.5.
+##     Please upgrade via install.packages(&#39;htmlwidgets&#39;).</code></pre>
+<div id="htmlwidget-8a1d8022713d8cbce370" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8a1d8022713d8cbce370">{"x":{"visdat":{"591b73fa3c4c":["function () ","plotlyVisDat"]},"cur_data":"591b73fa3c4c","attrs":{"591b73fa3c4c":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"age_group","type":"category","categoryorder":"array","categoryarray":["18-","18-30","30s","40s","50s","60+"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"prob"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.186015831134565,0.558047493403694,0.154353562005277,0.0620052770448549,0.0277044854881266,0.00923482849604222],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.0927672955974843,0.484276729559748,0.207547169811321,0.0943396226415094,0.0959119496855346,0.0235849056603774],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.0876712328767123,0.487671232876712,0.224657534246575,0.0986301369863014,0.0849315068493151,0.0136986301369863],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.137220259128386,0.507067137809187,0.190223792697291,0.0995288574793875,0.0530035335689046,0.0100117785630153],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.179216354344123,0.465928449744463,0.177853492333901,0.0945485519591141,0.0625212947189097,0.0161839863713799],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.149507609668756,0.553715308863026,0.170993733213966,0.0747538048343778,0.0402864816472695,0.00850492390331244],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.137597619933061,0.48716995165489,0.196169579769431,0.10468575678691,0.056898475269617,0.0148754183711417],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.125279642058166,0.539149888143177,0.201342281879195,0.0794183445190157,0.0425055928411633,0.00671140939597315],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.112,0.563428571428571,0.181714285714286,0.0731428571428571,0.056,0.0114285714285714],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[0.213930348258706,0.495024875621891,0.159203980099502,0.0771144278606965,0.0373134328358209,0.0174129353233831],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 6.1: The total count of reasons being stopped by age group</p>
+<pre class="r"><code>stop_age_group %&gt;% 
+  plot_ly(x = ~age_group, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-955127f0a5db0ee676a0" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-955127f0a5db0ee676a0">{"x":{"visdat":{"591b17055eda":["function () ","plotlyVisDat"]},"cur_data":"591b17055eda","attrs":{"591b17055eda":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"age_group","type":"category","categoryorder":"array","categoryarray":["18-","18-30","30s","40s","50s","60+"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["18-","18-30","30s","40s","50s","60+"],"y":[141,423,117,47,21,7],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[59,308,132,60,61,15],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[32,178,82,36,31,5],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[233,861,323,169,90,17],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[1052,2735,1044,555,367,95],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[334,1237,382,167,90,19],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[740,2620,1055,563,306,80],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[112,482,180,71,38,6],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[98,493,159,64,49,10],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-","18-30","30s","40s","50s","60+"],"y":[86,199,64,31,15,7],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 6.2: Amination of total count of reasons being stopped by age group</p>
+<pre class="r"><code>stop_age_group %&gt;% 
+  ggplot(aes(age_group, total, fill = age_group)) +
+  geom_col() +
+  transition_states(
+    reason_stopped,
+    transition_length = 3,
+    state_length = 3
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle(&#39;{closest_state}&#39;)</code></pre>
+<p><img src="plots_files/figure-html/plot6.2-1.gif" width="90%" /></p>
+<p>PLOT 7: The proportion of reasons being stopped by sex</p>
+<pre class="r"><code>stops_by_sex = 
+  stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% 
+   mutate(
+     sex = recode(
+    sex,
+    &quot;F&quot; = &quot;female&quot;,
+    &quot;M&quot; = &quot;male&quot;,
+    &quot;Z&quot; = &quot;other&quot;
+  ), 
+  reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+   filter(stops == 1) %&gt;% 
+  group_by(reason_stopped, sex) %&gt;% 
+  summarize(total =n()) %&gt;%
+  mutate(prop = total/sum(total)) 
+
+stops_by_sex %&gt;% 
+  plot_ly(x = ~sex, y= ~prop, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-9bce1d6c539895dfea3d" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9bce1d6c539895dfea3d">{"x":{"visdat":{"591b251e26a9":["function () ","plotlyVisDat"]},"cur_data":"591b251e26a9","attrs":{"591b251e26a9":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"sex","type":"category","categoryorder":"array","categoryarray":["female","male","other"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"prop"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["female","male","other"],"y":[0.0527704485488127,0.940633245382586,0.00659630606860158],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0833333333333333,0.913522012578616,0.00314465408805031],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0493150684931507,0.947945205479452,0.00273972602739726],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0477031802120141,0.949941107184923,0.00235571260306243],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0706984667802385,0.924531516183986,0.00477001703577513],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0487914055505819,0.945389435989257,0.00581915846016115],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0764224618817404,0.919486798066196,0.00409074005206396],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0268456375838926,0.969798657718121,0.00335570469798658],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[0.0548571428571429,0.940571428571429,0.00457142857142857],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male"],"y":[0.0497512437810945,0.950248756218905],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 7.1: The total count of reasons being stopped by sex</p>
+<pre class="r"><code>stops_by_sex %&gt;% 
+  plot_ly(x = ~sex, y = ~total, type = &quot;bar&quot;, color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-0be25a305746f2205c60" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0be25a305746f2205c60">{"x":{"visdat":{"591b2c4c936e":["function () ","plotlyVisDat"]},"cur_data":"591b2c4c936e","attrs":{"591b2c4c936e":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"sex","type":"category","categoryorder":"array","categoryarray":["female","male","other"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["female","male","other"],"y":[40,713,5],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[53,581,2],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[18,346,1],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[81,1613,4],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[415,5427,28],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[109,2112,13],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[411,4945,22],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[24,867,3],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male","other"],"y":[48,823,4],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["female","male"],"y":[20,382],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 8: The porportion of reasons being stopped by race</p>
+<pre class="r"><code>stop_by_race = 
+  stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+   filter(stops == 1) %&gt;% 
+  group_by(reason_stopped, race) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate(prop = total/sum(total)) 
+
+stop_by_race %&gt;% 
+  plot_ly(x = ~race, y= ~prop, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-e8ce287d75fd0d65b2ba" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e8ce287d75fd0d65b2ba">{"x":{"visdat":{"591b31456d68":["function () ","plotlyVisDat"]},"cur_data":"591b31456d68","attrs":{"591b31456d68":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"prop"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00131926121372032,0.0976253298153034,0.535620052770449,0.0672823218997362,0.0171503957783641,0.00659630606860158,0.054089709762533,0.220316622691293],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00314465408805031,0.0644654088050314,0.452830188679245,0.0628930817610063,0.020440251572327,0.0110062893081761,0.128930817610063,0.256289308176101],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","white","white-hispanic"],"y":[0.00273972602739726,0.0931506849315069,0.397260273972603,0.063013698630137,0.010958904109589,0.136986301369863,0.295890410958904],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00412249705535925,0.114252061248528,0.434628975265018,0.0677267373380448,0.013545347467609,0.00471142520612485,0.145465253239105,0.215547703180212],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00238500851788756,0.0359454855195911,0.556218057921635,0.0718909710391823,0.00851788756388416,0.00749574105621806,0.0943781942078365,0.223168654173765],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.000895255147717099,0.0505819158460161,0.554162936436885,0.0608773500447628,0.013876454789615,0.0062667860340197,0.0917636526410027,0.221575649059982],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00446262551134251,0.0708441799925623,0.513387876534028,0.0732614354778728,0.0113425065079955,0.00818148010412793,0.0991074748977315,0.21941242097434],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00111856823266219,0.0436241610738255,0.593959731543624,0.0671140939597315,0.00782997762863535,0.00559284116331096,0.0782997762863535,0.202460850111857],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.00228571428571429,0.107428571428571,0.443428571428571,0.0685714285714286,0.0194285714285714,0.00685714285714286,0.140571428571429,0.211428571428571],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[0.0472636815920398,0.532338308457711,0.0796019900497512,0.0149253731343284,0.00497512437810945,0.101990049751244,0.218905472636816],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 8.1: The total count of reasons being stopped by race</p>
+<pre class="r"><code>stop_by_race %&gt;% 
+  plot_ly(x = ~race, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-c059f67108125368899b" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c059f67108125368899b">{"x":{"visdat":{"591b1890b358":["function () ","plotlyVisDat"]},"cur_data":"591b1890b358","attrs":{"591b1890b358":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[1,74,406,51,13,5,41,167],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[2,41,288,40,13,7,82,163],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","white","white-hispanic"],"y":[1,34,145,23,4,50,108],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[7,194,738,115,23,8,247,366],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[14,211,3265,422,50,44,554,1310],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[2,113,1238,136,31,14,205,495],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[24,381,2761,394,61,44,533,1180],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[1,39,531,60,7,5,70,181],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["american indian/alaska native","asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[2,94,388,60,17,6,123,185],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["asian/pacific islander","black","black-hispanic","other","unknown","white","white-hispanic"],"y":[19,214,32,6,2,41,88],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 8.2: Amination of total count of reasons being stopped by race</p>
+<pre class="r"><code>stop_by_race %&gt;% 
+  ggplot(aes(race, total, fill = race)) +
+  geom_col() +
+  transition_states(
+    reason_stopped,
+    transition_length = 3,
+    state_length = 3
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle(&#39;{closest_state}&#39;) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="plots_files/figure-html/plot8.2-1.gif" width="90%" /></p>
+<p>PLOT 9: Arrest porportions of reasons being stopped</p>
+<pre class="r"><code>stops_arrest =
+stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+  mutate(
+    arst_made = recode(
+      arst_made,
+      &#39;0&#39; = &quot;not arrested&quot;,
+      &#39;1&#39; = &quot;arrested&quot;
+    )
+  ) %&gt;% 
+   filter(stops == 1) %&gt;% 
+  group_by(reason_stopped, arst_made) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate( prob = total/sum(total))
+
+stops_arrest %&gt;% 
+  plot_ly(x = ~arst_made, y= ~prob, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-447f2b77bdae93702317" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-447f2b77bdae93702317">{"x":{"visdat":{"591b433604c0":["function () ","plotlyVisDat"]},"cur_data":"591b433604c0","attrs":{"591b433604c0":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"arst_made","type":"category","categoryorder":"array","categoryarray":["arrested","not arrested"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"prob"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["arrested","not arrested"],"y":[0.187335092348285,0.812664907651715],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.39622641509434,0.60377358490566],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.342465753424658,0.657534246575342],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.165488810365135,0.834511189634865],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.185860306643952,0.814139693356048],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.231871083258729,0.768128916741271],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.213834139085162,0.786165860914838],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.251677852348993,0.748322147651007],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.177142857142857,0.822857142857143],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[0.151741293532338,0.848258706467662],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 9.1: The total count of arrest by reasons being stopped</p>
+<pre class="r"><code>stops_arrest %&gt;% 
+  plot_ly(x = ~arst_made, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-a4587513161ed1bb9324" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a4587513161ed1bb9324">{"x":{"visdat":{"591b445369b":["function () ","plotlyVisDat"]},"cur_data":"591b445369b","attrs":{"591b445369b":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"arst_made","type":"category","categoryorder":"array","categoryarray":["arrested","not arrested"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["arrested","not arrested"],"y":[142,616],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[252,384],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[125,240],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[281,1417],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[1091,4779],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[518,1716],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[1150,4228],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[225,669],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[155,720],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["arrested","not arrested"],"y":[61,341],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 10: The porportion of reasons being stopped by borough</p>
+<pre class="r"><code>stop_by_boro = 
+  stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+   filter(stops == 1) %&gt;% 
+  group_by(reason_stopped, boro) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate( prob = total/sum(total))
+
+stop_by_boro %&gt;% 
+  plot_ly(x = ~boro, y= ~prob, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-deb444e280729ab5f672" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-deb444e280729ab5f672">{"x":{"visdat":{"591b9a9526d":["function () ","plotlyVisDat"]},"cur_data":"591b9a9526d","attrs":{"591b9a9526d":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"boro","type":"category","categoryorder":"array","categoryarray":["bronx","brooklyn","manhattan","queens","staten is"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"prob"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.138522427440633,0.271767810026385,0.178100263852243,0.37335092348285,0.0382585751978892],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.242138364779874,0.300314465408805,0.19811320754717,0.213836477987421,0.0455974842767296],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.210958904109589,0.241095890410959,0.235616438356164,0.273972602739726,0.0383561643835616],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.152532391048292,0.215547703180212,0.143109540636042,0.449941107184923,0.03886925795053],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.186201022146508,0.302385008517888,0.224361158432709,0.213117546848382,0.0739352640545145],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.239480752014324,0.310205908683975,0.162041181736795,0.249776186213071,0.0384959713518353],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.188545927854221,0.299553737448866,0.182781703235403,0.291000371885459,0.0381182595760506],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.335570469798658,0.284116331096197,0.165548098434004,0.19910514541387,0.0156599552572707],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.193142857142857,0.217142857142857,0.114285714285714,0.430857142857143,0.0445714285714286],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[0.223880597014925,0.313432835820896,0.171641791044776,0.22636815920398,0.0646766169154229],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>stop_by_boro %&gt;% 
+  plot_ly(x = ~boro, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-ee748a7fec35d761bbcd" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ee748a7fec35d761bbcd">{"x":{"visdat":{"591b4b62770f":["function () ","plotlyVisDat"]},"cur_data":"591b4b62770f","attrs":{"591b4b62770f":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"boro","type":"category","categoryorder":"array","categoryarray":["bronx","brooklyn","manhattan","queens","staten is"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[105,206,135,283,29],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[154,191,126,136,29],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[77,88,86,100,14],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[259,366,243,764,66],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[1093,1775,1317,1251,434],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[535,693,362,558,86],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[1014,1611,983,1565,205],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[300,254,148,178,14],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[169,190,100,377,39],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[90,126,69,91,26],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 10.1: The total count of reasons being stopped by borough</p>
+<pre class="r"><code>stop_by_boro %&gt;% 
+  plot_ly(x = ~boro, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-a65a41f2b6f7ea34809b" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a65a41f2b6f7ea34809b">{"x":{"visdat":{"591b471ff556":["function () ","plotlyVisDat"]},"cur_data":"591b471ff556","attrs":{"591b471ff556":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"boro","type":"category","categoryorder":"array","categoryarray":["bronx","brooklyn","manhattan","queens","staten is"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[105,206,135,283,29],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[154,191,126,136,29],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[77,88,86,100,14],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,153,157,1)","line":{"color":"rgba(201,153,157,1)"}},"textfont":{"color":"rgba(201,153,157,1)"},"error_y":{"color":"rgba(201,153,157,1)"},"error_x":{"color":"rgba(201,153,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[259,366,243,764,66],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[1093,1775,1317,1251,434],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[535,693,362,558,86],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,209,99,1)","line":{"color":"rgba(176,209,99,1)"}},"textfont":{"color":"rgba(176,209,99,1)"},"error_y":{"color":"rgba(176,209,99,1)"},"error_x":{"color":"rgba(176,209,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[1014,1611,983,1565,205],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[300,254,148,178,14],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[169,190,100,377,39],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["bronx","brooklyn","manhattan","queens","staten is"],"y":[90,126,69,91,26],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>PLOT 10.2: Amination of total count of reasons being stopped by borough</p>
+<pre class="r"><code>stop_by_boro %&gt;% 
+  ggplot(aes(boro, total, fill=boro)) +
+  geom_col() +
+  transition_states(
+    reason_stopped,
+    transition_length = 3,
+    state_length = 3
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle(&#39;{closest_state}&#39;) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="plots_files/figure-html/plot10.2-1.gif" width="90%" /></p>
+<p>PLOT 11: Number of stops per day</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  group_by(date_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="plots_files/figure-html/plot11-1.png" width="90%" /></p>
+<p>PLOT 12: Number of stops per month</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  mutate(
+    month_stop = factor(month(date_stop))
+  ) %&gt;% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %&gt;% 
+  group_by(month_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = month_stop, y = count)) + 
+  geom_bar(stat = &quot;Identity&quot;)</code></pre>
+<p><img src="plots_files/figure-html/plot12-1.png" width="90%" /></p>
+<p>PLOT 13: Number of stops per day (broken down by boro)</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  mutate(
+    month_stop = month(date_stop)
+  ) %&gt;% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %&gt;%   
+  group_by(month_stop, boro) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="plots_files/figure-html/plot13-1.png" width="90%" /></p>
+<p>PLOT 14: Number of stops per hour over the day</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c(&quot;Night&quot;, &quot;Morning&quot;, &quot;Afternoon&quot;, &quot;Evening&quot;, &quot;Night&quot;), right = FALSE)
+  ) %&gt;% 
+  select(hour_stop, part_of_day) %&gt;% 
+  group_by(hour_stop, part_of_day) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = &quot;Identity&quot;, aes(fill = part_of_day)) +
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="plots_files/figure-html/plot14-1.png" width="90%" /></p>
+<p>PLOT 15: Number of stops per hour over the day (broken down by boro)</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %&gt;% 
+  group_by(hour_stop, boro) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="plots_files/figure-html/plot15-1.png" width="90%" /></p>
+<p>PLOT 16: Number of stops per day of week</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE)
+  ) %&gt;% 
+  group_by(dow_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
+  geom_bar(stat = &quot;Identity&quot;) </code></pre>
+<p><img src="plots_files/figure-html/plot16-1.png" width="90%" /></p>
+<p>PLOT 17: Number of stops per hour by day of week</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE),
+    hour_stop = hour(time_stop)
+  ) %&gt;% 
+  group_by(dow_stop, hour_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = count, color = dow_stop)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="plots_files/figure-html/plot17-1.png" width="90%" /></p>
+<p>PLOT 18: This code chunk looks at the number of people stopped, frisked, frisked &amp; searched, and searched over a single day</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  filter(date_stop != is.na(date_stop)) %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %&gt;% 
+  group_by(hour_stop, frisked, searched) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  pivot_wider(
+    names_from = frisked:searched,
+    values_from = count
+  ) %&gt;% 
+  rename(
+    &quot;stopped&quot; = &quot;0_0&quot;,
+    &quot;frisked&quot; = &quot;1_0&quot;,
+    &quot;searched&quot; = &quot;0_1&quot;,
+    &quot;frisk_and_search&quot; = &quot;1_1&quot;
+  ) %&gt;% 
+  mutate(
+    searched = replace_na(searched, 0),
+    stopped = replace_na(stopped, 0),
+    frisked = replace_na(frisked, 0),
+    frisk_and_search = replace_na(frisk_and_search, 0),
+    stopped = stopped + searched + frisked + frisk_and_search
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = stopped)) +
+  geom_smooth(se = FALSE, color = &#39;red&#39;) +
+  geom_smooth(aes(y = frisked, color = &#39;blue&#39;), se = FALSE) +
+  geom_smooth(aes(y = searched, color = &#39;green&#39;), se = FALSE) +
+  geom_smooth(aes(y = frisk_and_search, color = &#39;yellow&#39;), se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
+## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
+## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
+## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="plots_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

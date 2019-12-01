@@ -1,16 +1,9 @@
 ---
-title: "total_stops"
-author: "kd2640_total_stops"
-date: '`r format(Sys.time(), "%Y-%m-%d")`'
-output: github_document
+title: "Plots"
+author: "Keyanna Davis"
+date: "11/30/2019"
+output: html_document
 ---
-
-```{r}
-install.packages("gganimate")
-install.packages("transformr")
-install.packages("gifski")
-```
-
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -19,6 +12,11 @@ library(rvest)
 library(httr)
 library(lubridate)
 library(plotly)
+library(patchwork)
+library(transformr)
+library(gganimate)
+library(transformr)
+library(gifski)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -36,10 +34,7 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-
-
-```{r, message=FALSE, include=FALSE}
-# Read in data
+```{r}
 stop_frisk_df = 
   # Read in data from internet
   GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
@@ -141,16 +136,121 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
+PLOTS
 
+PLOT 1: Percentage of reported stops/frisks by race 
 
+```{r, plot1}
+stop =
+  stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  ggplot(aes(race, fill = race))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentages of Reported Stops by Race",
+    y= "percentage") +
+    theme(legend.position = "none")
 
+frisk =
+  stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  filter(frisked == '1') %>% 
+  ggplot(aes(race, fill = race))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentages of Reported Stops Resulting in a Frisk by Race",
+    y= "percentage") +
+    theme(legend.position = "none")
 
-Comparing the reason why people were stopped 
+(stop/frisk)
+```
 
-```{r, eval=FALSE}
+Plot 2: THe percentages of frisks by race
+
+```{r, plot2}
+  male=stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  filter( 
+    frisked == '1') %>% 
+  filter(sex == "M") %>% 
+  ggplot(aes(race, fill = sex))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentage of Reported Stops Resulting in a Frisk",
+    y= "percentage")
+ 
+ female = stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter( 
+    frisked == '1') %>% 
+  filter(sex == "F") %>% 
+  ggplot(aes(race, fill = sex))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentage of Reported Stops Resulting in a Frisk",
+    y= "percentage")
+ 
+ (male/female)
+```
+
+PLOT 3: Percentage of Reported Stops Resulting in a Frisk by Age
+
+```{r, plot3}
+stop_age_group  =
+  stop_frisk_df %>% 
+  select(frisked, age) %>% 
+  mutate(
+    age_group = case_when(
+      age < '18' ~ "18-",
+      age >= '18' & age < '30' ~ "18-30",
+      age >= '30' & age < '40' ~ "30s",
+      age >= '40' & age < '50' ~ "40s",
+      age >= '50' & age < '60' ~ "50s",
+      age >= '60' ~"60+"
+    )
+    )
+stop_age_group %>% 
+   filter( 
+    frisked == '1') %>% 
+  ggplot(aes(age_group, fill = age_group))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentage of Reported Stops Resulting in a Frisk by Age",
+    y= "percentage",
+    x = "age") +
+  theme(legend.position = "none")
+```
+
+PLOT 4: Percentage of Reported Stops Resulting in a Frisk by Borough
+
+```{r, plot4}
+stop_frisk_df %>% 
+  ggplot(aes(boro, fill = boro))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentage of Reported Stops Resulting in a Frisk by Borough",
+    y= "percentage",
+    x = "borough") +
+  theme(legend.position = "none")
+```
+
+PLOT 5: Total number of reasons for being stopped
+
+```{r, plot5, eval = FALSE}
 frisks_total =
 stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
   pivot_longer(
     cs_objcs:cs_other,
     names_to = "reason_stopped",
@@ -173,57 +273,15 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
   summarize(total =n()) %>% 
-  mutate(prob = total/sum(total)) 
+  mutate(prop = total/sum(total)) 
 
-stops_total %>% 
-  plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
-
-stops_total %>% 
- plot_ly(x = ~reason_stopped, y= ~prob, type = "bar" , color = ~reason_stopped) 
-  
+frisks_total %>% 
+ plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped) 
 ```
 
+PLOT 6: The proportion of reasons being stopped by age group
 
-total stops by ages
-
-```{r, eval=FALSE}
-stops_by_age = 
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, age) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-  filter(stops == 1) %>% 
-  group_by(reason_stopped, age) %>% 
-  summarize(total =n()) %>% 
-  mutate(prob = total/sum(total)) 
-
-stops_by_age %>% 
-  plot_ly(x = ~age, y= ~prob, type = "bar" , color = ~reason_stopped)
-
-stops_by_age %>% 
-  plot_ly(x = ~age, y= ~total, type = "bar" , color = ~reason_stopped)
-```
-
-
-total stop by age group 
-
-```{r, eval=FALSE}
+```{r, plot6}
 stop_age_group  =
   stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age) %>% 
@@ -266,9 +324,18 @@ stop_age_group %>%
   plot_ly(x = ~age_group, y= ~prob, type = "bar" , color = ~reason_stopped) 
 
 
+```
+
+PLOT 6.1: The total count of reasons being stopped by age group
+
+```{r, plot6.1}
 stop_age_group %>% 
- plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped) 
-  
+  plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+PLOT 6.2: Amination of total count of reasons being stopped by age group
+
+```{r, plot6.2}
 stop_age_group %>% 
   ggplot(aes(age_group, total, fill = age_group)) +
   geom_col() +
@@ -282,9 +349,9 @@ stop_age_group %>%
   ggtitle('{closest_state}')
 ```
 
-total stops by sex 
+PLOT 7: The proportion of reasons being stopped by sex
 
-```{r, eval=FALSE}
+```{r, plot7}
 stops_by_sex = 
   stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, sex) %>% 
@@ -321,13 +388,18 @@ stops_by_sex =
 stops_by_sex %>% 
   plot_ly(x = ~sex, y= ~prop, type = "bar" , color = ~reason_stopped)
 
+```
+
+PLOT 7.1: The total count of reasons being stopped by sex
+
+```{r, plot7.1}
 stops_by_sex %>% 
   plot_ly(x = ~sex, y = ~total, type = "bar", color = ~reason_stopped)
 ```
 
-total stops by race
+PLOT 8: The porportion of reasons being stopped by race
 
-```{r, eval=FALSE}
+```{r, plot8}
 stop_by_race = 
   stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, race) %>% 
@@ -356,90 +428,35 @@ stop_by_race =
 
 stop_by_race %>% 
   plot_ly(x = ~race, y= ~prop, type = "bar" , color = ~reason_stopped)
+```
 
+PLOT 8.1: The total count of reasons being stopped by race
+
+```{r, plot8.1}
 stop_by_race %>% 
   plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
+PLOT 8.2: Amination of total count of reasons being stopped by race
 
-total stops by date
-
-```{r, eval=FALSE}
-stops_by_month =
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, date_stop) %>% 
-  mutate( month_stop = month(date_stop)) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
+```{r, plot8.2}
+stop_by_race %>% 
+  ggplot(aes(race, total, fill = race)) +
+  geom_col() +
+  transition_states(
     reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, month_stop) %>% 
-  summarize(total =n()) %>% 
-  mutate( prob = total/sum(total))
-
-stops_by_month %>% 
-  plot_ly(x = ~month_stop, y= ~total, type = "bar" , color = ~reason_stopped)
-
-stops_by_month %>% 
-  plot_ly(x = ~month_stop, y= ~prob, type = "bar" , color = ~reason_stopped)
+    transition_length = 3,
+    state_length = 3
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle('{closest_state}') +
+  theme(legend.position = "none")
 ```
 
+PLOT 9: Arrest porportions of reasons being stopped 
 
-total of stop by inside and outside 
-
-```{r, eval=FALSE}
-in_out_stops = 
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, stop_in_out) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-   filter(stops == 1) %>% 
-  group_by(reason_stopped, stop_in_out) %>% 
-  summarize(total =n()) %>% 
-  mutate( prob = total/sum(total))
-
-in_out_stops %>% 
-  plot_ly(x = ~stop_in_out, y= ~total, type = "bar" , color = ~reason_stopped)
-
-in_out_stops %>% 
-   plot_ly(x = ~stop_in_out, y= ~prob, type = "bar" , color = ~reason_stopped)
-```
-
-
-arrest made by total stops
-
-```{r, eval=FALSE}
+```{r, plot9}
 stops_arrest =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, arst_made) %>% 
@@ -474,15 +491,19 @@ stop_frisk_df %>%
   mutate( prob = total/sum(total))
 
 stops_arrest %>% 
-  plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
-
-stops_arrest %>% 
   plot_ly(x = ~arst_made, y= ~prob, type = "bar" , color = ~reason_stopped)
 ```
 
-total stops by boro 
+PLOT 9.1: The total count of arrest by reasons being stopped
 
-```{r, eval=FALSE}
+```{r, plot9.1}
+stops_arrest %>% 
+  plot_ly(x = ~arst_made, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+PLOT 10: The porportion of reasons being stopped by borough
+
+```{r, plot10}
 stop_by_boro = 
   stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, boro) %>% 
@@ -516,3 +537,179 @@ stop_by_boro %>%
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
+PLOT 10.1: The total count of reasons being stopped by borough
+
+```{r, plot10.1}
+stop_by_boro %>% 
+  plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
+```
+
+PLOT 10.2: Amination of total count of reasons being stopped by borough
+
+```{r, plot10.2}
+stop_by_boro %>% 
+  ggplot(aes(boro, total, fill=boro)) +
+  geom_col() +
+  transition_states(
+    reason_stopped,
+    transition_length = 3,
+    state_length = 3
+  ) +
+  enter_fade() +
+  exit_shrink() +
+  ggtitle('{closest_state}') +
+  theme(legend.position = "none")
+```
+
+PLOT 11: Number of stops per day
+
+```{r, plot11}
+stop_frisk_df %>% 
+  group_by(date_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+PLOT 12: Number of stops per month
+
+```{r, plot12}
+stop_frisk_df %>% 
+  mutate(
+    month_stop = factor(month(date_stop))
+  ) %>% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %>% 
+  group_by(month_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = month_stop, y = count)) + 
+  geom_bar(stat = "Identity")
+```
+
+PLOT 13: Number of stops per day (broken down by boro)
+
+```{r, plot13}
+stop_frisk_df %>% 
+  mutate(
+    month_stop = month(date_stop)
+  ) %>% 
+  filter(
+    month_stop != is_null(month_stop)
+  ) %>%   
+  group_by(month_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+PLOT 14: Number of stops per hour over the day
+
+```{r, plot14}
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE)
+  ) %>% 
+  select(hour_stop, part_of_day) %>% 
+  group_by(hour_stop, part_of_day) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = "Identity", aes(fill = part_of_day)) +
+  geom_smooth(se = FALSE)
+
+```
+
+PLOT 15: Number of stops per hour over the day (broken down by boro)
+
+```{r, plot15}
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(hour_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+PLOT 16: Number of stops per day of week
+
+```{r, plot16}
+stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE)
+  ) %>% 
+  group_by(dow_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
+  geom_bar(stat = "Identity") 
+```
+
+PLOT 17: Number of stops per hour by day of week
+
+```{r, plot17}
+stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE),
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(dow_stop, hour_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count, color = dow_stop)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+```
+
+PLOT 18: This code chunk looks at the number of people stopped, frisked, frisked & searched, and searched over a single day
+
+```{r}
+stop_frisk_df %>% 
+  filter(date_stop != is.na(date_stop)) %>% 
+  mutate(
+    hour_stop = hour(time_stop)
+  ) %>% 
+  group_by(hour_stop, frisked, searched) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  pivot_wider(
+    names_from = frisked:searched,
+    values_from = count
+  ) %>% 
+  rename(
+    "stopped" = "0_0",
+    "frisked" = "1_0",
+    "searched" = "0_1",
+    "frisk_and_search" = "1_1"
+  ) %>% 
+  mutate(
+    searched = replace_na(searched, 0),
+    stopped = replace_na(stopped, 0),
+    frisked = replace_na(frisked, 0),
+    frisk_and_search = replace_na(frisk_and_search, 0),
+    stopped = stopped + searched + frisked + frisk_and_search
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = stopped)) +
+  geom_smooth(se = FALSE, color = 'red') +
+  geom_smooth(aes(y = frisked, color = 'blue'), se = FALSE) +
+  geom_smooth(aes(y = searched, color = 'green'), se = FALSE) +
+  geom_smooth(aes(y = frisk_and_search, color = 'yellow'), se = FALSE)
+```

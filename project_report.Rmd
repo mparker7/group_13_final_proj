@@ -78,11 +78,10 @@ LASSO regression was used to determine if machine learning could build a model t
 Based on the logistic model, only demopgrahics, characteristics, and location of stop were included in the 22 variable matrix. LASSO regression selected 10 of the 22 variables and minimized the others to 0. The resulting AUC value was 0.50, which was approximatley the same compared to the logistic model from above. 
 
 # Additional Analysis
-<<<<<<< HEAD
+
 Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. 
-=======
 *If you undertake formal statistical analyses, describe these in detail*
->>>>>>> 8fdf68a2f0565a2c75d367febe7df814978d45de
+
 
 # Discussion
 *What were you findings? Are they what you expected? What insights into the data can you make?*

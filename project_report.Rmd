@@ -15,11 +15,17 @@ output:
 
 
 # Motivation
-Provide an overview of the project goals and motivation
+Terry Stop is a crime-preventing program that has been used by the police around the country for more than 40 years. In New York City this program is known as stop-and-frisk and consists of possible temporary detention and questioning of an individual with possible searching for weapons or other contraband. During Michael Bloomberg’s tenure as a mayor of the City of New York, this program became increasingly aggressive and subsequently turned out to be the hot topic of discussion throughout the nation. In 2011 stop-and-frisk reached almost 700,000 stops. During the same year the New York Civil Liberties Union successfully sued the New York Police Department and forced it to regularly report to public all stop-and-frisk related activities. From the obtained data, it was concluded, that majority of stopped individuals were black and Hispanic men. Bloomberg and then NYC Police Commissioner Raymond W. Kelly, were accused of racial profiling. 
+
+Stop-and-frisk has been proven to be unsuccessful in identifying criminals and recovering illegal weapons. For years Bloomberg argued that there is a causal relationship between stop-and-frisk and crime rates in NYC, in order to rally support for the program. This assumption has been proven to be incorrect by the fact that even after the program was scaled back, crime rates continued to decline in NYC. 
+During mayoral election campaign in 2013, public pressure forced Bloomberg to cut back this  practice. 
+
+After Bill de Blasio won mayoral election in 2013, he continued to downsize the program. In 2016 number of stops were less than 2% in comparison to that of 2011, when the stops reached its peak. In spite of expectations, crime prevalence continued to decline even after the program was decreased by 98%.  
+
 
 
 # Related Work
-Anything that inspired you, such as a paper, a website, or something we discussed in class?
+New York Civil Liberties Union report “Stop-and-Frisk in the de Blasio era”.
 
 # Initial Questions
 What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?
@@ -31,7 +37,7 @@ Sourc, scraping method, cleaning, etc.
 Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.
 
 # Additional Analysis
-If you undertake formal statistical analyses, describe these in detail
+Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. 
 
 # Discussion
 What were you findings? Are they what you expected? What insights into the data can you make?

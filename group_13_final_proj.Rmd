@@ -34,6 +34,8 @@ library(lubridate)
 library(plotly)
 library(rgdal)
 library(sp)
+library(sf)
+library(leaflet)
 
 knitr::opts_chunk$set(
 	echo = TRUE,

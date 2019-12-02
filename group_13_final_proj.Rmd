@@ -438,7 +438,18 @@ demographics %>%
 demographics %>% 
   plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
 
+
+# percentage of races stopped
+demographics %>% 
+  count(race) %>% 
+  mutate(percent = (n / nrow(demographics))* 100,
+         # percent = str_replace(percent, "[0-9]$", "%"),
+         race = as.factor(race),
+         race = fct_reorder(race, n)) %>% 
+  plot_ly(x = ~ race, y = ~ percent, type = "bar", color = ~ race)
+
   
+
 # subjects count of frisked subjects by race, sex 
 frisked_plot = 
   stop_frisk_df %>% 
@@ -484,6 +495,7 @@ arrested_plot =
 library(patchwork)
 
 (frisked_plot+searched_plot + arrested_plot)
+
 ```
 
 Regression model for demographics
@@ -511,59 +523,99 @@ summary(arrest_model_2)
 ```
 
 
-Stops of subjects below 18
+Stops of subjects below 18. Maybe shny?
 ```{r}
+# percent innocent under 18
 stop_frisk_log %>% 
-  filter(
-    age < '18') %>% 
-  group_by(sex, race) %>% 
-  summarize(count = n()) %>% 
-  knitr::kable()
-
+  filter(age < '18') %>% 
+  count(arst_made) %>%
+  mutate(
+    percent = (n /nrow(under_18)* 100)
+  ) %>% 
+  knitr::kable(digits = 2)
+  
 # frisked under 18 by race
 stop_frisk_log %>% 
   filter(
     age < '18',
-    frisked == '1') %>% 
-  group_by( race) %>% 
-  summarize(count = n()) %>% 
-  knitr::kable()
+    frisked == '1') %>%
+  count(race) %>% 
+  mutate(
+    race = fct_reorder(race, n)) %>% 
+  plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
+
 
 #searched under 18
 stop_frisk_log %>% 
   filter(
     age < '18',
-    searched == '1') %>% 
-  group_by( race) %>% 
-  summarize(count = n()) %>% 
-  knitr::kable()
+    searched == '1') %>%
+  count(race) %>% 
+  mutate(
+    race = fct_reorder(race, n)) %>% 
+  plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
+
 
 #arrested under 18
 stop_frisk_log %>% 
   filter(
     age < '18',
-    arst_made =='1') %>% 
-  group_by(race) %>% 
-  summarize(count = n()) %>% 
-  knitr::kable()
+    arst_made =='1') %>%
+  count(race) %>% 
+  mutate(
+    race = fct_reorder(race, n)) %>% 
+  plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
 
-# bar chart for age below 18 for each race
+
+# stoped under 18
 stop_frisk_log %>% 
   filter(
     age < '18') %>%
-  ggplot(aes(x = race, fill = race))+
-  geom_bar()
+  count(race) %>% 
+  mutate(
+    race = fct_reorder(race, n)) %>% 
+  plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
 
-
-#violin plot of age below 18 for each race
+# innocent under 18
 stop_frisk_log %>% 
   filter(
-    age < '18') %>%
-  plot_ly(y = ~age, color = ~race, type = "violin", colors = "Set2")
+    age < '18',
+    arst_made =='0') %>% 
+  count(race) %>% 
+  mutate(
+    percent_innocent = (n/nrow(under_18)* 100),
+    race = fct_reorder(race, n)) %>% 
+  plot_ly(x = ~ race, y = ~ percent_innocent, type = "bar", color = ~ race)
 
-# weapon found on a child (<18)
-# top reasons for stopping children
-  
+# reasons for stoping under 18
+stop_frisk_df %>% 
+  filter(age < '18') %>%
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>%
+  group_by(reason_stopped) %>% 
+  summarize(total =n()) %>% 
+  mutate(prob = total/sum(total)) %>% 
+  plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
+
 ```
 
 

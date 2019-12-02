@@ -570,7 +570,6 @@ stop_frisk_log %>%
 
 
 
-
 ## Converting X Y Coordinates
 ```{r}
 test_df= 

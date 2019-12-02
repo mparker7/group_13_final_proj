@@ -427,6 +427,109 @@ div.tocify {
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory Analysis</h1>
 <p><em>Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.</em></p>
+<div id="loading-and-tidying-the-data" class="section level2">
+<h2>Loading and tidying the data</h2>
+<pre class="r"><code># Read in data
+stop_frisk_df = 
+  # Read in data from internet
+  GET(&quot;https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv&quot;) %&gt;% 
+  content(&quot;parsed&quot;) %&gt;% 
+  
+  # Clean and fix names of columns
+  janitor::clean_names() %&gt;% 
+  rename(
+    precinct = pct,
+    date_stop = datestop,
+    time_stop = timestop,
+    stop_in_out = inout,
+    obs_time_min = perobs,
+    stop_time_min = perstop,
+    arst_made = arstmade,
+    off_in_unif = offunif,
+    hair_col = haircolr,
+    eye_col = eyecolor,
+    other_feature = othfeatr,
+    boro = city
+  )  %&gt;% 
+  mutate(
+    # Combine height columns
+    height_inch = ht_feet * 12 + ht_inch,
+    # Convert date to proper format
+    date_stop = mdy(date_stop),
+    # Convert time to proper format
+    time_stop = hm(time_stop / 100),
+    # Recode to be more informative
+    stop_in_out = recode(stop_in_out, &quot;I&quot; = &quot;inside&quot;, &quot;O&quot; = &quot;outside&quot;),
+    race = recode(
+      race, 
+      &quot;A&quot; = &quot;other&quot;, 
+      &quot;B&quot; = &quot;black&quot;, 
+      &quot;I&quot; = &quot;other&quot;,
+      &quot;P&quot; = &quot;black-hispanic&quot;,
+      &quot;Q&quot; = &quot;white-hispanic&quot;,
+      &quot;W&quot; = &quot;white&quot;,
+      &quot;U&quot; = &quot;other&quot;,
+      &quot;Z&quot; = &quot;other&quot;
+    ),
+    hair_col = recode(
+      hair_col,
+      &quot;BA&quot; = &quot;bald&quot;,
+      &quot;BK&quot; = &quot;black&quot;,
+      &quot;BL&quot; = &quot;blond&quot;,
+      &quot;BR&quot; = &quot;brown&quot;,
+      &quot;DY&quot; = &quot;other&quot;,
+      &quot;FR&quot; = &quot;other&quot;,
+      &quot;GY&quot; = &quot;other&quot;,
+      &quot;RA&quot; = &quot;other&quot;,
+      &quot;SN&quot; = &quot;other&quot;,
+      &quot;SP&quot; = &quot;other&quot;,
+      &quot;WH&quot; = &quot;other&quot;,
+      &quot;XX&quot; = &quot;other&quot;,
+      &quot;ZZ&quot; = &quot;other&quot;,
+    ),
+    eye_col = recode(
+      eye_col,
+      &quot;BK&quot; = &quot;black&quot;,
+      &quot;BL&quot; = &quot;blue&quot;,
+      &quot;BR&quot; = &quot;brown&quot;,
+      &quot;DF&quot; = &quot;other&quot;,
+      &quot;GR&quot; = &quot;other&quot;,
+      &quot;GY&quot; = &quot;other&quot;,
+      &quot;HA&quot; = &quot;other&quot;,
+      &quot;MA&quot; = &quot;other&quot;,
+      &quot;PK&quot; = &quot;other&quot;,
+      &quot;VI&quot; = &quot;other&quot;,
+      &quot;XX&quot; = &quot;other&quot;,
+      &quot;Z&quot; = &quot;other&quot;,      
+    ),
+    build = recode(
+      build,
+      &quot;H&quot; = &quot;heavy&quot;,
+      &quot;M&quot; = &quot;medium&quot;,
+      &quot;T&quot; = &quot;thin&quot;,
+      &quot;U&quot; = &quot;other&quot;,
+      &quot;Z&quot; = &quot;unknown&quot;
+    ),
+    # change boro columns to lowercase for consistency
+    boro = tolower(boro),
+    # change character datatypes to numeric
+    age = as.numeric(age),
+    obs_time_min = as.numeric(obs_time_min),
+    stop_time_min = as.numeric(stop_time_min)
+  )  %&gt;% 
+  # select columns for further analysis
+  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
+         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %&gt;% 
+  # change all columns that have Y/N to 1/0
+  mutate_at(vars(arst_made:rf_bulg), funs(recode(., &quot;Y&quot; = &quot;1&quot;, &quot;N&quot; = &quot;0&quot;))) %&gt;% 
+  # change binary columns to numeric instead of character
+  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %&gt;% 
+  # converts all character variables to factors (this does the same as the for loop)
+  mutate_if(is.character, as.factor) %&gt;% 
+  # remove the single row of NAs
+  filter(!is.na(build))</code></pre>
+</div>
 <div id="logistic-regression-analysis" class="section level2">
 <h2>Logistic Regression Analysis</h2>
 <p>Goal: To select for models that will answer the following questions:</p>

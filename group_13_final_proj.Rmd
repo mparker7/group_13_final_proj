@@ -316,9 +316,8 @@ stop_frisk_df %>%
 
 
 Logistic Regression Dataset
-  - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone
-  
-```{r}
+    
+```{r, message=FALSE}
 stop_frisk_log = stop_frisk_df %>% mutate(
     race = recode(
       race, 
@@ -358,63 +357,245 @@ stop_frisk_log = stop_frisk_df %>% mutate(
       build,
       "muscular" = "other",
     ))
+
 ```
 
-
-
-
-
-
-Building a model using only characteristics, demographics, and location as predictors for frisked
- - assess multicolinearity to determine if there are any variables that exhibit high correlation 
- - We will remove any variables that exhibit signs of multicollinearity 
- - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors
-    - IMPORTANT: we cannot make any causal statements from this model 'i.e. you have a higher odds of getting stopped if you are X race' because everyone in this dataset was stopped
-    
+  
 ```{r}
-model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
 
 car::vif(model_1)
 # Based on the GVIF, we will remove boro
 
-model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
 
 car::vif(model_2)
 # no more collinearity problems
 
 summary(model_2)
-# Remove hair and eye color because all categories within them are highly unsignificant 
+# Remove hair and eye color because all categories within them are highly unsignificant, cs_drgtr, cs_lkout
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_cloth + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
 
 summary(model_3)
-# keep weight? 
+# remove weight, cs_cloth, cs_objcs
+model_4 = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
+
+summary(model_4)
+anova(model_4, model_3, test = "Chisq")
 ```
+
 
 Building a model that uses characteristics, demographics, and location as predictors for arrest made
 ```{r}
-model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-car::vif(model_4)
-
-summary(model_4)
-
-# remove eye color
-model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+car::vif(model_5)
 
 summary(model_5)
 
-# remove build
-model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove eye color and build 
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col+ stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_6)
 
-
-# remove height
-model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
+# remove height, age
+model_7 = glm(arst_made ~ sex + race + weight + hair_col+ stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_7)
+
 ```
+
+
+Creating Training and Testing datasets and use the selected models to create AOC
+```{r}
+train = sample_frac(stop_frisk_log, size = 0.8)
+test = anti_join(stop_frisk_log, train)
+
+library(caret)
+
+# predict results for arrest made model
+model_7_pred = glm(arst_made ~ sex + race + weight + stop_in_out + precinct + off_in_unif + hair_col, family = binomial, data = train)
+
+log_pred = predict(model_7_pred, newdata = test, type = "response")
+
+log_pred = ifelse(log_pred > 0.5, 1, 0)
+
+library(ROCR)
+library(Metrics)
+
+pr = prediction(log_pred, test$arst_made)
+perf = performance(pr, measure = "tpr", x.measure = "fpr")
+plot(perf)
+
+auc(test$arst_made, log_pred)
+
+
+
+# predict results for frisked model
+model_4_pred = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
+
+log_pred = predict(model_4_pred, newdata = test, type = "response")
+
+log_pred = ifelse(log_pred > 0.5, 1, 0)
+
+library(ROCR)
+library(Metrics)
+
+pr = prediction(log_pred, test$frisked)
+perf = performance(pr, measure = "tpr", x.measure = "fpr")
+plot(perf)
+
+auc(test$frisked, log_pred)
+```
+
+
+
+LASSO Frisked
+```{r}
+library(glmnet)
+
+set.seed(1)
+
+# getting rid of incomplete observations
+stop_frisk_lasso = stop_frisk_log[complete.cases(stop_frisk_log), ]
+
+# keeping only variables we want to use with frisked logistic prediction
+stop_frisk_lasso = stop_frisk_lasso %>% select(frisked, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
+
+# create test and train datasets
+train_lasso = sample_frac(stop_frisk_lasso, size = 0.5)
+test_lasso = anti_join(stop_frisk_lasso, train_lasso)
+
+# creating x and y
+x = model.matrix(frisked ~ ., train_lasso)[,-1]
+y = train_lasso$frisked
+
+# lasso fit
+lasso_fit = glmnet(x, y, family = "binomial")
+
+# cross validation
+lasso_cv = cv.glmnet(x, y, family = "binomial", type = "mse")
+
+lambda_opt = lasso_cv$lambda.min
+
+# visualizing best lambda
+broom::tidy(lasso_fit) %>% 
+  select(term, lambda, estimate) %>% 
+  complete(term, lambda, fill = list(estimate = 0) ) %>% 
+  filter(term != "(Intercept)") %>% 
+  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+  geom_path() + 
+  geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
+  theme(legend.position = "none")
+
+broom::tidy(lasso_cv) %>% 
+  ggplot(aes(x = log(lambda, 10), y = estimate)) + 
+  geom_point()  
+
+# coefficients from the optimal model
+lasso_fit = glmnet(x, y, lambda = lambda_opt)
+lasso_fit %>% broom::tidy()
+```
+
+Testing data
+```{r}
+#min value of lambda
+lambda_min <- lasso_cv$lambda.min
+#best value of lambda
+lambda_1se <- lasso_cv$lambda.1se
+#regression coefficients
+coef(lasso_cv, s = lambda_1se)
+
+#get test data
+x_test <- model.matrix(frisked ~ ., test_lasso)
+x_test = x_test[,-1]
+
+#predict class, type=”class”
+lasso_prob <- predict(lasso_cv, newx = x_test, s = lambda_1se, type = "response")
+
+#translate probabilities to predictions
+lasso_predict <- rep("neg", nrow(test_lasso))
+lasso_predict[lasso_prob > 0.5] <- "pos"
+
+#confusion matrix
+table(pred = lasso_predict, true = test_lasso$frisked)
+
+auc(test_lasso$frisked, lasso_predict)
+```
+
+LASSO Arrested
+```{r}
+# getting rid of incomplete observations
+stop_frisk_lasso_arst = stop_frisk_log[complete.cases(stop_frisk_log), ]
+
+# keeping only variables we want to use with frisked logistic prediction
+stop_frisk_lasso_arst = stop_frisk_lasso_arst %>% select(arst_made, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif)
+
+
+# create test and train datasets
+train_lasso_arst = sample_frac(stop_frisk_lasso_arst, size = 0.5)
+test_lasso_arst = anti_join(stop_frisk_lasso_arst, train_lasso_arst)
+
+# creating x and y
+x = model.matrix(arst_made ~ ., train_lasso_arst)[,-1]
+y = train_lasso_arst$arst_made
+
+# lasso fit
+lasso_fit = glmnet(x, y, family = "binomial")
+
+# cross validation
+lasso_cv = cv.glmnet(x, y, family = "binomial", type = "mse")
+
+lambda_opt = lasso_cv$lambda.min
+
+# visualizing best lambda
+broom::tidy(lasso_fit) %>% 
+  select(term, lambda, estimate) %>% 
+  complete(term, lambda, fill = list(estimate = 0) ) %>% 
+  filter(term != "(Intercept)") %>% 
+  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+  geom_path() + 
+  geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
+  theme(legend.position = "none")
+
+broom::tidy(lasso_cv) %>% 
+  ggplot(aes(x = log(lambda, 10), y = estimate)) + 
+  geom_point()  
+
+# coefficients from the optimal model
+lasso_fit = glmnet(x, y, lambda = lambda_opt)
+lasso_fit %>% broom::tidy()
+```
+
+
+Tsting the data
+```{r}
+#min value of lambda
+lambda_min <- lasso_cv$lambda.min
+#best value of lambda
+lambda_1se <- lasso_cv$lambda.1se
+#regression coefficients
+coef(lasso_cv, s = lambda_1se)
+
+#get test data
+x_test <- model.matrix(arst_made ~ ., test_lasso_arst)
+x_test = x_test[,-1]
+
+#predict class, type=”class”
+lasso_prob <- predict(lasso_cv, newx = x_test, s = lambda_1se, type = "response")
+
+#translate probabilities to predictions
+lasso_predict <- rep("neg", nrow(test_lasso_arst))
+lasso_predict[lasso_prob > 0.5] <- "pos"
+
+#confusion matrix
+table(pred = lasso_predict, true = test_lasso_arst$arst_made)
+
+auc(test_lasso_arst$arst_made, lasso_predict)
+```
+
+
 
 
 ```{r}

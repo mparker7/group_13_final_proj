@@ -2,7 +2,7 @@
 title: "Shiny Dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
+    orientation: rows
     vertical_layout: fill
 runtime: shiny
 ---
@@ -260,7 +260,10 @@ max_stops_by_race =
 nypd_prec = left_join(nypd_prec, max_stops_by_race, by="precinct")
 ```
 
-Column {.sidebar}
+
+
+
+Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
@@ -268,7 +271,7 @@ Column {.sidebar}
 
 radioButtons(
   "analysis_type", 
-  label = h3("Choose analysis type"),
+  label = h3("Choose Analysis Type"),
   choices = c("All boros", "Individual boro"), 
   selected = "All boros")
 
@@ -288,7 +291,7 @@ selectInput(
 )
 ```
 
-Column {data-width=650}
+Row 
 -----------------------------------------------------------------------
 
 ### Chart A
@@ -315,8 +318,8 @@ output$map <- renderLeaflet({
               group = "Police Precinct Info") %>% 
   addLegend(pal = pal3,
             values = ~totalarrests,
-            title = "Total Number of Arrests",
-            position = "bottomright",
+            title = "Total Number <br/> of Arrests",
+            position = "topleft",
             group = "Police Precinct Info") %>% 
   addPolylines(label = ~maxstoppedrace,
               color = ~palfact(maxstoppedrace),
@@ -336,15 +339,12 @@ output$map <- renderLeaflet({
   addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race of Largest Percentage of Stops"),
                    options = layersControlOptions(collapsed = FALSE)) %>% 
   hideGroup(c("Police Precinct Info", "Race of Largest Percentage of Stops"))
-  
-  map
-  
 })
 
 leafletOutput('map')
 ```
 
-Column {data-width=350}
+Row {data-height=350}
 -----------------------------------------------------------------------
 
 ### Chart B

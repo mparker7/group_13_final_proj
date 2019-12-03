@@ -518,4 +518,67 @@ nypd_prec %>%
 ```
 
 
+### PLACE TO HOLD EXTRA CODE
+
+```{r}
+checkboxInput("ind_stops", "Individual Stops", value = FALSE)
+checkboxInput("pol_prec", "Police Precinct Info", value = FALSE)
+checkboxInput("race_stops", "Race and Percentage of Stops", value = FALSE)
+
+
+checkboxGroupInput("variable", label = h3("Map Options:"),
+                   c("Individual Stops" = "ind_stops",
+                     "Police Precinct Info" = "pol_prec",
+                     "Race and Percentage of Stops" = "race_stops"))
+```
+
+
+```{r, message=FALSE}
+output$map <- renderLeaflet({
+  map <- nypd_prec %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(data = stop_frisk_map_df,
+                   ~longitude, ~latitude,
+                   radius = 1,
+                   opacity = 0.6,
+                   label = ~label,
+                   group = "Individual Stops") %>% 
+  addPolygons(label = ~label,
+              color = "#000000",
+              fillColor = ~tac,
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.75,
+              group = "Police Precinct Info") %>% 
+  addLegend(pal = pal3,
+            values = ~totalarrests,
+            title = "Total Number <br/> of Arrests",
+            position = "topleft",
+            group = "Police Precinct Info") %>% 
+  addPolylines(label = ~maxstoppedrace,
+              color = ~palfact(maxstoppedrace),
+              weight = 1.5,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(weight = 4,
+                                                  bringToFront = TRUE),
+              group = "Race and Percentage of Stops") %>% 
+   addLegend(pal = palfact,
+            values = ~maxstoppedrace,
+            title = "Race Making Up Largest <br/> Percentage Stops",
+            position = "bottomright",
+            group = "Race and Percentage of Stops") %>% 
+  addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
+                   options = layersControlOptions(collapsed = FALSE)) %>% 
+  hideGroup(c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops")) 
+  
+})
+
+leafletOutput('map')
+```
+
 

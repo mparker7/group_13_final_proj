@@ -1,5 +1,5 @@
 ---
-title: "Shiny Dashboard"
+title: "Stop! You are being frisked...a closer look"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -200,7 +200,7 @@ nypd_prec %>%
 ```{r}
 stop_reason_total =
 stop_frisk_df %>% 
-  select(precinct, cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
+  select(precinct, boro, cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
   pivot_longer(
     cs_objcs:cs_other,
     names_to = "reason_stopped",
@@ -258,6 +258,13 @@ max_stops_by_race =
   select(precinct, maxstoppedrace)
 
 nypd_prec = left_join(nypd_prec, max_stops_by_race, by="precinct")
+
+precinct_boro = 
+  stop_frisk_df %>% 
+  select(precinct, boro) %>% 
+  distinct(precinct, .keep_all = TRUE)
+
+nypd_prec = left_join(nypd_prec, precinct_boro, by="precinct")
 ```
 
 
@@ -266,13 +273,11 @@ Sidebar {.sidebar}
 
 ```{r}
 # first widget
-
 radioButtons(
   "analysis_type", 
   label = h3("Choose Analysis Type"),
-  choices = c("All boros", "Individual boro"), 
-  selected = "All boros")
-
+  choices = c("All Boroughs", "Individual Borough"), 
+  selected = "All Boroughs")
 
 # second widget
 boros = 
@@ -283,23 +288,175 @@ boros =
 # selectInput widget - dropdown menu
 selectInput(
   "boro_choice", # name
-  label = h3("Select boro"), # what user is going to see
+  label = h3("Select Borough"), # what user is going to see
   choices = boros, # what the choices are
   selected = "manhattan" # default choice
-)
+  )
 ```
 
+Row {data-height=350}
+-----------------------------------------------------------------------
 
+### Number of Stops by Month
 
+```{r}
+renderPlot({
+  
+  if (input[["analysis_type"]] == "Individual Borough") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Month",
+        y = "Number of Stops"
+      )
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Month",
+        y = "Number of Stops"
+      )
+    
+  }
+  
+})
+```
 
+### Number of Stops by Hour
+
+```{r}
+renderPlot({
+  
+  if (input[["analysis_type"]] == "Individual Borough") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Hour",
+        y = "Number of Stops"
+      )
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Hour",
+        y = "Number of Stops"
+      )
+    
+  }
+  
+})
+```
 
 Row 
 -----------------------------------------------------------------------
 
 ### Map of Stop-and-Frisk Information
 
-```{r, message=FALSE}
+```{r}
 output$map <- renderLeaflet({
+  
+  if (input[["analysis_type"]] == "Individual Borough") {
+  
+  map <- nypd_prec %>% 
+    filter(
+      boro == input[["boro_choice"]]
+    ) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(data = stop_frisk_map_df %>% 
+                     filter(boro==input[["boro_choice"]]),
+                   ~longitude, ~latitude,
+                   radius = 1,
+                   opacity = 0.6,
+                   label = ~label,
+                   group = "Individual Stops") %>% 
+  addPolygons(label = ~label,
+              color = "#000000",
+              fillColor = ~tac,
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.75,
+              group = "Police Precinct Info") %>% 
+  addLegend(pal = pal3,
+            values = ~totalarrests,
+            title = "Total Number <br/> of Arrests",
+            position = "topleft",
+            group = "Police Precinct Info") %>% 
+  addPolylines(label = ~maxstoppedrace,
+              color = ~palfact(maxstoppedrace),
+              weight = 1.5,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(weight = 4,
+                                                  bringToFront = TRUE),
+              group = "Race and Percentage of Stops") %>% 
+   addLegend(pal = palfact,
+            values = ~maxstoppedrace,
+            title = "Race Making Up Largest <br/> Percentage Stops",
+            position = "bottomright",
+            group = "Race and Percentage of Stops") %>% 
+  addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
+                   options = layersControlOptions(collapsed = FALSE)) 
+
+  } else {
+    
   map <- nypd_prec %>% 
   leaflet() %>% 
   addTiles() %>% 
@@ -338,100 +495,13 @@ output$map <- renderLeaflet({
             position = "bottomright",
             group = "Race and Percentage of Stops") %>% 
   addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
-                   options = layersControlOptions(collapsed = FALSE)) %>% 
-  hideGroup(c("Police Precinct Info", "Race and Percentage of Stops"))
+                   options = layersControlOptions(collapsed = FALSE)) 
+  
+  }
+  
 })
 
 leafletOutput('map')
 ```
 
-Row {data-height=350}
------------------------------------------------------------------------
 
-### Number of Stops by Month
-
-```{r}
-renderPlot({
-  
-  if (input[["analysis_type"]] == "Individual boro") {
-  
-    stop_frisk_df %>% 
-      filter(
-        boro == input[["boro_choice"]]
-      ) %>% 
-      mutate(
-        month_stop = month(date_stop)
-      ) %>% 
-      filter(
-        month_stop != is_null(month_stop)
-      ) %>%   
-      group_by(month_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = month_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE) 
-  
-  } else {
-    
-    stop_frisk_df %>% 
-      mutate(
-        month_stop = month(date_stop)
-      ) %>% 
-      filter(
-        month_stop != is_null(month_stop)
-      ) %>%   
-      group_by(month_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = month_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE)  
-    
-  }
-  
-})
-```
-
-### Number of Stops by Hour
-
-```{r}
-renderPlot({
-  
-  if (input[["analysis_type"]] == "Individual boro") {
-  
-    stop_frisk_df %>% 
-      filter(
-        boro == input[["boro_choice"]]
-      ) %>% 
-      mutate(
-        hour_stop = hour(time_stop)
-      ) %>% 
-      group_by(hour_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = hour_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE)
-  
-  } else {
-    
-    stop_frisk_df %>% 
-      mutate(
-        hour_stop = hour(time_stop)
-      ) %>% 
-      group_by(hour_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = hour_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE)
-    
-  }
-  
-})
-```

@@ -261,8 +261,6 @@ nypd_prec = left_join(nypd_prec, max_stops_by_race, by="precinct")
 ```
 
 
-
-
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
@@ -291,10 +289,14 @@ selectInput(
 )
 ```
 
+
+
+
+
 Row 
 -----------------------------------------------------------------------
 
-### Chart A
+### Map of Stop-and-Frisk Information
 
 ```{r, message=FALSE}
 output$map <- renderLeaflet({
@@ -329,16 +331,15 @@ output$map <- renderLeaflet({
               fillOpacity = 0.5,
               highlightOptions = highlightOptions(weight = 4,
                                                   bringToFront = TRUE),
-              group = "Race of Largest Percentage of Stops") %>% 
+              group = "Race and Percentage of Stops") %>% 
    addLegend(pal = palfact,
             values = ~maxstoppedrace,
-            title = "Race Making Up the Largest <br/>
-            Percentage Stops",
+            title = "Race Making Up Largest <br/> Percentage Stops",
             position = "bottomright",
-            group = "Race of Largest Percentage of Stops") %>% 
-  addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race of Largest Percentage of Stops"),
+            group = "Race and Percentage of Stops") %>% 
+  addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
                    options = layersControlOptions(collapsed = FALSE)) %>% 
-  hideGroup(c("Police Precinct Info", "Race of Largest Percentage of Stops"))
+  hideGroup(c("Police Precinct Info", "Race and Percentage of Stops"))
 })
 
 leafletOutput('map')
@@ -347,7 +348,7 @@ leafletOutput('map')
 Row {data-height=350}
 -----------------------------------------------------------------------
 
-### Chart B
+### Number of Stops by Month
 
 ```{r}
 renderPlot({
@@ -394,7 +395,7 @@ renderPlot({
 })
 ```
 
-### Chart C
+### Number of Stops by Hour
 
 ```{r}
 renderPlot({

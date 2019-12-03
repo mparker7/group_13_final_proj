@@ -67,13 +67,13 @@ stop_frisk_df =
     stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
     race = recode(
       race, 
-      "A" = "asian/pacific islander", 
+      "A" = "other", 
       "B" = "black", 
-      "I" = "american indian/alaska native",
+      "I" = "other",
       "P" = "black-hispanic",
       "Q" = "white-hispanic",
       "W" = "white",
-      "U" = "unknown",
+      "U" = "other",
       "Z" = "other"
     ),
     hair_col = recode(
@@ -82,14 +82,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blond",
       "BR" = "brown",
-      "DY" = "dyed",
-      "FR" = "frosted",
-      "GY" = "gray",
-      "RA" = "red",
-      "SN" = "sandy",
-      "SP" = "salt and pepper",
-      "WH" = "white",
-      "XX" = "unknown",
+      "DY" = "other",
+      "FR" = "other",
+      "GY" = "other",
+      "RA" = "other",
+      "SN" = "other",
+      "SP" = "other",
+      "WH" = "other",
+      "XX" = "other",
       "ZZ" = "other",
     ),
     eye_col = recode(
@@ -97,14 +97,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blue",
       "BR" = "brown",
-      "DF" = "different",
-      "GR" = "green",
-      "GY" = "gray",
-      "HA" = "hazel",
-      "MA" = "maroon",
-      "PK" = "pink",
-      "VI" = "violet",
-      "XX" = "unknown",
+      "DF" = "other",
+      "GR" = "other",
+      "GY" = "other",
+      "HA" = "other",
+      "MA" = "other",
+      "PK" = "other",
+      "VI" = "other",
+      "XX" = "other",
       "Z" = "other",      
     ),
     build = recode(
@@ -112,7 +112,7 @@ stop_frisk_df =
       "H" = "heavy",
       "M" = "medium",
       "T" = "thin",
-      "U" = "muscular",
+      "U" = "other",
       "Z" = "unknown"
     ),
     # change boro columns to lowercase for consistency
@@ -125,13 +125,15 @@ stop_frisk_df =
   # select columns for further analysis
   select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
          searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
-         rf_bulg, sex, race, age, height_inch, weight:other_feature, boro, xcoord, ycoord) %>% 
+         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %>% 
   # change all columns that have Y/N to 1/0
   mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
   # change binary columns to numeric instead of character
   mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
   # converts all character variables to factors (this does the same as the for loop)
-  mutate_if(is.character, as.factor)
+  mutate_if(is.character, as.factor) %>% 
+  # remove the single row of NAs
+  filter(!is.na(build))
 ```
 
 

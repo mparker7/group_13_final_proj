@@ -453,7 +453,8 @@ output$map <- renderLeaflet({
             position = "bottomright",
             group = "Race and Percentage of Stops") %>% 
   addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
-                   options = layersControlOptions(collapsed = FALSE)) 
+                   options = layersControlOptions(collapsed = FALSE)) %>% 
+    hideGroup("Individual Stops")
 
   } else {
     
@@ -495,7 +496,8 @@ output$map <- renderLeaflet({
             position = "bottomright",
             group = "Race and Percentage of Stops") %>% 
   addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
-                   options = layersControlOptions(collapsed = FALSE)) 
+                   options = layersControlOptions(collapsed = FALSE)) %>% 
+    hideGroup("Individual Stops")
   
   }
   

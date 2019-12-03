@@ -16,7 +16,7 @@ library(lubridate)
 library(shiny)
 ```
 
-```{r}
+```{r, message=FALSE}
 # Read in data
 stop_frisk_df = 
   # Read in data from internet
@@ -50,13 +50,13 @@ stop_frisk_df =
     stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
     race = recode(
       race, 
-      "A" = "asian/pacific islander", 
+      "A" = "other", 
       "B" = "black", 
-      "I" = "american indian/alaska native",
+      "I" = "other",
       "P" = "black-hispanic",
       "Q" = "white-hispanic",
       "W" = "white",
-      "U" = "unknown",
+      "U" = "other",
       "Z" = "other"
     ),
     hair_col = recode(
@@ -65,14 +65,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blond",
       "BR" = "brown",
-      "DY" = "dyed",
-      "FR" = "frosted",
-      "GY" = "gray",
-      "RA" = "red",
-      "SN" = "sandy",
-      "SP" = "salt and pepper",
-      "WH" = "white",
-      "XX" = "unknown",
+      "DY" = "other",
+      "FR" = "other",
+      "GY" = "other",
+      "RA" = "other",
+      "SN" = "other",
+      "SP" = "other",
+      "WH" = "other",
+      "XX" = "other",
       "ZZ" = "other",
     ),
     eye_col = recode(
@@ -80,14 +80,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blue",
       "BR" = "brown",
-      "DF" = "different",
-      "GR" = "green",
-      "GY" = "gray",
-      "HA" = "hazel",
-      "MA" = "maroon",
-      "PK" = "pink",
-      "VI" = "violet",
-      "XX" = "unknown",
+      "DF" = "other",
+      "GR" = "other",
+      "GY" = "other",
+      "HA" = "other",
+      "MA" = "other",
+      "PK" = "other",
+      "VI" = "other",
+      "XX" = "other",
       "Z" = "other",      
     ),
     build = recode(
@@ -95,7 +95,7 @@ stop_frisk_df =
       "H" = "heavy",
       "M" = "medium",
       "T" = "thin",
-      "U" = "muscular",
+      "U" = "other",
       "Z" = "unknown"
     ),
     # change boro columns to lowercase for consistency
@@ -125,7 +125,19 @@ Column {.sidebar}
 
 ```{r}
 # first widget
-boros = stop_frisk_df %>% distinct(boro) %>% pull()
+
+radioButtons(
+  "analysis_type", 
+  label = h3("Choose analysis type"),
+  choices = c("All boros", "Individual boro"), 
+  selected = "All boros")
+
+
+# second widget
+boros = 
+  stop_frisk_df %>% 
+  distinct(boro) %>% 
+  pull() 
 
 # selectInput widget - dropdown menu
 selectInput(
@@ -144,23 +156,44 @@ Column {data-width=650}
 ```{r}
 renderPlot({
   
-  stop_frisk_df %>% 
-    filter(
-      boro == input[["boro_choice"]]
-    ) %>% 
-    mutate(
-      month_stop = month(date_stop)
-    ) %>% 
-    filter(
-      month_stop != is_null(month_stop)
-    ) %>%   
-    group_by(month_stop) %>% 
-    summarize(
-      count = n()
-    ) %>% 
-    ggplot(aes(x = month_stop, y = count)) + 
-    geom_point() +
-    geom_smooth(se = FALSE) 
+  if (input[["analysis_type"]] == "Individual boro") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) 
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE)  
+    
+  }
   
 })
 ```
@@ -171,11 +204,48 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
-
+renderPrint({ 
+  input[["analysis_type"]]
+})
 ```
 
 ### Chart C
 
 ```{r}
-
+renderPlot({
+  
+  if (input[["analysis_type"]] == "Individual boro") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE)
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE)
+    
+  }
+  
+})
 ```

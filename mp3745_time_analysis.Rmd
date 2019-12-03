@@ -147,14 +147,93 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
-Looking at stops over time 
 
-* Over a year
-* By time of day
-* By day of week
+Final plots to keep
 
-```{r, message=FALSE}
+```{r}
 # Number of stops per day
+stop_frisk_df %>% 
+  group_by(date_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Number of stops per day in 2016",
+    x = "Date of stop",
+    y = "Number of stops"
+  )
+
+# Number of stops per month (broken down by boro) 
+stop_frisk_df %>% 
+  mutate(
+    month_stop = month(date_stop),
+    boro = str_to_title(boro)
+  ) %>%   
+  group_by(month_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Number of stops per month by borough",
+    x = "Month of stop",
+    y = "Number of stops",
+    color = "Borough"
+  ) +
+  scale_x_continuous(
+    breaks = 1:12,
+    labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+  )
+
+# Number of stops per hour over the day
+stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE),
+    part_of_day = fct_relevel(part_of_day, "Morning", "Afternoon", "Evening")
+  ) %>% 
+  select(hour_stop, part_of_day) %>% 
+  group_by(hour_stop, part_of_day) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = "Identity", aes(fill = part_of_day)) +
+  labs(
+    title = "Number of stops per hour over the day",
+    x = "Hour of stop",
+    y = "Number of stops",
+    fill = "Part of day"
+  )
+
+# Number of stops per day of week 
+stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE)
+  ) %>% 
+  group_by(dow_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
+  geom_bar(stat = "Identity") +
+  labs(
+    title = "Number of stops per day of week",
+    x = "Day of week",
+    y = "Number of stops"
+  ) +
+  theme(legend.position = "none")
+```
+
+
+
+```{r, message=FALSE, eval=FALSE}
+# Number of stops per day (KEEP)
 stop_frisk_df %>% 
   group_by(date_stop) %>% 
   summarize(
@@ -179,7 +258,7 @@ stop_frisk_df %>%
   ggplot(aes(x = month_stop, y = count)) + 
   geom_bar(stat = "Identity") 
 
-# Number of stops per day (broken down by boro)
+# Number of stops per month (broken down by boro) (KEEP)
 stop_frisk_df %>% 
   mutate(
     month_stop = month(date_stop)
@@ -195,7 +274,7 @@ stop_frisk_df %>%
   geom_point() +
   geom_smooth(se = FALSE) 
 
-# Number of stops per hour over the day
+# Number of stops per hour over the day (KEEP)
 stop_frisk_df %>% 
   mutate(
     hour_stop = hour(time_stop),
@@ -223,7 +302,7 @@ stop_frisk_df %>%
   geom_point() +
   geom_smooth(se = FALSE)
 
-# Number of stops per day of week
+# Number of stops per day of week (KEEP)
 stop_frisk_df %>% 
   mutate(
     dow_stop = wday(date_stop, label = TRUE)

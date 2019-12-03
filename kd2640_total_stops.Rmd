@@ -2,22 +2,10 @@
 title: "total_stops"
 author: "kd2640_total_stops"
 date: '`r format(Sys.time(), "%Y-%m-%d")`'
-output: github_document
+output: html_document
 ---
 
-```{r}
-install.packages("gganimate")
-install.packages("transformr")
-install.packages("gifski")
-install.packages("httr")
-install.packages("rgdal")
-install.packages("sp")
-install.packages("sf")
-install.packages("caret")
-install.packages("ROCR")
-install.packages("Metrics")
-install.packages("glmnet")
-```
+
 
 
 ```{r setup, include=FALSE}

@@ -339,21 +339,6 @@ stop_age_group %>%
   plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
-PLOT 6.2: Amination of total count of reasons being stopped by age group
-
-```{r, plot6.2}
-stop_age_group %>% 
-  ggplot(aes(age_group, total, fill = age_group)) +
-  geom_col() +
-  transition_states(
-    reason_stopped,
-    transition_length = 3,
-    state_length = 3
-  ) +
-  enter_fade() +
-  exit_shrink() +
-  ggtitle('{closest_state}')
-```
 
 PLOT 7: The proportion of reasons being stopped by sex
 
@@ -443,22 +428,6 @@ stop_by_race %>%
   plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
-PLOT 8.2: Amination of total count of reasons being stopped by race
-
-```{r, plot8.2}
-stop_by_race %>% 
-  ggplot(aes(race, total, fill = race)) +
-  geom_col() +
-  transition_states(
-    reason_stopped,
-    transition_length = 3,
-    state_length = 3
-  ) +
-  enter_fade() +
-  exit_shrink() +
-  ggtitle('{closest_state}') +
-  theme(legend.position = "none")
-```
 
 PLOT 9: Arrest porportions of reasons being stopped 
 
@@ -550,22 +519,7 @@ stop_by_boro %>%
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
-PLOT 10.2: Amination of total count of reasons being stopped by borough
 
-```{r, plot10.2}
-stop_by_boro %>% 
-  ggplot(aes(boro, total, fill=boro)) +
-  geom_col() +
-  transition_states(
-    reason_stopped,
-    transition_length = 3,
-    state_length = 3
-  ) +
-  enter_fade() +
-  exit_shrink() +
-  ggtitle('{closest_state}') +
-  theme(legend.position = "none")
-```
 
 PLOT 11: Number of stops per day
 

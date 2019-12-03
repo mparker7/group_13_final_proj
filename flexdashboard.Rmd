@@ -125,10 +125,10 @@ stop_frisk_df =
 
 
 
-Column {data-width=550}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Percentage of reported stops/frisks by race 
+### Percentage of Reported Stops and Frisks by Race 
 
 ```{r}
 stop =
@@ -162,7 +162,7 @@ frisk =
 ```
 
 
-Column {data-width=400}
+Column {data-width=450}
 -----------------------------------------------------------------------
 
 ### Distribution of Age by Race

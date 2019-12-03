@@ -12,6 +12,7 @@
 
 <meta name="author" content="Lauren, Olya, Matt, Cj, &amp; Keyanna" />
 
+<meta name="date" content="2019-12-05" />
 
 <title>Stop! You Are Being Frisked!</title>
 
@@ -409,17 +410,16 @@ div.tocify {
 <div id="initial-questions" class="section level1">
 <h1>Initial Questions</h1>
 <p><em>What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?</em></p>
-<p>We are interested in determining if there is a predictive nature to this dataset. We also want to describe the scope of the dataset through visualizations of the different demographics present, reasons for stopping, and create a map of stops across the five boroughs. Specifically, we strive to answer the following questions:</p>
+<p>We are interested in determining if there is a predictive nature to this dataset. We also want to describe the scope of the dataset through visualizations of the different demographics present and create a map of stops across the five boroughs. Specifically, we strive to answer the following questions:</p>
 <ul>
 <li>What is the distribution of demographics in the dataset?</li>
 <li>After being stopped, can demographics, characteristics, and location of stop predict whether or not the individual will be frisked or arrested?</li>
-<li>Are there any difference between stops made over the course of the year? Week? Time of day?</li>
 <li>What are the trends in stops across different areas of New York City?</li>
 </ul>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<p>Our dataset is from the New York Police Department and was obtained through the NYC Open Data resource. It contains data from 12,404 stops that occurred during 2016. The original dataset contained 112 variables, however to narrow our focus, the dataset was reduced down to 45 categorical, binary, and numerical variables that describe each stop and are relevant to the questions at hand. The data cleaning and tidying process recoded variables, implemented understandable variable names, and converted categorical variables to factors and binary variables into ‘0’ and ‘1’ within R. The outcome variables that we are interested in building models for are FRISKED and ARST_MADE. These variables are binary in nature and describe whether the stopped individual was frisked, and whether the individual was arrested.</p>
+<p>Our dataset is from the New York Police Department and was obtained through the NYC Open Data resource. It contains data from 12,404 stops that occurred during 2016. The original dataset contained 112 variables, however to narrow our focus, the dataset was reduced down to 45 categorical, binary, and numerical variables that describe each stop and are relevant to the questions at hand. The data cleaning and tidying process recoded variables, implemented understandable variable names, and converted categorical variables to factors and binary variables into ‘0’ and ‘1’ within R. The outcome variables that we are interested in building models for are FRISKED and ARST_MADE. These variables are binary in nature and describe whether the stopped individual was frisked and/or arrested.</p>
 </div>
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory Analysis</h1>
@@ -568,10 +568,7 @@ model_4 = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + p
 summary(model_4)
 anova(model_4, model_3, test = &quot;Chisq&quot;)
 
-# predict results for frisked model
-model_4_pred = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
-
-log_pred = predict(model_4_pred, newdata = test, type = &quot;response&quot;)
+log_pred = predict(model_4, newdata = test, type = &quot;response&quot;)
 
 log_pred = ifelse(log_pred &gt; 0.5, 1, 0)
 
@@ -625,7 +622,7 @@ auc(test$arst_made, log_pred)</code></pre>
 </div>
 <div id="lasso-regression" class="section level2">
 <h2>LASSO Regression</h2>
-<p>LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model only minimized one variable to zero and kept 32 variables in the model. The AUC value was 0.461, which was less than the value selected from our logistic modeling. LASSO regression cor the arrest made model selected 22 of the 33 variables and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above.</p>
+<p>LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model only minimized one variable to zero and kept 32 variables in the model. The AUC value was 0.461, which was less than the value selected from our logistic modeling. LASSO regression for the arrest made model selected 22 of the 33 variables and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above.</p>
 <pre class="r"><code>library(glmnet)
 
 set.seed(1)
@@ -794,12 +791,12 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %&gt;% knitr::kabl
 </div>
 <div id="additional-analysis" class="section level1">
 <h1>Additional Analysis</h1>
-<p>Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. <em>If you undertake formal statistical analyses, describe these in detail</em></p>
+<p>Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic.</p>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
 <p><em>What were you findings? Are they what you expected? What insights into the data can you make?</em></p>
-<p>The models created for FRISKED and ARST_MADE were not successful at predicting who would be frisked or arrested. These models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested than taking a guess. While we were hoping to make a good predictive model, this points to the fact that officers are not basing their decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful.</p>
+<p>The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. These models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested than taking a guess. While our goal was to develop a predictive model, this points to the fact that officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race.</p>
 </div>
 
 

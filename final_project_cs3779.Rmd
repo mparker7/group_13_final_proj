@@ -207,18 +207,18 @@ stop_frisk_map_df %>%
   leaflet() %>% 
   addTiles() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
-  addCircleMarkers(
-    ~longitude, ~latitude,
-    radius = 1,
-    opacity = 0.6,
-    label = ~label) %>% 
   addPolygons(data = nypd_prec,
               color = "#000000",
               fillColor = "#FFFFFF",
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
-              fillOpacity = 0.1)
+              fillOpacity = 0.1) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    radius = 1,
+    opacity = 0.6,
+    label = ~label) 
 
 # Locations of Frisks with Precincts Outlines
 stop_frisk_map_df %>% 
@@ -226,18 +226,18 @@ stop_frisk_map_df %>%
   leaflet() %>% 
   addTiles() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
-  addCircleMarkers(
-    ~longitude, ~latitude,
-    radius = 1,
-    opacity = 0.6,
-    label = ~label) %>% 
   addPolygons(data = nypd_prec,
               color = "#000000",
               fillColor = "#FFFFFF",
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
-              fillOpacity = 0.1)
+              fillOpacity = 0.1) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    radius = 1,
+    opacity = 0.6,
+    label = ~label)
 
 # Colored Area based on Number of Stops with Information on # of Frisks by Precinct
 stops_by_prec = 
@@ -252,19 +252,37 @@ frisks_by_prec =
   filter(frisked==1) %>% 
   summarize(totalfrisks = n())
 
+friskorsearch_by_prec = 
+  stop_frisk_df %>% 
+  group_by(precinct) %>% 
+  filter(frisked==1|searched==1) %>% 
+  summarize(totalfriskorsearch = n())
+
+arrests_by_prec = 
+  stop_frisk_df %>% 
+  group_by(precinct) %>% 
+  filter(arst_made==1) %>% 
+  summarize(totalarrests = n())
+
 nypd_prec  = 
   inner_join(nypd_prec, stops_by_prec, by="precinct") %>% 
-  inner_join(., frisks_by_prec, by="precinct")
+  inner_join(., frisks_by_prec, by="precinct") %>% 
+  inner_join(., arrests_by_prec, by="precinct") %>% 
+  inner_join(., friskorsearch_by_prec, by="precinct")
 
 pal <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalstops))
 pal2 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfrisks))
+pal3 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalarrests))
+pal4 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfriskorsearch))
 
 nypd_prec =
 nypd_prec %>% 
   mutate(
     tsc = pal(totalstops),
     tfc = pal2(totalfrisks),
-    label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks in 2016: ", totalfrisks) %>% map(htmltools::HTML)
+    tac = pal3(totalarrests),
+    tfsc = pal4(totalfriskorsearch),
+    label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks or Searches in 2016: ", totalfriskorsearch, "<br/>", "Total Arrests in 2016: ", totalarrests) %>% map(htmltools::HTML)
   )
 
 # Total Stops by Precinct
@@ -278,7 +296,7 @@ nypd_prec %>%
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
-              fillOpacity = 0.5,
+              fillOpacity = 0.75,
               highlightOptions = highlightOptions(color = "white",
                                                   weight = 2,
                                                   bringToFront = TRUE)) %>% 
@@ -287,24 +305,44 @@ nypd_prec %>%
             title = "Total Number of Stops",
             position = "bottomright")
 
-# Total Frisks by Precinct
+# Total Frisks or Searches by Precinct
 nypd_prec %>% 
   leaflet() %>% 
   addTiles() %>%
   addProviderTiles(providers$CartoDB.Positron) %>% 
   addPolygons(label = ~label,
               color = "#000000",
-              fillColor = ~tfc,
+              fillColor = ~tfsc,
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
-              fillOpacity = 0.5,
+              fillOpacity = 0.75,
               highlightOptions = highlightOptions(color = "white",
                                                   weight = 2,
                                                   bringToFront = TRUE)) %>% 
-  addLegend(pal = pal2,
-            values = ~totalfrisks,
-            title = "Total Number of Frisks",
+  addLegend(pal = pal4,
+            values = ~totalfriskorsearch,
+            title = "Total Number of Frisks or Searches",
+            position = "bottomright")
+
+# Total Arrests by Precinct
+nypd_prec %>% 
+  leaflet() %>% 
+  addTiles() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addPolygons(label = ~label,
+              color = "#000000",
+              fillColor = ~tac,
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.75,
+              highlightOptions = highlightOptions(color = "white",
+                                                  weight = 2,
+                                                  bringToFront = TRUE)) %>% 
+  addLegend(pal = pal3,
+            values = ~totalarrests,
+            title = "Total Number of Arrests",
             position = "bottomright")
 ```
 
@@ -315,6 +353,11 @@ stop_frisk_map_df %>%
   leaflet() %>% 
   addTiles() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    radius = 1,
+    opacity = 0.6,
+    group = "Individual Stops") %>% 
   addPolygons(data = nypd_prec,
               label = ~label,
               color = "#000000",
@@ -322,7 +365,7 @@ stop_frisk_map_df %>%
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
-              fillOpacity = 0.5,
+              fillOpacity = 0.75,
               group = "Police Precincts"
   ) %>% 
   addLegend(data = nypd_prec,
@@ -332,18 +375,13 @@ stop_frisk_map_df %>%
             position = "bottomright",
             group = "Police Precincts"
   ) %>% 
-  addCircleMarkers(
-    ~longitude, ~latitude,
-    radius = 1,
-    opacity = 0.6,
-    group = "Individual Stops") %>% 
   addLayersControl(
     overlayGroups = c("Individual Stops", "Police Precincts"),
     options = layersControlOptions(collapsed = FALSE)
   )
 ```
 
-# Showing Distribution of Stops by Race 
+# Heatmap of Stops by Race 
 ```{r}
 stops_by_race = 
   left_join(stop_frisk_map_df, stops_by_prec, by="precinct") %>% 
@@ -354,7 +392,7 @@ stops_by_race =
     percentstops = (stops_by_race/totalstops)*100
   ) 
 
-pal3 <- colorFactor("YlOrRd", domain = stops_by_race$race)
+palfact <- colorFactor("viridis", domain = stops_by_race$race)
 
 max_stops_by_race = 
   stops_by_race %>% 
@@ -371,16 +409,79 @@ nypd_prec %>%
   addProviderTiles(providers$CartoDB.Positron) %>% 
   addPolygons(label = ~maxstoppedrace,
               color = "#000000",
-              fillColor = ~pal3(maxstoppedrace),
+              fillColor = ~palfact(maxstoppedrace),
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
-              fillOpacity = 0.5
+              fillOpacity = 0.75
   ) %>% 
-   addLegend(pal = pal3,
+   addLegend(pal = palfact,
             values = ~maxstoppedrace,
             title = "Race Making Up the Largest <br/>
             Percentage Stops",
             position = "bottomright")
+```
+
+# Testing Layers for Shiny
+```{r}
+nypd_prec %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addPolygons(label = ~label,
+              color = "#000000",
+              fillColor = ~tac,
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.75) %>% 
+  addLegend(pal = pal3,
+            values = ~totalarrests,
+            title = "Total Number of Arrests",
+            position = "bottomright") %>% 
+  addPolylines(label = ~maxstoppedrace,
+              color = ~palfact(maxstoppedrace),
+              weight = 1.5,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(weight = 4,
+                                                  bringToFront = TRUE)) %>% 
+   addLegend(pal = palfact,
+            values = ~maxstoppedrace,
+            title = "Race Making Up the Largest <br/>
+            Percentage Stops",
+            position = "bottomright")
+```
+
+
+# Showing Distributions of Stops by Reason 
+```{r}
+frisks_total =
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped) %>% 
+  summarize(total =n()) %>% 
+  mutate(prop = total/sum(total)) 
 ```
 

@@ -13,6 +13,10 @@ install.packages("httr")
 install.packages("rgdal")
 install.packages("sp")
 install.packages("sf")
+install.packages("caret")
+install.packages("ROCR")
+install.packages("Metrics")
+install.packages("glmnet")
 ```
 
 
@@ -23,7 +27,10 @@ library(rvest)
 library(httr)
 library(lubridate)
 library(plotly)
-
+library(caret)
+library(ROCR)
+library(Metrics)
+library(glmnet)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,

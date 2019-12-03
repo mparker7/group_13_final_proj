@@ -1,5 +1,5 @@
 ---
-title: "Stop! You are being frisked!"
+title: "Stop! You Are Being Frisked!"
 author: "Lauren, Olya, Matt, Cj, & Keyanna"
 date: "December 5, 2019"
 output:

@@ -323,6 +323,10 @@ stop_age_group  =
 stop_age_group %>% 
   plot_ly(x = ~age_group, y= ~prob, type = "bar" , color = ~reason_stopped) 
 
+ stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age, race) %>% 
+    ggplot(aes(x= age))+
+   geom_density(aes(fill=race), alpha = .5)
 
 ```
 

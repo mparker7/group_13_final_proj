@@ -9,6 +9,10 @@ output: github_document
 install.packages("gganimate")
 install.packages("transformr")
 install.packages("gifski")
+install.packages("httr")
+install.packages("rgdal")
+install.packages("sp")
+install.packages("sf")
 ```
 
 

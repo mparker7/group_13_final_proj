@@ -352,7 +352,6 @@ nypd_prec %>%
             position = "bottomright")
 ```
 
-
 # Additing Most Frequent Reason for Stops by Precinct 
 ```{r}
 stop_reason_total =
@@ -512,7 +511,8 @@ nypd_prec %>%
             position = "bottomright",
             group = "Race of Largest Percentage of Stops") %>% 
   addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race of Largest Percentage of Stops"),
-                   options = layersControlOptions(collapsed = FALSE))
+                   options = layersControlOptions(collapsed = FALSE)) %>% 
+  hideGroup(c("Police Precinct Info", "Race of Largest Percentage of Stops"))
 ```
 
 

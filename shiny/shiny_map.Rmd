@@ -2,7 +2,7 @@
 title: "Shiny Dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
+    orientation: rows
     vertical_layout: fill
 runtime: shiny
 ---
@@ -13,9 +13,16 @@ library(tidyverse)
 library(rvest)
 library(httr)
 library(lubridate)
+library(shiny)
+library(viridis)
+library(plotly)
+library(rgdal)
+library(sp)
+library(sf)
+library(leaflet)
 ```
 
-```{r}
+```{r, message=FALSE}
 # Read in data
 stop_frisk_df = 
   # Read in data from internet
@@ -49,13 +56,13 @@ stop_frisk_df =
     stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
     race = recode(
       race, 
-      "A" = "asian/pacific islander", 
+      "A" = "other", 
       "B" = "black", 
-      "I" = "american indian/alaska native",
+      "I" = "other",
       "P" = "black-hispanic",
       "Q" = "white-hispanic",
       "W" = "white",
-      "U" = "unknown",
+      "U" = "other",
       "Z" = "other"
     ),
     hair_col = recode(
@@ -64,14 +71,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blond",
       "BR" = "brown",
-      "DY" = "dyed",
-      "FR" = "frosted",
-      "GY" = "gray",
-      "RA" = "red",
-      "SN" = "sandy",
-      "SP" = "salt and pepper",
-      "WH" = "white",
-      "XX" = "unknown",
+      "DY" = "other",
+      "FR" = "other",
+      "GY" = "other",
+      "RA" = "other",
+      "SN" = "other",
+      "SP" = "other",
+      "WH" = "other",
+      "XX" = "other",
       "ZZ" = "other",
     ),
     eye_col = recode(
@@ -79,14 +86,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blue",
       "BR" = "brown",
-      "DF" = "different",
-      "GR" = "green",
-      "GY" = "gray",
-      "HA" = "hazel",
-      "MA" = "maroon",
-      "PK" = "pink",
-      "VI" = "violet",
-      "XX" = "unknown",
+      "DF" = "other",
+      "GR" = "other",
+      "GY" = "other",
+      "HA" = "other",
+      "MA" = "other",
+      "PK" = "other",
+      "VI" = "other",
+      "XX" = "other",
       "Z" = "other",      
     ),
     build = recode(
@@ -94,7 +101,7 @@ stop_frisk_df =
       "H" = "heavy",
       "M" = "medium",
       "T" = "thin",
-      "U" = "muscular",
+      "U" = "other",
       "Z" = "unknown"
     ),
     # change boro columns to lowercase for consistency
@@ -118,13 +125,160 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
+```{r, results=FALSE}
+nypd_prec = 
+  st_read("./data/nypp/geo_export_55605c77-3922-4b7a-bd65-18d11225a91f.shp")
 
-Column {.sidebar}
+long_lat_df =
+  stop_frisk_df %>% 
+  select(xcoord, ycoord) %>% 
+  drop_na()
+
+coordinates(long_lat_df) <- c("xcoord", "ycoord")
+proj4string(long_lat_df) <- CRS("+init=epsg:2263")
+long_lat_df <- spTransform(long_lat_df, CRS("+init=epsg:4326"))
+long_lat_df <- data.frame(longitude = coordinates(long_lat_df)[,1], latitude = coordinates(long_lat_df)[,2])
+
+stop_frisk_map_df = 
+  stop_frisk_df %>% 
+  drop_na(xcoord) %>% 
+  bind_cols(long_lat_df) %>% 
+  select(-xcoord, -ycoord) %>% 
+  mutate(
+    sex = recode(sex, "M" = "male", "F" = "female"),
+    label = str_c("Gender: ", sex, "<br/>", "Race: ", race, "<br/>", "Age: ", age, "<br/>", "Build: ", build) %>% map(htmltools::HTML))
+```
+
+```{r}
+# Colored Area based on Number of Stops with Information on # of Frisks by Precinct
+stops_by_prec = 
+  stop_frisk_df %>% 
+  group_by(precinct) %>% 
+  summarize(totalstops = n()) %>% 
+  drop_na()
+
+frisks_by_prec = 
+  stop_frisk_df %>% 
+  group_by(precinct) %>% 
+  filter(frisked==1) %>% 
+  summarize(totalfrisks = n())
+
+friskorsearch_by_prec = 
+  stop_frisk_df %>% 
+  group_by(precinct) %>% 
+  filter(frisked==1|searched==1) %>% 
+  summarize(totalfriskorsearch = n())
+
+arrests_by_prec = 
+  stop_frisk_df %>% 
+  group_by(precinct) %>% 
+  filter(arst_made==1) %>% 
+  summarize(totalarrests = n())
+
+nypd_prec  = 
+  inner_join(nypd_prec, stops_by_prec, by="precinct") %>% 
+  inner_join(., frisks_by_prec, by="precinct") %>% 
+  inner_join(., arrests_by_prec, by="precinct") %>% 
+  inner_join(., friskorsearch_by_prec, by="precinct")
+
+pal <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalstops))
+pal2 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfrisks))
+pal3 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalarrests))
+pal4 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfriskorsearch))
+
+nypd_prec =
+nypd_prec %>% 
+  mutate(
+    tsc = pal(totalstops),
+    tfc = pal2(totalfrisks),
+    tac = pal3(totalarrests),
+    tfsc = pal4(totalfriskorsearch),
+    label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks or Searches in 2016: ", totalfriskorsearch, "<br/>", "Total Arrests in 2016: ", totalarrests) %>% map(htmltools::HTML)
+  )
+```
+
+```{r}
+stop_reason_total =
+stop_frisk_df %>% 
+  select(precinct, cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspcious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped, precinct) %>% 
+  summarize(total =n()) %>% 
+  ungroup() %>% 
+  group_by(precinct) %>% 
+  top_n(1, total) %>% 
+  mutate(greatreasonstop = reason_stopped) %>% 
+  select(precinct, greatreasonstop)
+
+nypd_prec = left_join(nypd_prec, stop_reason_total, by="precinct")
+
+nypd_prec =
+nypd_prec %>% 
+  mutate(
+    label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks or Searches in 2016: ", totalfriskorsearch, "<br/>", "Total Arrests in 2016: ", totalarrests, "<br/>", "Most Frequent Reason for Stop: ", greatreasonstop) %>% map(htmltools::HTML)
+  )
+```
+
+```{r}
+stops_by_race = 
+  left_join(stop_frisk_map_df, stops_by_prec, by="precinct") %>% 
+  group_by(precinct, race) %>% 
+  summarize(stops_by_race = n()) %>% 
+  left_join(., stops_by_prec, by="precinct") %>% 
+  mutate(
+    percentstops = (stops_by_race/totalstops)*100
+  ) 
+
+palfact <- colorFactor("viridis", domain = stops_by_race$race)
+
+max_stops_by_race = 
+  stops_by_race %>% 
+  group_by(precinct) %>% 
+  top_n(1, percentstops) %>% 
+  mutate(maxstoppedrace = race) %>% 
+  select(precinct, maxstoppedrace)
+
+nypd_prec = left_join(nypd_prec, max_stops_by_race, by="precinct")
+```
+
+
+Sidebar {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
 # first widget
-boros = stop_frisk_df %>% distinct(boro) %>% pull()
+
+radioButtons(
+  "analysis_type", 
+  label = h3("Choose Analysis Type"),
+  choices = c("All boros", "Individual boro"), 
+  selected = "All boros")
+
+
+# second widget
+boros = 
+  stop_frisk_df %>% 
+  distinct(boro) %>% 
+  pull() 
 
 # selectInput widget - dropdown menu
 selectInput(
@@ -135,46 +289,149 @@ selectInput(
 )
 ```
 
-Column {data-width=650}
+
+
+
+
+Row 
 -----------------------------------------------------------------------
 
-### Chart A
+### Map of Stop-and-Frisk Information
+
+```{r, message=FALSE}
+output$map <- renderLeaflet({
+  map <- nypd_prec %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addCircleMarkers(data = stop_frisk_map_df,
+                   ~longitude, ~latitude,
+                   radius = 1,
+                   opacity = 0.6,
+                   label = ~label,
+                   group = "Individual Stops") %>% 
+  addPolygons(label = ~label,
+              color = "#000000",
+              fillColor = ~tac,
+              weight = 1,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.75,
+              group = "Police Precinct Info") %>% 
+  addLegend(pal = pal3,
+            values = ~totalarrests,
+            title = "Total Number <br/> of Arrests",
+            position = "topleft",
+            group = "Police Precinct Info") %>% 
+  addPolylines(label = ~maxstoppedrace,
+              color = ~palfact(maxstoppedrace),
+              weight = 1.5,
+              smoothFactor = 0.5,
+              opacity = 1,
+              fillOpacity = 0.5,
+              highlightOptions = highlightOptions(weight = 4,
+                                                  bringToFront = TRUE),
+              group = "Race and Percentage of Stops") %>% 
+   addLegend(pal = palfact,
+            values = ~maxstoppedrace,
+            title = "Race Making Up Largest <br/> Percentage Stops",
+            position = "bottomright",
+            group = "Race and Percentage of Stops") %>% 
+  addLayersControl(overlayGroups = c("Individual Stops", "Police Precinct Info", "Race and Percentage of Stops"),
+                   options = layersControlOptions(collapsed = FALSE)) %>% 
+  hideGroup(c("Police Precinct Info", "Race and Percentage of Stops"))
+})
+
+leafletOutput('map')
+```
+
+Row {data-height=350}
+-----------------------------------------------------------------------
+
+### Number of Stops by Month
 
 ```{r}
 renderPlot({
   
-  stop_frisk_df %>% 
-    filter(
-      boro == input[["boro_choice"]]
-    ) %>% 
-    mutate(
-      month_stop = month(date_stop)
-    ) %>% 
-    filter(
-      month_stop != is_null(month_stop)
-    ) %>%   
-    group_by(month_stop) %>% 
-    summarize(
-      count = n()
-    ) %>% 
-    ggplot(aes(x = month_stop, y = count)) + 
-    geom_point() +
-    geom_smooth(se = FALSE) 
+  if (input[["analysis_type"]] == "Individual boro") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) 
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE)  
+    
+  }
   
 })
 ```
 
-Column {data-width=350}
------------------------------------------------------------------------
-
-### Chart B
+### Number of Stops by Hour
 
 ```{r}
-
-```
-
-### Chart C
-
-```{r}
-
+renderPlot({
+  
+  if (input[["analysis_type"]] == "Individual boro") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE)
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE)
+    
+  }
+  
+})
 ```

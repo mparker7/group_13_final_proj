@@ -2,7 +2,7 @@
 title: "final_project_cs3779"
 author: "CJ Snyder"
 date: "11/27/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}

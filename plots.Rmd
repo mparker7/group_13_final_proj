@@ -35,6 +35,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
 ```{r}
+# Read in data
 stop_frisk_df = 
   # Read in data from internet
   GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
@@ -67,13 +68,13 @@ stop_frisk_df =
     stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
     race = recode(
       race, 
-      "A" = "asian/pacific islander", 
+      "A" = "other", 
       "B" = "black", 
-      "I" = "american indian/alaska native",
+      "I" = "other",
       "P" = "black-hispanic",
       "Q" = "white-hispanic",
       "W" = "white",
-      "U" = "unknown",
+      "U" = "other",
       "Z" = "other"
     ),
     hair_col = recode(
@@ -82,14 +83,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blond",
       "BR" = "brown",
-      "DY" = "dyed",
-      "FR" = "frosted",
-      "GY" = "gray",
-      "RA" = "red",
-      "SN" = "sandy",
-      "SP" = "salt and pepper",
-      "WH" = "white",
-      "XX" = "unknown",
+      "DY" = "other",
+      "FR" = "other",
+      "GY" = "other",
+      "RA" = "other",
+      "SN" = "other",
+      "SP" = "other",
+      "WH" = "other",
+      "XX" = "other",
       "ZZ" = "other",
     ),
     eye_col = recode(
@@ -97,14 +98,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blue",
       "BR" = "brown",
-      "DF" = "different",
-      "GR" = "green",
-      "GY" = "gray",
-      "HA" = "hazel",
-      "MA" = "maroon",
-      "PK" = "pink",
-      "VI" = "violet",
-      "XX" = "unknown",
+      "DF" = "other",
+      "GR" = "other",
+      "GY" = "other",
+      "HA" = "other",
+      "MA" = "other",
+      "PK" = "other",
+      "VI" = "other",
+      "XX" = "other",
       "Z" = "other",      
     ),
     build = recode(
@@ -112,7 +113,7 @@ stop_frisk_df =
       "H" = "heavy",
       "M" = "medium",
       "T" = "thin",
-      "U" = "muscular",
+      "U" = "other",
       "Z" = "unknown"
     ),
     # change boro columns to lowercase for consistency
@@ -167,6 +168,7 @@ frisk =
     title = "Percentages of Reported Stops Resulting in a Frisk by Race",
     y= "percentage") +
     theme(legend.position = "none")
+
 
 (stop/frisk)
 ```
@@ -323,7 +325,11 @@ stop_age_group  =
 stop_age_group %>% 
   plot_ly(x = ~age_group, y= ~prob, type = "bar" , color = ~reason_stopped) 
 
-
+age_dist = stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age, race) %>% 
+    ggplot(aes(x= age))+
+   geom_density(aes(fill=race), alpha = .4)
+ggplotly(age_dist)
 ```
 
 PLOT 6.1: The total count of reasons being stopped by age group
@@ -333,21 +339,6 @@ stop_age_group %>%
   plot_ly(x = ~age_group, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
-PLOT 6.2: Amination of total count of reasons being stopped by age group
-
-```{r, plot6.2}
-stop_age_group %>% 
-  ggplot(aes(age_group, total, fill = age_group)) +
-  geom_col() +
-  transition_states(
-    reason_stopped,
-    transition_length = 3,
-    state_length = 3
-  ) +
-  enter_fade() +
-  exit_shrink() +
-  ggtitle('{closest_state}')
-```
 
 PLOT 7: The proportion of reasons being stopped by sex
 
@@ -437,22 +428,6 @@ stop_by_race %>%
   plot_ly(x = ~race, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
-PLOT 8.2: Amination of total count of reasons being stopped by race
-
-```{r, plot8.2}
-stop_by_race %>% 
-  ggplot(aes(race, total, fill = race)) +
-  geom_col() +
-  transition_states(
-    reason_stopped,
-    transition_length = 3,
-    state_length = 3
-  ) +
-  enter_fade() +
-  exit_shrink() +
-  ggtitle('{closest_state}') +
-  theme(legend.position = "none")
-```
 
 PLOT 9: Arrest porportions of reasons being stopped 
 
@@ -544,22 +519,7 @@ stop_by_boro %>%
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
-PLOT 10.2: Amination of total count of reasons being stopped by borough
 
-```{r, plot10.2}
-stop_by_boro %>% 
-  ggplot(aes(boro, total, fill=boro)) +
-  geom_col() +
-  transition_states(
-    reason_stopped,
-    transition_length = 3,
-    state_length = 3
-  ) +
-  enter_fade() +
-  exit_shrink() +
-  ggtitle('{closest_state}') +
-  theme(legend.position = "none")
-```
 
 PLOT 11: Number of stops per day
 

@@ -2,14 +2,10 @@
 title: "total_stops"
 author: "kd2640_total_stops"
 date: '`r format(Sys.time(), "%Y-%m-%d")`'
-output: github_document
+output: html_document
 ---
 
-```{r}
-install.packages("gganimate")
-install.packages("transformr")
-install.packages("gifski")
-```
+
 
 
 ```{r setup, include=FALSE}
@@ -19,7 +15,10 @@ library(rvest)
 library(httr)
 library(lubridate)
 library(plotly)
-
+library(caret)
+library(ROCR)
+library(Metrics)
+library(glmnet)
 knitr::opts_chunk$set(
 	echo = TRUE,
 	warning = FALSE,

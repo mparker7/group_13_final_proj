@@ -7,13 +7,17 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-library(flexdashboard)
 library(tidyverse)
 library(viridis)
 library(rvest)
 library(httr)
 library(lubridate)
 library(plotly)
+library(rgdal)
+library(sp)
+library(sf)
+library(leaflet)
+library(patchwork)
 ```
 
 ```{r, include=FALSE}
@@ -50,13 +54,13 @@ stop_frisk_df =
     stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
     race = recode(
       race, 
-      "A" = "asian/pacific islander", 
+      "A" = "other", 
       "B" = "black", 
-      "I" = "american indian/alaska native",
+      "I" = "other",
       "P" = "black-hispanic",
       "Q" = "white-hispanic",
       "W" = "white",
-      "U" = "unknown",
+      "U" = "other",
       "Z" = "other"
     ),
     hair_col = recode(
@@ -65,14 +69,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blond",
       "BR" = "brown",
-      "DY" = "dyed",
-      "FR" = "frosted",
-      "GY" = "gray",
-      "RA" = "red",
-      "SN" = "sandy",
-      "SP" = "salt and pepper",
-      "WH" = "white",
-      "XX" = "unknown",
+      "DY" = "other",
+      "FR" = "other",
+      "GY" = "other",
+      "RA" = "other",
+      "SN" = "other",
+      "SP" = "other",
+      "WH" = "other",
+      "XX" = "other",
       "ZZ" = "other",
     ),
     eye_col = recode(
@@ -80,14 +84,14 @@ stop_frisk_df =
       "BK" = "black",
       "BL" = "blue",
       "BR" = "brown",
-      "DF" = "different",
-      "GR" = "green",
-      "GY" = "gray",
-      "HA" = "hazel",
-      "MA" = "maroon",
-      "PK" = "pink",
-      "VI" = "violet",
-      "XX" = "unknown",
+      "DF" = "other",
+      "GR" = "other",
+      "GY" = "other",
+      "HA" = "other",
+      "MA" = "other",
+      "PK" = "other",
+      "VI" = "other",
+      "XX" = "other",
       "Z" = "other",      
     ),
     build = recode(
@@ -95,7 +99,7 @@ stop_frisk_df =
       "H" = "heavy",
       "M" = "medium",
       "T" = "thin",
-      "U" = "muscular",
+      "U" = "other",
       "Z" = "unknown"
     ),
     # change boro columns to lowercase for consistency
@@ -117,100 +121,105 @@ stop_frisk_df =
   mutate_if(is.character, as.factor) %>% 
   # remove the single row of NAs
   filter(!is.na(build))
-
-hour_stop = 
-  stop_frisk_df %>% 
-  mutate(
-    hour_stop = hour(time_stop),
-    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE)
-  ) %>% 
-  select(hour_stop, part_of_day) %>% 
-  group_by(hour_stop, part_of_day) %>% 
-  summarize(
-    count = n()
-  ) 
-
-month_frisk = 
-  stop_frisk_df %>% 
-  mutate(
-    month_stop = month(date_stop)
-  ) %>% 
-  filter(
-    month_stop != is_null(month_stop)
-  ) %>%   
-  group_by(month_stop, boro) %>% 
-  summarize(
-    count = n()
-  ) 
-
-demographics = stop_frisk_df %>% 
-  select(sex:build, height_inch, frisked, searched)
-
-stops_total =
-stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% 
-  mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-  filter(stops == 1) %>% 
-  group_by(reason_stopped) %>% 
-  summarize(total =n()) %>% 
-  mutate(prob = total/sum(total)) 
 ```
+
+
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Number of stops per day (broken down by boro)
+### Percentage of Reported Stops and Frisks by Race 
 
 ```{r}
-month_frisk %>% 
-  ggplot(aes(x = month_stop, y = count, color = boro)) + 
-  geom_point() +
-  geom_smooth(se = FALSE) 
+stop =
+  stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  ggplot(aes(race, fill = race))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentages of Reported Stops by Race",
+    y= "percentage") +
+    theme(legend.position = "none")
+
+frisk =
+  stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  filter(frisked == '1') %>% 
+  ggplot(aes(race, fill = race))+
+  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
+  labs(
+    title = "Percentages of Reported Stops Resulting in a Frisk by Race",
+    y= "percentage") +
+    theme(legend.position = "none")
+
+(stop/frisk)
 ```
 
-### Number of stops per hour over the day
-```{r}
 
-hour_stop %>% 
-  ggplot(aes(x = hour_stop, y = count)) + 
-  geom_bar(stat = "Identity", aes(fill = part_of_day)) +
-  geom_smooth(se = FALSE)
-```
-
-Column {data-width=500}
+Column {data-width=450}
 -----------------------------------------------------------------------
 
-### distribution of age by sex
+### Distribution of Age by Race
 
 ```{r}
-
-demographics %>% 
-  plot_ly(y = ~ age, color = ~sex, type = "violin", colors = "Set2")
+age_dist = stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age, race) %>% 
+    ggplot(aes(x= age))+
+   geom_density(aes(fill=race), alpha = .4)
+ggplotly(age_dist)
 ```
 
-### proportions of reason why people were frisked 
+### Total Count of Frisked, Searched, and Arrested of Subjects by Race and Sex 
 
 ```{r}
 
-stops_total %>% 
- plot_ly(x = ~reason_stopped, y= ~prob, type = "bar" , color = ~reason_stopped) 
+frisked_plot = 
+  stop_frisk_df %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)
+    ) %>% 
+  filter( 
+    frisked == '1') %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Frisked")+
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count of searched subjects by race, sex
+searched_plot = 
+  stop_frisk_df  %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter(searched =='1') %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Searched")+
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+# subjects count of arrested subjects by race, sex
+arrested_plot = 
+  stop_frisk_df  %>% 
+  drop_na() %>% 
+  mutate(
+    race = fct_infreq(race)) %>% 
+  filter(arst_made =='1') %>% 
+  ggplot(aes(x = race, fill = sex))+
+  geom_bar(alpha = .5, position = "dodge")+
+  labs(
+    title = "Arrested")+
+  theme(axis.text.x = element_text(angle = 80, hjust = 1))
+
+
+(frisked_plot + searched_plot + arrested_plot)
 ```
 

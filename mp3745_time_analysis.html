@@ -12,7 +12,7 @@
 
 <meta name="author" content="mp3745" />
 
-<meta name="date" content="2019-11-27" />
+<meta name="date" content="2019-12-02" />
 
 <title>mp3745_time_analysis</title>
 
@@ -307,7 +307,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">mp3745_time_analysis</h1>
 <h4 class="author">mp3745</h4>
-<h4 class="date">2019-11-27</h4>
+<h4 class="date">2019-12-02</h4>
 
 </div>
 
@@ -324,12 +324,7 @@ $(document).ready(function () {
 <li>Selects column subset for further analysis</li>
 <li>Removes the row of NAs that exists in the data</li>
 </ul>
-<p>Looking at stops over time</p>
-<ul>
-<li>Over a year</li>
-<li>By time of day</li>
-<li>By day of week</li>
-</ul>
+<p>Final plots to keep</p>
 <pre class="r"><code># Number of stops per day
 stop_frisk_df %&gt;% 
   group_by(date_stop) %&gt;% 
@@ -338,9 +333,89 @@ stop_frisk_df %&gt;%
   ) %&gt;% 
   ggplot(aes(x = date_stop, y = count)) + 
   geom_point() +
-  geom_smooth(se = FALSE)</code></pre>
+  geom_smooth(se = FALSE) +
+  labs(
+    title = &quot;Number of stops per day in 2016&quot;,
+    x = &quot;Date of stop&quot;,
+    y = &quot;Number of stops&quot;
+  )</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
 <p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
-<pre class="r"><code># Number of stops per month
+<pre class="r"><code># Number of stops per month (broken down by boro) 
+stop_frisk_df %&gt;% 
+  mutate(
+    month_stop = month(date_stop),
+    boro = str_to_title(boro)
+  ) %&gt;%   
+  group_by(month_stop, boro) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = &quot;Number of stops per month by borough&quot;,
+    x = &quot;Month of stop&quot;,
+    y = &quot;Number of stops&quot;,
+    color = &quot;Borough&quot;
+  ) +
+  scale_x_continuous(
+    breaks = 1:12,
+    labels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;)
+  )</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-2.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per hour over the day
+stop_frisk_df %&gt;% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c(&quot;Night&quot;, &quot;Morning&quot;, &quot;Afternoon&quot;, &quot;Evening&quot;, &quot;Night&quot;), right = FALSE),
+    part_of_day = fct_relevel(part_of_day, &quot;Morning&quot;, &quot;Afternoon&quot;, &quot;Evening&quot;)
+  ) %&gt;% 
+  select(hour_stop, part_of_day) %&gt;% 
+  group_by(hour_stop, part_of_day) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = &quot;Identity&quot;, aes(fill = part_of_day)) +
+  labs(
+    title = &quot;Number of stops per hour over the day&quot;,
+    x = &quot;Hour of stop&quot;,
+    y = &quot;Number of stops&quot;,
+    fill = &quot;Part of day&quot;
+  )</code></pre>
+<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-3.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per day of week 
+stop_frisk_df %&gt;% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE)
+  ) %&gt;% 
+  group_by(dow_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
+  geom_bar(stat = &quot;Identity&quot;) +
+  labs(
+    title = &quot;Number of stops per day of week&quot;,
+    x = &quot;Day of week&quot;,
+    y = &quot;Number of stops&quot;
+  ) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-4.png" width="90%" /></p>
+<pre class="r"><code># Number of stops per day (KEEP)
+stop_frisk_df %&gt;% 
+  group_by(date_stop) %&gt;% 
+  summarize(
+    count = n()
+  ) %&gt;% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+# Number of stops per month
 stop_frisk_df %&gt;% 
   mutate(
     month_stop = factor(month(date_stop))
@@ -353,9 +428,9 @@ stop_frisk_df %&gt;%
     count = n()
   ) %&gt;% 
   ggplot(aes(x = month_stop, y = count)) + 
-  geom_bar(stat = &quot;Identity&quot;) </code></pre>
-<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-2.png" width="90%" /></p>
-<pre class="r"><code># Number of stops per day (broken down by boro)
+  geom_bar(stat = &quot;Identity&quot;) 
+
+# Number of stops per month (broken down by boro) (KEEP)
 stop_frisk_df %&gt;% 
   mutate(
     month_stop = month(date_stop)
@@ -369,9 +444,9 @@ stop_frisk_df %&gt;%
   ) %&gt;% 
   ggplot(aes(x = month_stop, y = count, color = boro)) + 
   geom_point() +
-  geom_smooth(se = FALSE) </code></pre>
-<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-3.png" width="90%" /></p>
-<pre class="r"><code># Number of stops per hour over the day
+  geom_smooth(se = FALSE) 
+
+# Number of stops per hour over the day (KEEP)
 stop_frisk_df %&gt;% 
   mutate(
     hour_stop = hour(time_stop),
@@ -384,9 +459,9 @@ stop_frisk_df %&gt;%
   ) %&gt;% 
   ggplot(aes(x = hour_stop, y = count)) + 
   geom_bar(stat = &quot;Identity&quot;, aes(fill = part_of_day)) +
-  geom_smooth(se = FALSE)</code></pre>
-<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-4.png" width="90%" /></p>
-<pre class="r"><code># Number of stops per hour over the day (broken down by boro)
+  geom_smooth(se = FALSE)
+
+# Number of stops per hour over the day (broken down by boro)
 stop_frisk_df %&gt;% 
   mutate(
     hour_stop = hour(time_stop)
@@ -397,9 +472,9 @@ stop_frisk_df %&gt;%
   ) %&gt;% 
   ggplot(aes(x = hour_stop, y = count, color = boro)) + 
   geom_point() +
-  geom_smooth(se = FALSE)</code></pre>
-<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-5.png" width="90%" /></p>
-<pre class="r"><code># Number of stops per day of week
+  geom_smooth(se = FALSE)
+
+# Number of stops per day of week (KEEP)
 stop_frisk_df %&gt;% 
   mutate(
     dow_stop = wday(date_stop, label = TRUE)
@@ -409,9 +484,9 @@ stop_frisk_df %&gt;%
     count = n()
   ) %&gt;% 
   ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
-  geom_bar(stat = &quot;Identity&quot;) </code></pre>
-<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-6.png" width="90%" /></p>
-<pre class="r"><code># Number of stops per hour by day of week
+  geom_bar(stat = &quot;Identity&quot;) 
+
+# Number of stops per hour by day of week
 stop_frisk_df %&gt;% 
   mutate(
     dow_stop = wday(date_stop, label = TRUE),
@@ -424,7 +499,6 @@ stop_frisk_df %&gt;%
   ggplot(aes(x = hour_stop, y = count, color = dow_stop)) + 
   geom_point() + 
   geom_smooth(se = FALSE)</code></pre>
-<p><img src="mp3745_time_analysis_files/figure-html/unnamed-chunk-2-7.png" width="90%" /></p>
 <p>This code chunk looks at the number of people stopped, frisked, frisked &amp; searched, and searched over a single day</p>
 <pre class="r"><code>stop_frisk_df %&gt;% 
   filter(date_stop != is.na(date_stop)) %&gt;% 

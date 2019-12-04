@@ -1237,7 +1237,7 @@ stop_frisk_df %&gt;%
   mutate(prob = total/sum(total)) %&gt;% 
   plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)
 
-# percent innocent in that race category
+# percent innocent in black race category
 stop_frisk_log %&gt;% 
   filter(age &lt; 18,
          race == &#39;black&#39;) %&gt;% 
@@ -1252,7 +1252,7 @@ stop_frisk_log %&gt;%
   mutate(
     percentage = (innocent/(innocent + arrested)) *100)
 
-# function
+# function to do the same for every race
 under_18_inn = function(x) {
   stop_frisk_log %&gt;% 
   filter(age &lt; 18,

@@ -29,6 +29,13 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.49.4/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.49.4/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -793,10 +800,103 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %&gt;% knitr::kabl
 </div>
 <div id="additional-analysis" class="section level1">
 <h1>Additional Analysis</h1>
-<p>Additional analysis was performed for stopped individuals under age of 18. 14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic.</p>
 <div id="minors" class="section level2">
 <h2>Minors</h2>
-<p>Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. &gt;&gt;&gt;&gt;&gt;&gt;&gt; 74f88d134d1c921ecf3702e0c5573919aa46f58f</p>
+<p>Additional analysis was performed for stopped individuals under age of 18.</p>
+<p>14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping minors are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of minors stopped were innocent and 20% were arrested. Out of minors who have been arrested 86% were black, white-hispanic or black-hispanic.</p>
+<p>Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.</p>
+<pre class="r"><code>under_18 = stop_frisk_df %&gt;% 
+  filter(age&lt;&#39;18&#39;) 
+
+under_18 %&gt;%
+  count(race) %&gt;% 
+  mutate(
+    race = fct_reorder(race, -n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race) %&gt;% 
+  layout(
+    title = &#39;Minors Stopped by Race&#39;,
+    xaxis = list(
+      type = &#39;category&#39;,
+      title  = &#39;Race&#39;), 
+    yaxis = list(
+      title = &#39;Count&#39;,
+      range = c(0, 1100)
+    ) 
+  )</code></pre>
+<div id="htmlwidget-16609bd8a66a5ea4d468" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-16609bd8a66a5ea4d468">{"x":{"visdat":{"3c06397e95ab":["function () ","plotlyVisDat"]},"cur_data":"3c06397e95ab","attrs":{"3c06397e95ab":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># percent innocent and arrested amoung minors 
+under_18 %&gt;% 
+  count(arst_made) %&gt;%
+  mutate(
+    percent = (n /nrow(under_18)* 100)
+  ) %&gt;% 
+  knitr::kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">arst_made</th>
+<th align="right">n</th>
+<th align="right">percent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">1486</td>
+<td align="right">80.45</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">361</td>
+<td align="right">19.55</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Percent innocent minors among each race category
+under_18_inn = function(x) {
+  stop_frisk_df %&gt;% 
+  filter(age &lt; 18,
+         race == x) %&gt;% 
+  group_by(race, arst_made) %&gt;% 
+  count() %&gt;% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %&gt;% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %&gt;% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+}
+
+output = map_df(stop_frisk_df$race, under_18_inn) %&gt;% 
+  distinct(race, percentage)
+
+output %&gt;% 
+  ungroup(race) %&gt;% 
+  mutate(
+    race = fct_relevel(race, c(&quot;white&quot;, &quot;black&quot;, &quot;other&quot;, &quot;white-hispanic&quot;)),
+    race = recode(race, 
+                  &quot;white&quot; = &quot;White&quot;,
+                  &quot;black&quot; = &quot;Black&quot;,
+                  &quot;other&quot; = &quot;Other&quot;,
+                  &quot;white-hispanic&quot; = &quot;White-Hispanic&quot;,
+                  &quot;black-hispanic&quot; = &quot;Black-Hispanic&quot;)
+    ) %&gt;% 
+plot_ly(x = ~race, y = ~percentage, type = &quot;bar&quot;, color = ~race) %&gt;% 
+  layout(
+    title = &#39;Percent innocent Minors among each race category&#39;,
+    xaxis = list(
+      type = &#39;category&#39;,
+      title  = &#39;Race&#39;), 
+    yaxis = list(
+      title = &#39;Percent innocent, %&#39;,
+      range = c(0, 100)
+    ) 
+  )</code></pre>
+<div id="htmlwidget-e0425d4fa8e99defe9bd" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e0425d4fa8e99defe9bd">{"x":{"visdat":{"3c0680e4056":["function () ","plotlyVisDat"]},"cur_data":"3c0680e4056","attrs":{"3c0680e4056":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Percent innocent Minors among each race category","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["White","Black","Other","White-Hispanic","Black-Hispanic"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Percent innocent, %","range":[0,100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["White"],"y":[83.4782608695652],"type":"bar","name":"White","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Black"],"y":[82.6127819548872],"type":"bar","name":"Black","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Other"],"y":[78.6206896551724],"type":"bar","name":"Other","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["White-Hispanic"],"y":[76.2532981530343],"type":"bar","name":"White-Hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Black-Hispanic"],"y":[76.158940397351],"type":"bar","name":"Black-Hispanic","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="trends-over-time" class="section level2">
 <h2>Trends over time</h2>

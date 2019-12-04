@@ -438,7 +438,7 @@ nypd_prec %>%
 ```
 
 # Combining to Try Layering Functioning (but this can be accomplished with Shiny as well)
-```{r}
+```{r, eval = FALSE}
 stop_frisk_map_df %>% 
   leaflet() %>% 
   addTiles() %>% 
@@ -473,7 +473,7 @@ stop_frisk_map_df %>%
 
 
 # Testing Additional Layers for Shiny
-```{r}
+```{r, eval=FALSE}
 nypd_prec %>% 
   leaflet() %>% 
   addTiles() %>% 
@@ -520,7 +520,7 @@ nypd_prec %>%
 
 ### PLACE TO HOLD EXTRA CODE
 
-```{r}
+```{r, eval = FALSE}
 checkboxInput("ind_stops", "Individual Stops", value = FALSE)
 checkboxInput("pol_prec", "Police Precinct Info", value = FALSE)
 checkboxInput("race_stops", "Race and Percentage of Stops", value = FALSE)
@@ -540,7 +540,7 @@ selectInput("heatmap", label = h3("Heat Map Options:"),
 
 
 
-```{r, message=FALSE}
+```{r, eval=FALSE}
 output$map <- renderLeaflet({
   map <- nypd_prec %>% 
   leaflet() %>% 
@@ -595,7 +595,7 @@ Row {data-height=350}
 
 ### Number of Stops by Month
 
-```{r}
+```{r, eval=FALSE}
 renderPlot({
   
   if (input[["analysis_type"]] == "Individual Borough") {
@@ -650,7 +650,7 @@ renderPlot({
 
 ### Number of Stops by Hour
 
-```{r}
+```{r, eval=FALSE}
 renderPlot({
   
   if (input[["analysis_type"]] == "Individual Borough") {

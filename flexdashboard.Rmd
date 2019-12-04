@@ -189,11 +189,24 @@ Column {data-width=450}
 ### Distribution of Age by Race
 
 ```{r}
-age_dist = stop_frisk_df %>% 
-  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other,age, race) %>% 
-    ggplot(aes(x= age))+
-   geom_density(aes(fill=race), alpha = .4)
-ggplotly(age_dist)
+p = stop_frisk_df %>% 
+drop_na() %>% 
+mutate(stopped = as.numeric(stop_in_out),
+stopped = case_when(
+stopped > 0 ~ '1',
+TRUE ~""),
+stopped = as.numeric(stopped)) %>% 
+select(age, arst_made, frisked, stopped) %>% 
+pivot_longer(
+arst_made:stopped,
+names_to = "action",
+values_to = "value") %>% 
+filter(value == '1') %>% 
+count(age, action) %>% 
+ ggplot(aes(y= age, x  = action )) +
+   geom_boxplot(aes(color=action), alpha = .4)
+ggplotly(p)
+  
 ```
 
 ### Total Count of Frisked, Searched, and Arrested of Subjects by Race and Sex 

@@ -515,3 +515,10 @@ stop_by_boro %>%
   plot_ly(x = ~boro, y= ~total, type = "bar" , color = ~reason_stopped)
 ```
 
+```{r}
+stop_frisk_df %>% 
+  filter(frisked==1) %>% 
+  count(frisked) 
+
+```
+

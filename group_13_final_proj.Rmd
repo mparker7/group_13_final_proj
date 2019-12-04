@@ -660,7 +660,7 @@ stop_frisk_log %>%
 under_18_inn = function(x) {
   stop_frisk_log %>% 
   filter(age < 18,
-         race == 'x') %>% 
+         race == x) %>% 
   group_by(race, arst_made) %>% 
   count() %>% 
   pivot_wider(
@@ -673,7 +673,7 @@ under_18_inn = function(x) {
     percentage = (innocent/(innocent + arrested)) *100)
 }
 
-output = map(stop_frisk_df$race, under_18_inn)
+output = map_df(stop_frisk_df$race, under_18_inn)
 ```
 
 

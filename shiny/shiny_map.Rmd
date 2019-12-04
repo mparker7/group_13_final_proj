@@ -181,18 +181,9 @@ nypd_prec  =
   inner_join(., arrests_by_prec, by="precinct") %>% 
   inner_join(., friskorsearch_by_prec, by="precinct")
 
-pal <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalstops))
-pal2 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfrisks))
-pal3 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalarrests))
-pal4 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfriskorsearch))
-
 nypd_prec =
 nypd_prec %>% 
   mutate(
-    tsc = pal(totalstops),
-    tfc = pal2(totalfrisks),
-    tac = pal3(totalarrests),
-    tfsc = pal4(totalfriskorsearch),
     label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks or Searches in 2016: ", totalfriskorsearch, "<br/>", "Total Arrests in 2016: ", totalarrests) %>% map(htmltools::HTML)
   )
 ```
@@ -295,6 +286,10 @@ conditionalPanel(
     selected = "manhattan" # default choice
     )
 )
+
+# third widget
+selectInput("heatmap", label = h3("Heat Map Options:"),
+            choices = c("totalstops", "totalfriskorsearch", "totalarrests"))
 ```
 
 Row {data-height=350}
@@ -412,6 +407,10 @@ Row
 ```{r}
 output$map <- renderLeaflet({
   
+pal <- colorNumeric("YlOrRd", domain = nypd_prec[[input$heatmap]])
+
+colordata <- nypd_prec[[input$heatmap]]
+    
   if (input[["analysis_type"]] == "Individual Borough") {
   
   map <- nypd_prec %>% 
@@ -430,15 +429,15 @@ output$map <- renderLeaflet({
                    group = "Individual Stops") %>% 
   addPolygons(label = ~label,
               color = "#000000",
-              fillColor = ~tac,
+              fillColor = ~pal(colordata),
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
               fillOpacity = 0.75,
               group = "Police Precinct Info") %>% 
-  addLegend(pal = pal3,
-            values = ~totalarrests,
-            title = "Total Number <br/> of Arrests",
+  addLegend(pal = pal,
+            values = ~colordata,
+            title = input$heatmap,
             position = "topleft",
             group = "Police Precinct Info") %>% 
   addPolylines(label = ~maxstoppedrace,
@@ -473,15 +472,15 @@ output$map <- renderLeaflet({
                    group = "Individual Stops") %>% 
   addPolygons(label = ~label,
               color = "#000000",
-              fillColor = ~tac,
+              fillColor = ~pal(colordata),
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
               fillOpacity = 0.75,
               group = "Police Precinct Info") %>% 
-  addLegend(pal = pal3,
-            values = ~totalarrests,
-            title = "Total Number <br/> of Arrests",
+  addLegend(pal = pal,
+            values = ~colordata,
+            title = input$heatmap,
             position = "topleft",
             group = "Police Precinct Info") %>% 
   addPolylines(label = ~maxstoppedrace,

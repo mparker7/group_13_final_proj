@@ -530,7 +530,14 @@ checkboxGroupInput("variable", label = h3("Map Options:"),
                    c("Individual Stops" = "ind_stops",
                      "Police Precinct Info" = "pol_prec",
                      "Race and Percentage of Stops" = "race_stops"))
+
+selectInput("heatmap", label = h3("Heat Map Options:"),
+                   choices = c("Number of Stops" = "~tsc", 
+                               "Number of Frisks/Searches" = "~tfsc", 
+                               "Number of Arrests" = "~tac"),
+                   selected = "Number of Stops")
 ```
+
 
 
 ```{r, message=FALSE}

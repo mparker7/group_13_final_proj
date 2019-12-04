@@ -13,21 +13,21 @@ title: "Stop! You are being frisked!"
 
 <h2> The motivation for this project </h2>
 
-Stop and Frisk has been a controversial police tactic used for years as a way to briefly stop and search civilians who are of suspect. Police must have "reasonable suspicion" according to the fourth amendment to legally stop a person. Utilizing NYC Stop and Frisk data, we want to give insight into the most influential factors of those who are targeted by the Stop and Frisk tactic.
+Stop and Frisk has been a controversial police tactic used for years as a way to briefly stop and search civilians who are of suspect. Police must have "reasonable suspicion" according to the fourth amendment to legally stop a person. Utilizing NYC Stop and Frisk data, we want to develop a predictive model, visualize the data across the five New York City Boroughs, and describe the scope of our dataset.
 
 <h2> The intended final products </h2>
-Our final products will include a report summarizing our final results, and our entire analytical process of the 2016 Stop & Frisk Data Set, as well as a complimentary website that will provide access and curate the final report; creating visualizations and interactional displays to help guide readers through our report's findings. 
+Our final products will include a report summarizing our final results, the process we took to analyz the 2016 Stop & Frisk Data Set, as well as a complimentary website that will detail the final report. There will also be interactive visualizations and displays to help guide readers through our report's findings. 
 
 <h2> Data sources </h2>
-Our anticipated data source is going to be the publicly available data from NYC/the NYPD located [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page)
+Our data source is going to be the publicly available data from NYC/the NYPD located [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page)
 
-We intend on using the data set published from 2016 since the only complete data dictionary we could locate is from the 2016 data set.
+We intend on using the data set published from 2016, due to its completeness within the data as well as its data dictionary. 
 
-If we should need any additional data (like neighborhood demographics, etc.), we will most likely get them from NYC's public database [additional data](https://opendata.cityofnewyork.us/).
+If we should need any additional data (like neighborhood demographics, etc.), we will acquire it from NYC's public database [additional data](https://opendata.cityofnewyork.us/).
 
 <h2> The planned analyses/visualizations/coding challenges </h2>
-  
 
+We plan to develop a logistic regression model through variable selection and LASSO regression modeling, visualize demographics, and develop an interactive map to display the data.
   
 
 

@@ -398,7 +398,7 @@ colordata <- nypd_prec[[input$heatmap]]
   
 })
 
-leafletOutput('map', height=700)
+leafletOutput('map', height = "92vh")
 ```
 
 

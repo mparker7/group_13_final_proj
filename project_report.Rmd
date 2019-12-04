@@ -10,8 +10,6 @@ output:
       
 ---
 
-<<<<<<< HEAD
-=======
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
@@ -23,6 +21,7 @@ library(rgdal)
 library(sp)
 library(sf)
 library(leaflet)
+library(patchwork)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -42,7 +41,6 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 
 
->>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
 # Motivation
 
 Terry Stop is a crime-preventing program that has been used by the police around the country for more than 40 years. In New York City this program is known as stop-and-frisk and consists of possible temporary detention and questioning of an individual with possible searching for weapons or other contraband. During Michael Bloomberg’s tenure as a mayor of the City of New York, this program became increasingly aggressive and subsequently turned out to be the hot topic of discussion throughout the nation. In 2011 stop-and-frisk reached almost 700,000 stops. During the same year the New York Civil Liberties Union successfully sued the New York Police Department and forced it to regularly report to public all stop-and-frisk related activities. From the obtained data, it was concluded, that majority of stopped individuals were black and Hispanic men. Bloomberg and then NYC Police Commissioner Raymond W. Kelly, were accused of racial profiling. 
@@ -450,7 +448,8 @@ We also conducted analysis to explore the trends in stops over time and by borou
 
 ```{r, message=FALSE}
 # Number of stops per day
-stop_frisk_df %>% 
+stops_per_day =
+  stop_frisk_df %>% 
   group_by(date_stop) %>% 
   summarize(
     count = n()
@@ -463,11 +462,10 @@ stop_frisk_df %>%
     x = "Date of stop",
     y = "Number of stops"
   )
-```
 
-```{r, message=FALSE}
 # Number of stops per month (broken down by boro) 
-stop_frisk_df %>% 
+stops_per_month =
+  stop_frisk_df %>% 
   mutate(
     month_stop = month(date_stop),
     boro = str_to_title(boro)
@@ -489,11 +487,10 @@ stop_frisk_df %>%
     breaks = 1:12,
     labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
   )
-```
 
-```{r}
 # Number of stops per hour over the day
-stop_frisk_df %>% 
+stops_per_hour =
+  stop_frisk_df %>% 
   mutate(
     hour_stop = hour(time_stop),
     part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE),
@@ -512,11 +509,9 @@ stop_frisk_df %>%
     y = "Number of stops",
     fill = "Part of day"
   )
-```
 
-```{r}
 # Number of stops per day of week 
-stop_frisk_df %>% 
+stops_per_dow = stop_frisk_df %>% 
   mutate(
     dow_stop = wday(date_stop, label = TRUE)
   ) %>% 
@@ -524,7 +519,7 @@ stop_frisk_df %>%
   summarize(
     count = n()
   ) %>% 
-  ggplot(aes(x = dow_stop, y = count, fill = dow_stop)) + 
+  ggplot(aes(x = dow_stop, y = count)) + 
   geom_bar(stat = "Identity") +
   labs(
     title = "Number of stops per day of week",
@@ -532,6 +527,8 @@ stop_frisk_df %>%
     y = "Number of stops"
   ) +
   theme(legend.position = "none")
+
+(stops_per_month + stops_per_dow) / (stops_per_hour + stops_per_day)
 ```
 
 

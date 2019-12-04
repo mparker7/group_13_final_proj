@@ -209,7 +209,7 @@ ggplotly(p)
   
 ```
 
-### Total Count of Frisked, Searched, and Arrested of Subjects by Race and Sex 
+### Total Count of Frisked, Searched, and Arrested of Subjects by Race
 
 ```{r}
 afs %>% 

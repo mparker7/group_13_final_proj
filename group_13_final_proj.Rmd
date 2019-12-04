@@ -605,12 +605,22 @@ stop_frisk_log %>%
 stop_frisk_log %>% 
   filter(
     age < '18',
+    arst_made == '0') %>%
+  count(race) %>% 
+  mutate(
+    race = fct_reorder(race, -n)) %>% 
+  plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
+
+# percent innocent under 18
+stop_frisk_log %>% 
+  filter(
+    age < '18',
     arst_made =='0') %>% 
   count(race) %>% 
   mutate(
-    percent_innocent = (n/nrow(under_18)* 100),
+    percent = (n/nrow(under_18)* 100),
     race = fct_reorder(race, -n)) %>% 
-  plot_ly(x = ~ race, y = ~ percent_innocent, type = "bar", color = ~ race)
+  plot_ly(x = ~ race, y = ~ percent, type = "bar", color = ~ race)
 
 # reasons for stoping under 18
 stop_frisk_df %>% 
@@ -656,6 +666,8 @@ stop_frisk_log %>%
   mutate(
     percentage = (innocent/(innocent + arrested)) *100)
 
+
+
 # function to do the same for every race
 under_18_inn = function(x) {
   stop_frisk_log %>% 
@@ -673,7 +685,32 @@ under_18_inn = function(x) {
     percentage = (innocent/(innocent + arrested)) *100)
 }
 
-output = map_df(stop_frisk_df$race, under_18_inn)
+output = map_df(stop_frisk_df$race, under_18_inn) %>% 
+  distinct(race, percentage)
+
+output %>% 
+  ungroup(race) %>% 
+  mutate(
+    race = fct_relevel(race, c("white", "black", "other", "white-hispanic")),
+    race = recode(race, 
+                  "white" = "White",
+                  "black" = "Black",
+                  "other" = "Other",
+                  "white-hispanic" = "White-Hispanic",
+                  "black-hispanic" = "Black-Hispanic")
+    ) %>% 
+plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>% 
+  layout(
+    title = 'Percent innocent Minors amoung each race category',
+    xaxis = list(
+      type = 'category',
+      title  = 'Race'), 
+    yaxis = list(
+      title = 'Percent innocent, %',
+      range = c(0, 100)
+    ) 
+  )
+
 ```
 
 

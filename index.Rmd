@@ -5,11 +5,12 @@ title: "Stop! You are being frisked!"
 
 
 <center>
- 
-<img src = "images/cartoon.jpeg" width = "300px" height = "auto")
+
+![](images/cartoon.jpeg)
 
 </center>
 
+<center>
 
 <h2> The motivation for this project </h2>
 
@@ -29,5 +30,5 @@ If we should need any additional data (like neighborhood demographics, etc.), we
 
 We plan to develop a logistic regression model through variable selection and LASSO regression modeling, visualize demographics, and develop an interactive map to display the data.
   
-
+</center>
 

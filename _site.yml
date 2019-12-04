@@ -8,7 +8,7 @@ navbar:
     - text: "Project Report"
       href: project_report.html
     - text: "Map"
-      href: shiny_map.html
+      href: https://mparker7.shinyapps.io/shiny/
     - icon: fa-envelope fa-lg
       href: mailto:<mp3745@cumc.columbia.edu>
     - icon: fa-github fa-lg

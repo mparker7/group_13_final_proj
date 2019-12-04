@@ -178,9 +178,10 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
-## Demographics Distribution
+## Demographics 
+The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop. 
 
-
+The age range of the reported stops is from ages 1-99. The distribution 
 
 ## Logistic Regression Analysis
 

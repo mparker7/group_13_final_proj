@@ -1,0 +1,10 @@
+name: shiny
+title:
+username:
+account: mparker7
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1558026
+bundleId: 2638209
+url: https://mparker7.shinyapps.io/shiny/
+when: 1575419931.57582

@@ -588,4 +588,112 @@ output$map <- renderLeaflet({
 leafletOutput('map')
 ```
 
+### EXTRA SHINY CODE
+
+Row {data-height=350}
+-----------------------------------------------------------------------
+
+### Number of Stops by Month
+
+```{r}
+renderPlot({
+  
+  if (input[["analysis_type"]] == "Individual Borough") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Month",
+        y = "Number of Stops"
+      )
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        month_stop = month(date_stop)
+      ) %>% 
+      filter(
+        month_stop != is_null(month_stop)
+      ) %>%   
+      group_by(month_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = month_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Month",
+        y = "Number of Stops"
+      )
+    
+  }
+  
+})
+```
+
+### Number of Stops by Hour
+
+```{r}
+renderPlot({
+  
+  if (input[["analysis_type"]] == "Individual Borough") {
+  
+    stop_frisk_df %>% 
+      filter(
+        boro == input[["boro_choice"]]
+      ) %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Hour",
+        y = "Number of Stops"
+      )
+  
+  } else {
+    
+    stop_frisk_df %>% 
+      mutate(
+        hour_stop = hour(time_stop)
+      ) %>% 
+      group_by(hour_stop) %>% 
+      summarize(
+        count = n()
+      ) %>% 
+      ggplot(aes(x = hour_stop, y = count)) + 
+      geom_point() +
+      geom_smooth(se = FALSE) +
+      labs(
+        x = "Hour",
+        y = "Number of Stops"
+      )
+    
+  }
+  
+})
+```
 

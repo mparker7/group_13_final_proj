@@ -2,7 +2,7 @@
 title: "Group 13 Final Project"
 author: "cs3779, kd2640, ob2305, mp3745, lef2147"
 date: '`r format(Sys.time(), "%Y-%m-%d")`'
-output: github_document
+output: html_document
 ---
 
 Rough Outline of Project:
@@ -34,6 +34,8 @@ library(lubridate)
 library(plotly)
 library(rgdal)
 library(sp)
+library(sf)
+library(leaflet)
 
 knitr::opts_chunk$set(
 	echo = TRUE,

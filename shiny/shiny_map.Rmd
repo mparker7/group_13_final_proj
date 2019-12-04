@@ -286,12 +286,15 @@ boros =
   pull() 
 
 # selectInput widget - dropdown menu
-selectInput(
-  "boro_choice", # name
-  label = h3("Select Borough"), # what user is going to see
-  choices = boros, # what the choices are
-  selected = "manhattan" # default choice
-  )
+conditionalPanel(
+  condition = "input.analysis_type == 'Individual Borough'",
+    selectInput(
+    "boro_choice", # name
+    label = h3("Select Borough"), # what user is going to see
+    choices = boros, # what the choices are
+    selected = "manhattan" # default choice
+    )
+)
 ```
 
 Row {data-height=350}

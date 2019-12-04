@@ -940,6 +940,10 @@ stops_per_month =
   scale_x_continuous(
     breaks = 1:12,
     labels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;)
+  ) +
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 6)
   )
 
 # Number of stops per hour over the day
@@ -962,7 +966,12 @@ stops_per_hour =
     x = &quot;Hour of stop&quot;,
     y = &quot;Number of stops&quot;,
     fill = &quot;Part of day&quot;
-  )
+  ) +
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 6)
+  ) +
+  scale_fill_viridis_d(direction = -1, option = &quot;magma&quot;)
 
 # Number of stops per day of week 
 stops_per_dow = stop_frisk_df %&gt;% 
@@ -982,7 +991,7 @@ stops_per_dow = stop_frisk_df %&gt;%
   ) +
   theme(legend.position = &quot;none&quot;)
 
-(stops_per_month + stops_per_dow) / (stops_per_hour + stops_per_day)</code></pre>
+(stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)</code></pre>
 <p><img src="project_report_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
 </div>
 </div>

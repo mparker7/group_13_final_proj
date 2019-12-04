@@ -10,6 +10,8 @@ output:
       
 ---
 
+<<<<<<< HEAD
+=======
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
@@ -40,6 +42,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 
 
+>>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
 # Motivation
 
 Terry Stop is a crime-preventing program that has been used by the police around the country for more than 40 years. In New York City this program is known as stop-and-frisk and consists of possible temporary detention and questioning of an individual with possible searching for weapons or other contraband. During Michael Bloomberg’s tenure as a mayor of the City of New York, this program became increasingly aggressive and subsequently turned out to be the hot topic of discussion throughout the nation. In 2011 stop-and-frisk reached almost 700,000 stops. During the same year the New York Civil Liberties Union successfully sued the New York Police Department and forced it to regularly report to public all stop-and-frisk related activities. From the obtained data, it was concluded, that majority of stopped individuals were black and Hispanic men. Bloomberg and then NYC Police Commissioner Raymond W. Kelly, were accused of racial profiling. 

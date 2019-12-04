@@ -26,12 +26,12 @@
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="site_libs/plotly-binding-4.9.0/plotly.js"></script>
+<script src="site_libs/plotly-binding-4.9.1/plotly.js"></script>
 <script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="site_libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="site_libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.49.4/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.49.4/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -617,7 +617,7 @@ stop_frisk_df %&gt;%
   geom_smooth(aes(y = searched, color = &#39;green&#39;), se = FALSE) +
   geom_smooth(aes(y = frisk_and_search, color = &#39;yellow&#39;), se = FALSE) </code></pre>
 <p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
-<p>Logistic Regression Dataset</p>
+<p>Logistic Regression Dataset - not sure if we want to use this for overall but didnt want to completely change the code above without asking everyone</p>
 <pre class="r"><code>stop_frisk_log = stop_frisk_df %&gt;% mutate(
     race = recode(
       race, 
@@ -657,241 +657,140 @@ stop_frisk_df %&gt;%
       build,
       &quot;muscular&quot; = &quot;other&quot;,
     ))</code></pre>
-<pre class="r"><code>model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
+<p>Building a model using only characteristics, demographics, and location as predictors for frisked - assess multicolinearity to determine if there are any variables that exhibit high correlation - We will remove any variables that exhibit signs of multicollinearity - From this model, we can assess of those who were stopped, what are the odds of getting frisked based on certain characteristics, demographics and location predictors - IMPORTANT: we cannot make any causal statements from this model ‘i.e. you have a higher odds of getting stopped if you are X race’ because everyone in this dataset was stopped</p>
+<pre class="r"><code>model_1 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 car::vif(model_1)</code></pre>
 <pre><code>##                  GVIF Df GVIF^(1/(2*Df))
-## sex          1.186934  2        1.043774
-## race         1.584431  4        1.059215
-## age          1.226080  1        1.107285
-## height_inch  1.320156  1        1.148980
-## weight       1.547907  1        1.244149
-## hair_col     1.408799  4        1.043773
-## eye_col      1.241150  3        1.036662
-## boro        30.424025  4        1.532506
-## build        1.393916  4        1.042388
-## stop_in_out  1.101694  1        1.049616
-## precinct    25.462761  1        5.046064
-## off_in_unif  1.243957  1        1.115328
-## cs_objcs     1.028057  1        1.013932
-## cs_descr     1.695655  1        1.302173
-## cs_casng     1.339425  1        1.157335
-## cs_lkout     1.203300  1        1.096950
-## cs_cloth     1.025266  1        1.012554
-## cs_drgtr     1.113681  1        1.055311
-## cs_furtv     1.093081  1        1.045505
-## cs_vcrim     1.053229  1        1.026269
-## cs_bulge     1.045242  1        1.022371
-## cs_other     1.433493  1        1.197286</code></pre>
+## sex          1.179297  2        1.042091
+## race         1.561548  4        1.057291
+## age          1.222201  1        1.105532
+## height_inch  1.320364  1        1.149071
+## weight       1.567631  1        1.252051
+## hair_col     1.406664  4        1.043575
+## eye_col      1.235170  3        1.035828
+## boro        29.189812  4        1.524593
+## build        1.395551  4        1.042541
+## stop_in_out  1.074392  1        1.036529
+## precinct    25.307892  1        5.030695
+## off_in_unif  1.097859  1        1.047788</code></pre>
 <pre class="r"><code># Based on the GVIF, we will remove boro
 
-model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
+model_2 = glm(frisked ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 car::vif(model_2)</code></pre>
 <pre><code>##                 GVIF Df GVIF^(1/(2*Df))
-## sex         1.182409  2        1.042778
-## race        1.461133  4        1.048543
-## age         1.223566  1        1.106149
-## height_inch 1.314809  1        1.146651
-## weight      1.542245  1        1.241872
-## hair_col    1.400690  4        1.043020
-## eye_col     1.236954  3        1.036078
-## build       1.381728  4        1.041245
-## stop_in_out 1.095221  1        1.046528
-## precinct    1.128869  1        1.062482
-## off_in_unif 1.207484  1        1.098856
-## cs_objcs    1.027542  1        1.013678
-## cs_descr    1.684240  1        1.297783
-## cs_casng    1.330229  1        1.153355
-## cs_lkout    1.200614  1        1.095725
-## cs_cloth    1.022920  1        1.011395
-## cs_drgtr    1.109289  1        1.053228
-## cs_furtv    1.091124  1        1.044569
-## cs_vcrim    1.051119  1        1.025241
-## cs_bulge    1.043289  1        1.021415
-## cs_other    1.423612  1        1.193152</code></pre>
+## sex         1.173811  2        1.040877
+## race        1.433039  4        1.046001
+## age         1.219806  1        1.104448
+## height_inch 1.316565  1        1.147417
+## weight      1.564742  1        1.250896
+## hair_col    1.397985  4        1.042768
+## eye_col     1.230990  3        1.035243
+## build       1.384006  4        1.041459
+## stop_in_out 1.067664  1        1.033278
+## precinct    1.113891  1        1.055410
+## off_in_unif 1.059472  1        1.029307</code></pre>
 <pre class="r"><code># no more collinearity problems
 
 summary(model_2)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
-##     hair_col + eye_col + build + stop_in_out + precinct + off_in_unif + 
-##     cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + 
-##     cs_furtv + cs_vcrim + cs_bulge + cs_other, family = binomial, 
-##     data = stop_frisk_log)
+##     hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, 
+##     family = binomial, data = stop_frisk_log)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.6268  -1.2031   0.6260   0.9713   2.1885  
+## -2.0482  -1.2804   0.7371   0.9372   1.9748  
 ## 
 ## Coefficients:
 ##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -2.2633767  0.4538449  -4.987 6.13e-07 ***
-## sexM                0.7844223  0.0796209   9.852  &lt; 2e-16 ***
-## sexZ                0.5635434  0.2980257   1.891 0.058635 .  
-## raceblack           0.3393057  0.0765014   4.435 9.19e-06 ***
-## raceblack-hispanic  0.4102328  0.1040284   3.943 8.03e-05 ***
-## racewhite          -0.0763965  0.0962497  -0.794 0.427351    
-## racewhite-hispanic  0.3585055  0.0823611   4.353 1.34e-05 ***
-## age                -0.0086202  0.0018269  -4.719 2.38e-06 ***
-## height_inch         0.0287328  0.0066410   4.327 1.51e-05 ***
-## weight              0.0003756  0.0006290   0.597 0.550380    
-## hair_colblack       0.1025538  0.1142457   0.898 0.369367    
-## hair_colblond      -0.2086216  0.2171680  -0.961 0.336730    
-## hair_colbrown      -0.0219957  0.1212771  -0.181 0.856079    
-## hair_colother      -0.0743499  0.1447687  -0.514 0.607548    
-## eye_colblue         0.1269834  0.1747864   0.727 0.467528    
-## eye_colbrown       -0.0017403  0.0746096  -0.023 0.981391    
-## eye_colother       -0.1099811  0.1333422  -0.825 0.409483    
-## buildmedium        -0.2265162  0.0776304  -2.918 0.003524 ** 
-## buildother         -0.5330507  0.2001139  -2.664 0.007728 ** 
-## buildthin          -0.1986318  0.0825269  -2.407 0.016090 *  
-## buildunknown       -0.5382958  0.1660933  -3.241 0.001191 ** 
-## stop_in_outoutside  0.3052284  0.0508098   6.007 1.89e-09 ***
-## precinct           -0.0018300  0.0006134  -2.983 0.002851 ** 
-## off_in_unif        -0.5513660  0.0483611 -11.401  &lt; 2e-16 ***
-## cs_objcs            0.2061038  0.1224074   1.684 0.092230 .  
-## cs_descr            0.2906208  0.0515015   5.643 1.67e-08 ***
-## cs_casng           -0.2812006  0.0655367  -4.291 1.78e-05 ***
-## cs_lkout           -0.0924328  0.0850009  -1.087 0.276845    
-## cs_cloth            0.1834164  0.1297837   1.413 0.157583    
-## cs_drgtr            0.0135138  0.0958541   0.141 0.887884    
-## cs_furtv            1.0169119  0.0648383  15.684  &lt; 2e-16 ***
-## cs_vcrim            0.8744151  0.1066926   8.196 2.49e-16 ***
-## cs_bulge            1.6331189  0.1231829  13.258  &lt; 2e-16 ***
-## cs_other            0.1788994  0.0476036   3.758 0.000171 ***
+## (Intercept)        -1.7286908  0.4367304  -3.958 7.55e-05 ***
+## sexM                0.8342144  0.0775060  10.763  &lt; 2e-16 ***
+## sexZ                0.6674880  0.2875712   2.321 0.020280 *  
+## raceblack           0.4450129  0.0739403   6.019 1.76e-09 ***
+## raceblack-hispanic  0.4535358  0.1011500   4.484 7.33e-06 ***
+## racewhite          -0.0454750  0.0932264  -0.488 0.625698    
+## racewhite-hispanic  0.4371895  0.0798993   5.472 4.46e-08 ***
+## age                -0.0108360  0.0017841  -6.074 1.25e-09 ***
+## height_inch         0.0274359  0.0064336   4.264 2.00e-05 ***
+## weight              0.0004723  0.0006257   0.755 0.450349    
+## hair_colblack       0.1138623  0.1116728   1.020 0.307915    
+## hair_colblond      -0.2342093  0.2132065  -1.099 0.271982    
+## hair_colbrown      -0.0075590  0.1183843  -0.064 0.949089    
+## hair_colother      -0.0427759  0.1417515  -0.302 0.762830    
+## eye_colblue         0.1284665  0.1700807   0.755 0.450053    
+## eye_colbrown       -0.0105313  0.0727950  -0.145 0.884971    
+## eye_colother       -0.0887821  0.1293596  -0.686 0.492511    
+## buildmedium        -0.2527791  0.0758386  -3.333 0.000859 ***
+## buildother         -0.4490363  0.1932803  -2.323 0.020166 *  
+## buildthin          -0.2165816  0.0807537  -2.682 0.007318 ** 
+## buildunknown       -0.5533496  0.1618418  -3.419 0.000628 ***
+## stop_in_outoutside  0.3561322  0.0489741   7.272 3.55e-13 ***
+## precinct           -0.0024775  0.0005978  -4.144 3.41e-05 ***
+## off_in_unif        -0.6270943  0.0438455 -14.302  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 16164  on 12369  degrees of freedom
-## Residual deviance: 14701  on 12336  degrees of freedom
+## Residual deviance: 15410  on 12346  degrees of freedom
 ##   (34 observations deleted due to missingness)
-## AIC: 14769
+## AIC: 15458
 ## 
-## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code># Remove hair and eye color because all categories within them are highly unsignificant, cs_drgtr, cs_lkout
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># Remove hair and eye color because all categories within them are highly unsignificant 
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_cloth + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
 summary(model_3)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = frisked ~ sex + race + age + height_inch + weight + 
-##     build + stop_in_out + precinct + off_in_unif + cs_objcs + 
-##     cs_descr + cs_casng + cs_cloth + cs_furtv + cs_vcrim + cs_bulge + 
-##     cs_other, family = binomial, data = stop_frisk_log)
-## 
-## Deviance Residuals: 
-##     Min       1Q   Median       3Q      Max  
-## -2.6193  -1.2054   0.6301   0.9739   2.0738  
-## 
-## Coefficients:
-##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -2.1682582  0.4337842  -4.998 5.78e-07 ***
-## sexM                0.8019418  0.0790577  10.144  &lt; 2e-16 ***
-## sexZ                0.5576983  0.2968261   1.879 0.060262 .  
-## raceblack           0.3481331  0.0763199   4.562 5.08e-06 ***
-## raceblack-hispanic  0.4098271  0.1039331   3.943 8.04e-05 ***
-## racewhite          -0.1346264  0.0917883  -1.467 0.142456    
-## racewhite-hispanic  0.3416191  0.0818948   4.171 3.03e-05 ***
-## age                -0.0094303  0.0017342  -5.438 5.40e-08 ***
-## height_inch         0.0282611  0.0066470   4.252 2.12e-05 ***
-## weight              0.0004206  0.0006316   0.666 0.505406    
-## buildmedium        -0.2241739  0.0775145  -2.892 0.003828 ** 
-## buildother         -0.5238977  0.2000930  -2.618 0.008838 ** 
-## buildthin          -0.1972421  0.0824802  -2.391 0.016785 *  
-## buildunknown       -0.5702604  0.1648423  -3.459 0.000541 ***
-## stop_in_outoutside  0.3039561  0.0506983   5.995 2.03e-09 ***
-## precinct           -0.0018771  0.0006120  -3.067 0.002160 ** 
-## off_in_unif        -0.5520238  0.0482673 -11.437  &lt; 2e-16 ***
-## cs_objcs            0.2083518  0.1222462   1.704 0.088313 .  
-## cs_descr            0.2933437  0.0495935   5.915 3.32e-09 ***
-## cs_casng           -0.2998495  0.0620997  -4.829 1.38e-06 ***
-## cs_cloth            0.1819576  0.1298064   1.402 0.160987    
-## cs_furtv            1.0178590  0.0647766  15.713  &lt; 2e-16 ***
-## cs_vcrim            0.8724999  0.1064436   8.197 2.47e-16 ***
-## cs_bulge            1.6352909  0.1228109  13.316  &lt; 2e-16 ***
-## cs_other            0.1838703  0.0464174   3.961 7.46e-05 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 16164  on 12369  degrees of freedom
-## Residual deviance: 14713  on 12345  degrees of freedom
-##   (34 observations deleted due to missingness)
-## AIC: 14763
-## 
-## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code># remove weight, cs_cloth, cs_objcs
-model_4 = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = stop_frisk_log)
-
-summary(model_4)</code></pre>
-<pre><code>## 
-## Call:
-## glm(formula = frisked ~ sex + race + age + height_inch + build + 
-##     stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + 
-##     cs_furtv + cs_vcrim + cs_bulge + cs_other, family = binomial, 
+##     build + stop_in_out + precinct + off_in_unif, family = binomial, 
 ##     data = stop_frisk_log)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -2.6232  -1.2072   0.6299   0.9725   2.0659  
+## -2.0497  -1.2793   0.7362   0.9364   1.8435  
 ## 
 ## Coefficients:
 ##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -2.1791291  0.4333314  -5.029 4.94e-07 ***
-## sexM                0.8083040  0.0787876  10.259  &lt; 2e-16 ***
-## sexZ                0.5562408  0.2969852   1.873 0.061074 .  
-## raceblack           0.3473607  0.0762373   4.556 5.21e-06 ***
-## raceblack-hispanic  0.4097184  0.1038664   3.945 7.99e-05 ***
-## racewhite          -0.1333086  0.0917304  -1.453 0.146150    
-## racewhite-hispanic  0.3440684  0.0818417   4.204 2.62e-05 ***
-## age                -0.0092047  0.0017091  -5.386 7.21e-08 ***
-## height_inch         0.0298190  0.0063123   4.724 2.31e-06 ***
-## buildmedium        -0.2422417  0.0727974  -3.328 0.000876 ***
-## buildother         -0.5380601  0.1994142  -2.698 0.006971 ** 
-## buildthin          -0.2208972  0.0738390  -2.992 0.002775 ** 
-## buildunknown       -0.5923292  0.1626071  -3.643 0.000270 ***
-## stop_in_outoutside  0.3068768  0.0506752   6.056 1.40e-09 ***
-## precinct           -0.0018765  0.0006115  -3.069 0.002149 ** 
-## off_in_unif        -0.5532569  0.0482391 -11.469  &lt; 2e-16 ***
-## cs_descr            0.2827799  0.0491291   5.756 8.62e-09 ***
-## cs_casng           -0.3018118  0.0618532  -4.879 1.06e-06 ***
-## cs_furtv            1.0252015  0.0644066  15.918  &lt; 2e-16 ***
-## cs_vcrim            0.8751371  0.1063031   8.232  &lt; 2e-16 ***
-## cs_bulge            1.6333929  0.1227424  13.307  &lt; 2e-16 ***
-## cs_other            0.1726151  0.0460302   3.750 0.000177 ***
+## (Intercept)        -1.6409172  0.4165361  -3.939 8.17e-05 ***
+## sexM                0.8520890  0.0769262  11.077  &lt; 2e-16 ***
+## sexZ                0.6679717  0.2863221   2.333 0.019651 *  
+## raceblack           0.4513006  0.0737944   6.116 9.62e-10 ***
+## raceblack-hispanic  0.4519143  0.1010787   4.471 7.79e-06 ***
+## racewhite          -0.1002964  0.0889673  -1.127 0.259598    
+## racewhite-hispanic  0.4188420  0.0794744   5.270 1.36e-07 ***
+## age                -0.0116504  0.0016961  -6.869 6.47e-12 ***
+## height_inch         0.0272573  0.0064278   4.241 2.23e-05 ***
+## weight              0.0005208  0.0006289   0.828 0.407667    
+## buildmedium        -0.2507412  0.0757687  -3.309 0.000935 ***
+## buildother         -0.4441811  0.1932429  -2.299 0.021530 *  
+## buildthin          -0.2159530  0.0807378  -2.675 0.007479 ** 
+## buildunknown       -0.5792819  0.1607148  -3.604 0.000313 ***
+## stop_in_outoutside  0.3541251  0.0489056   7.241 4.45e-13 ***
+## precinct           -0.0024976  0.0005971  -4.183 2.88e-05 ***
+## off_in_unif        -0.6294283  0.0437821 -14.376  &lt; 2e-16 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 16164  on 12369  degrees of freedom
-## Residual deviance: 14719  on 12348  degrees of freedom
+## Residual deviance: 15421  on 12353  degrees of freedom
 ##   (34 observations deleted due to missingness)
-## AIC: 14763
+## AIC: 15455
 ## 
-## Number of Fisher Scoring iterations: 5</code></pre>
-<pre class="r"><code>anova(model_4, model_3, test = &quot;Chisq&quot;)</code></pre>
-<pre><code>## Analysis of Deviance Table
-## 
-## Model 1: frisked ~ sex + race + age + height_inch + build + stop_in_out + 
-##     precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + 
-##     cs_vcrim + cs_bulge + cs_other
-## Model 2: frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + 
-##     precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + 
-##     cs_cloth + cs_furtv + cs_vcrim + cs_bulge + cs_other
-##   Resid. Df Resid. Dev Df Deviance Pr(&gt;Chi)
-## 1     12348      14719                     
-## 2     12345      14713  3   5.4088   0.1442</code></pre>
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code># keep weight? </code></pre>
 <p>Building a model that uses characteristics, demographics, and location as predictors for arrest made</p>
-<pre class="r"><code>model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+<pre class="r"><code>model_4 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-car::vif(model_5)</code></pre>
+car::vif(model_4)</code></pre>
 <pre><code>##                 GVIF Df GVIF^(1/(2*Df))
 ## sex         1.196703  2        1.045915
 ## race        1.415372  4        1.044381
@@ -904,7 +803,7 @@ car::vif(model_5)</code></pre>
 ## stop_in_out 1.090944  1        1.044483
 ## precinct    1.102226  1        1.049870
 ## off_in_unif 1.071970  1        1.035360</code></pre>
-<pre class="r"><code>summary(model_5)</code></pre>
+<pre class="r"><code>summary(model_4)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
@@ -952,123 +851,138 @@ car::vif(model_5)</code></pre>
 ## AIC: 12353
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<pre class="r"><code># remove eye color and build 
-model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col+ stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+<pre class="r"><code># remove eye color
+model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + build + stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
 
-summary(model_6)</code></pre>
+summary(model_5)</code></pre>
 <pre><code>## 
 ## Call:
 ## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
-##     hair_col + stop_in_out + precinct + off_in_unif, family = binomial, 
-##     data = stop_frisk_log)
+##     hair_col + build + stop_in_out + precinct + off_in_unif, 
+##     family = binomial, data = stop_frisk_log)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -1.3387  -0.6668  -0.5961  -0.5346   2.4339  
+## -1.3464  -0.6675  -0.5963  -0.5320   2.4055  
 ## 
 ## Coefficients:
 ##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)        -0.2621460  0.5008406  -0.523 0.600688    
-## sexM               -0.0929552  0.0888925  -1.046 0.295698    
-## sexZ               -1.1146650  0.4834801  -2.306 0.021138 *  
-## raceblack           0.1092875  0.0940234   1.162 0.245096    
-## raceblack-hispanic  0.2631428  0.1209404   2.176 0.029570 *  
-## racewhite           0.1589597  0.1153830   1.378 0.168305    
-## racewhite-hispanic  0.4442909  0.0987528   4.499 6.83e-06 ***
-## age                 0.0038564  0.0020810   1.853 0.063863 .  
-## height_inch         0.0066503  0.0076933   0.864 0.387348    
-## weight             -0.0022953  0.0007537  -3.045 0.002325 ** 
-## hair_colblack      -0.2550229  0.1244635  -2.049 0.040464 *  
-## hair_colblond      -0.0105077  0.2315999  -0.045 0.963812    
-## hair_colbrown      -0.2744509  0.1330705  -2.062 0.039165 *  
-## hair_colother      -0.3734880  0.1643805  -2.272 0.023081 *  
-## stop_in_outoutside -1.0179785  0.0521227 -19.530  &lt; 2e-16 ***
-## precinct           -0.0022934  0.0006920  -3.314 0.000919 ***
-## off_in_unif        -0.2276864  0.0489971  -4.647 3.37e-06 ***
+## (Intercept)        -0.2901413  0.5057784  -0.574 0.566203    
+## sexM               -0.0958134  0.0894755  -1.071 0.284245    
+## sexZ               -1.1155023  0.4836155  -2.307 0.021078 *  
+## raceblack           0.1087049  0.0940490   1.156 0.247750    
+## raceblack-hispanic  0.2659418  0.1209820   2.198 0.027935 *  
+## racewhite           0.1616558  0.1154173   1.401 0.161328    
+## racewhite-hispanic  0.4477819  0.0988082   4.532 5.85e-06 ***
+## age                 0.0040773  0.0020869   1.954 0.050734 .  
+## height_inch         0.0063178  0.0077066   0.820 0.412340    
+## weight             -0.0020183  0.0008739  -2.309 0.020920 *  
+## hair_colblack      -0.2552874  0.1245925  -2.049 0.040464 *  
+## hair_colblond      -0.0167779  0.2317412  -0.072 0.942284    
+## hair_colbrown      -0.2752952  0.1332020  -2.067 0.038758 *  
+## hair_colother      -0.3789820  0.1646885  -2.301 0.021380 *  
+## buildmedium        -0.0319966  0.0892178  -0.359 0.719868    
+## buildother         -0.0876892  0.2391380  -0.367 0.713851    
+## buildthin           0.0361099  0.0966727   0.374 0.708756    
+## buildunknown        0.0817591  0.1935233   0.422 0.672677    
+## stop_in_outoutside -1.0190000  0.0521582 -19.537  &lt; 2e-16 ***
+## precinct           -0.0022871  0.0006928  -3.301 0.000962 ***
+## off_in_unif        -0.2303575  0.0490705  -4.694 2.67e-06 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 12821  on 12369  degrees of freedom
-## Residual deviance: 12308  on 12353  degrees of freedom
+## Residual deviance: 12305  on 12349  degrees of freedom
 ##   (34 observations deleted due to missingness)
-## AIC: 12342
+## AIC: 12347
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<pre class="r"><code># remove height, age
-model_7 = glm(arst_made ~ sex + race + weight + hair_col+ stop_in_out + precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+<pre class="r"><code># remove build
+model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
-summary(model_7)</code></pre>
+summary(model_6)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = arst_made ~ sex + race + weight + hair_col + stop_in_out + 
-##     precinct + off_in_unif, family = binomial, data = stop_frisk_log)
+## glm(formula = arst_made ~ sex + race + age + height_inch + weight + 
+##     hair_col + stop_in_out + off_in_unif, family = binomial, 
+##     data = stop_frisk_log)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -1.3458  -0.6665  -0.5961  -0.5373   2.4324  
+## -1.2975  -0.6635  -0.5931  -0.5415   2.4229  
 ## 
 ## Coefficients:
 ##                      Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)         0.2297619  0.2060298   1.115  0.26477    
-## sexM               -0.0756078  0.0850909  -0.889  0.37424    
-## sexZ               -1.1242536  0.4825585  -2.330  0.01982 *  
-## raceblack           0.1152951  0.0936047   1.232  0.21805    
-## raceblack-hispanic  0.2531615  0.1208586   2.095  0.03620 *  
-## racewhite           0.1813235  0.1149132   1.578  0.11458    
-## racewhite-hispanic  0.4442470  0.0986428   4.504 6.68e-06 ***
-## weight             -0.0017477  0.0006459  -2.706  0.00681 ** 
-## hair_colblack      -0.3005914  0.1210457  -2.483  0.01302 *  
-## hair_colblond      -0.0558530  0.2298589  -0.243  0.80801    
-## hair_colbrown      -0.3152354  0.1299525  -2.426  0.01528 *  
-## hair_colother      -0.3781010  0.1642529  -2.302  0.02134 *  
-## stop_in_outoutside -1.0265748  0.0518863 -19.785  &lt; 2e-16 ***
-## precinct           -0.0022296  0.0006910  -3.226  0.00125 ** 
-## off_in_unif        -0.2214285  0.0488617  -4.532 5.85e-06 ***
+## (Intercept)        -0.4293999  0.4986940  -0.861  0.38921    
+## sexM               -0.0921439  0.0888558  -1.037  0.29973    
+## sexZ               -1.0730364  0.4834979  -2.219  0.02646 *  
+## raceblack           0.1563236  0.0928705   1.683  0.09233 .  
+## raceblack-hispanic  0.3240457  0.1194968   2.712  0.00669 ** 
+## racewhite           0.1831512  0.1150179   1.592  0.11130    
+## racewhite-hispanic  0.4860926  0.0978721   4.967 6.81e-07 ***
+## age                 0.0040368  0.0020779   1.943  0.05205 .  
+## height_inch         0.0064726  0.0076985   0.841  0.40048    
+## weight             -0.0023204  0.0007529  -3.082  0.00206 ** 
+## hair_colblack      -0.2583725  0.1243414  -2.078  0.03772 *  
+## hair_colblond      -0.0263750  0.2313251  -0.114  0.90922    
+## hair_colbrown      -0.2825310  0.1329109  -2.126  0.03353 *  
+## hair_colother      -0.3653675  0.1642454  -2.225  0.02611 *  
+## stop_in_outoutside -1.0501850  0.0512621 -20.487  &lt; 2e-16 ***
+## off_in_unif        -0.2119237  0.0487338  -4.349 1.37e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-##     Null deviance: 12851  on 12403  degrees of freedom
-## Residual deviance: 12342  on 12389  degrees of freedom
-## AIC: 12372
+##     Null deviance: 12821  on 12369  degrees of freedom
+## Residual deviance: 12319  on 12354  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 12351
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<p>Creating Training and Testing datasets and use the selected models to create AOC</p>
-<pre class="r"><code>train = sample_frac(stop_frisk_log, size = 0.8)
-test = anti_join(stop_frisk_log, train)</code></pre>
-<pre><code>## Joining, by = c(&quot;precinct&quot;, &quot;date_stop&quot;, &quot;time_stop&quot;, &quot;stop_in_out&quot;, &quot;obs_time_min&quot;, &quot;stop_time_min&quot;, &quot;arst_made&quot;, &quot;off_in_unif&quot;, &quot;frisked&quot;, &quot;searched&quot;, &quot;rf_vcrim&quot;, &quot;rf_othsw&quot;, &quot;rf_attir&quot;, &quot;cs_objcs&quot;, &quot;cs_descr&quot;, &quot;cs_casng&quot;, &quot;cs_lkout&quot;, &quot;rf_vcact&quot;, &quot;cs_cloth&quot;, &quot;cs_drgtr&quot;, &quot;ac_evasv&quot;, &quot;cs_furtv&quot;, &quot;rf_rfcmp&quot;, &quot;ac_cgdir&quot;, &quot;rf_verbl&quot;, &quot;cs_vcrim&quot;, &quot;cs_bulge&quot;, &quot;cs_other&quot;, &quot;rf_knowl&quot;, &quot;sb_hdobj&quot;, &quot;sb_outln&quot;, &quot;sb_admis&quot;, &quot;rf_furt&quot;, &quot;rf_bulg&quot;, &quot;sex&quot;, &quot;race&quot;, &quot;age&quot;, &quot;height_inch&quot;, &quot;weight&quot;, &quot;hair_col&quot;, &quot;eye_col&quot;, &quot;build&quot;, &quot;boro&quot;, &quot;xcoord&quot;, &quot;ycoord&quot;)</code></pre>
-<pre class="r"><code>library(caret)</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## 
-## Attaching package: &#39;caret&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:httr&#39;:
-## 
-##     progress</code></pre>
-<pre><code>## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     lift</code></pre>
-<pre class="r"><code># predict results for arrest made model
-model_7_pred = glm(arst_made ~ sex + race + weight + stop_in_out + precinct + off_in_unif + hair_col, family = binomial, data = train)
+<pre class="r"><code># remove height
+model_7 = glm(arst_made ~ sex + race + age + weight + hair_col + stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 
-log_pred = predict(model_7_pred, newdata = test, type = &quot;response&quot;)
-
-log_pred = ifelse(log_pred &gt; 0.5, 1, 0)
-
-library(ROCR)</code></pre>
-<pre><code>## Loading required package: gplots</code></pre>
+summary(model_7)</code></pre>
 <pre><code>## 
-## Attaching package: &#39;gplots&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## Call:
+## glm(formula = arst_made ~ sex + race + age + weight + hair_col + 
+##     stop_in_out + off_in_unif, family = binomial, data = stop_frisk_log)
 ## 
-##     lowess</code></pre>
-<pre class="r"><code>library(Metrics)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;Metrics&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:caret&#39;:
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.3023  -0.6630  -0.5931  -0.5420   2.4217  
 ## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)        -0.0484123  0.2091060  -0.232  0.81691    
+## sexM               -0.0710071  0.0852080  -0.833  0.40465    
+## sexZ               -1.0543000  0.4829617  -2.183  0.02904 *  
+## raceblack           0.1630594  0.0925216   1.762  0.07800 .  
+## raceblack-hispanic  0.3245760  0.1194966   2.716  0.00660 ** 
+## racewhite           0.1875979  0.1148896   1.633  0.10250    
+## racewhite-hispanic  0.4838087  0.0978299   4.945 7.60e-07 ***
+## age                 0.0040270  0.0020764   1.939  0.05245 .  
+## weight             -0.0020816  0.0006851  -3.038  0.00238 ** 
+## hair_colblack      -0.2572458  0.1243320  -2.069  0.03854 *  
+## hair_colblond      -0.0228738  0.2312852  -0.099  0.92122    
+## hair_colbrown      -0.2799264  0.1328703  -2.107  0.03514 *  
+## hair_colother      -0.3670896  0.1642374  -2.235  0.02541 *  
+## stop_in_outoutside -1.0500310  0.0512612 -20.484  &lt; 2e-16 ***
+## off_in_unif        -0.2130833  0.0487153  -4.374 1.22e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+<<<<<<< HEAD
+##     Null deviance: 12821  on 12369  degrees of freedom
+## Residual deviance: 12319  on 12355  degrees of freedom
+##   (34 observations deleted due to missingness)
+## AIC: 12349
+=======
 ##     precision, recall</code></pre>
 <pre class="r"><code>pr = prediction(log_pred, test$arst_made)
 perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
@@ -1098,231 +1012,9 @@ plot(perf)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;Matrix&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+>>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
 ## 
-##     expand, pack, unpack</code></pre>
-<pre><code>## Loaded glmnet 3.0-1</code></pre>
-<pre class="r"><code>set.seed(1)
-
-# getting rid of incomplete observations
-stop_frisk_lasso = stop_frisk_log[complete.cases(stop_frisk_log), ]
-
-# keeping only variables we want to use with frisked logistic prediction
-stop_frisk_lasso = stop_frisk_lasso %&gt;% select(frisked, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
-
-# create test and train datasets
-train_lasso = sample_frac(stop_frisk_lasso, size = 0.5)
-test_lasso = anti_join(stop_frisk_lasso, train_lasso)</code></pre>
-<pre><code>## Joining, by = c(&quot;frisked&quot;, &quot;sex&quot;, &quot;race&quot;, &quot;age&quot;, &quot;height_inch&quot;, &quot;weight&quot;, &quot;hair_col&quot;, &quot;eye_col&quot;, &quot;build&quot;, &quot;stop_in_out&quot;, &quot;precinct&quot;, &quot;off_in_unif&quot;, &quot;cs_objcs&quot;, &quot;cs_descr&quot;, &quot;cs_casng&quot;, &quot;cs_lkout&quot;, &quot;cs_cloth&quot;, &quot;cs_drgtr&quot;, &quot;cs_furtv&quot;, &quot;cs_vcrim&quot;, &quot;cs_bulge&quot;, &quot;cs_other&quot;)</code></pre>
-<pre class="r"><code># creating x and y
-x = model.matrix(frisked ~ ., train_lasso)[,-1]
-y = train_lasso$frisked
-
-# lasso fit
-lasso_fit = glmnet(x, y, family = &quot;binomial&quot;)
-
-# cross validation
-lasso_cv = cv.glmnet(x, y, family = &quot;binomial&quot;, type = &quot;mse&quot;)
-
-lambda_opt = lasso_cv$lambda.min
-
-# visualizing best lambda
-broom::tidy(lasso_fit) %&gt;% 
-  select(term, lambda, estimate) %&gt;% 
-  complete(term, lambda, fill = list(estimate = 0) ) %&gt;% 
-  filter(term != &quot;(Intercept)&quot;) %&gt;% 
-  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
-  geom_path() + 
-  geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
-  theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
-<pre class="r"><code>broom::tidy(lasso_cv) %&gt;% 
-  ggplot(aes(x = log(lambda, 10), y = estimate)) + 
-  geom_point()  </code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-9-2.png" width="90%" /></p>
-<pre class="r"><code># coefficients from the optimal model
-lasso_fit = glmnet(x, y, lambda = lambda_opt)
-lasso_fit %&gt;% broom::tidy()</code></pre>
-<pre><code>## # A tibble: 32 x 5
-##    term                step  estimate   lambda dev.ratio
-##    &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-##  1 (Intercept)            1 -0.0718   0.000561     0.103
-##  2 sexM                   1  0.174    0.000561     0.103
-##  3 sexZ                   1  0.214    0.000561     0.103
-##  4 raceblack              1  0.0697   0.000561     0.103
-##  5 raceblack-hispanic     1  0.0824   0.000561     0.103
-##  6 racewhite-hispanic     1  0.0973   0.000561     0.103
-##  7 age                    1 -0.00156  0.000561     0.103
-##  8 height_inch            1  0.00644  0.000561     0.103
-##  9 weight                 1  0.000203 0.000561     0.103
-## 10 hair_colblack          1  0.0468   0.000561     0.103
-## # … with 22 more rows</code></pre>
-<p>Testing data</p>
-<pre class="r"><code>#min value of lambda
-lambda_min &lt;- lasso_cv$lambda.min
-#best value of lambda
-lambda_1se &lt;- lasso_cv$lambda.1se
-#regression coefficients
-coef(lasso_cv, s = lambda_1se)</code></pre>
-<pre><code>## 34 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
-##                               1
-## (Intercept)        -1.318302987
-## sexM                0.578761755
-## sexZ                .          
-## raceblack           .          
-## raceblack-hispanic  .          
-## racewhite          -0.220506026
-## racewhite-hispanic  .          
-## age                -0.001479548
-## height_inch         0.017550495
-## weight              .          
-## hair_colblack       0.088428252
-## hair_colblond       .          
-## hair_colbrown       .          
-## hair_colother       .          
-## eye_colblue         .          
-## eye_colbrown        .          
-## eye_colother        .          
-## buildmedium         .          
-## buildother          .          
-## buildthin           .          
-## buildunknown        .          
-## stop_in_outoutside  0.242644808
-## precinct            .          
-## off_in_unif        -0.280209277
-## cs_objcs            .          
-## cs_descr            0.010899211
-## cs_casng           -0.112312701
-## cs_lkout            .          
-## cs_cloth            .          
-## cs_drgtr            .          
-## cs_furtv            0.726889511
-## cs_vcrim            0.505486370
-## cs_bulge            1.123915907
-## cs_other            .</code></pre>
-<pre class="r"><code>#get test data
-x_test &lt;- model.matrix(frisked ~ ., test_lasso)
-x_test = x_test[,-1]
-
-#predict class, type=”class”
-lasso_prob &lt;- predict(lasso_cv, newx = x_test, s = lambda_1se, type = &quot;response&quot;)
-
-#translate probabilities to predictions
-lasso_predict &lt;- rep(&quot;neg&quot;, nrow(test_lasso))
-lasso_predict[lasso_prob &gt; 0.5] &lt;- &quot;pos&quot;
-
-#confusion matrix
-table(pred = lasso_predict, true = test_lasso$frisked)</code></pre>
-<pre><code>##      true
-## pred     0    1
-##   neg  253  131
-##   pos 1939 3640</code></pre>
-<pre class="r"><code>auc(test_lasso$frisked, lasso_predict)</code></pre>
-<pre><code>## [1] 0.5403405</code></pre>
-<p>LASSO Arrested</p>
-<pre class="r"><code># getting rid of incomplete observations
-stop_frisk_lasso_arst = stop_frisk_log[complete.cases(stop_frisk_log), ]
-
-# keeping only variables we want to use with frisked logistic prediction
-stop_frisk_lasso_arst = stop_frisk_lasso_arst %&gt;% select(arst_made, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif)
-
-
-# create test and train datasets
-train_lasso_arst = sample_frac(stop_frisk_lasso_arst, size = 0.5)
-test_lasso_arst = anti_join(stop_frisk_lasso_arst, train_lasso_arst)</code></pre>
-<pre><code>## Joining, by = c(&quot;arst_made&quot;, &quot;sex&quot;, &quot;race&quot;, &quot;age&quot;, &quot;height_inch&quot;, &quot;weight&quot;, &quot;hair_col&quot;, &quot;eye_col&quot;, &quot;build&quot;, &quot;stop_in_out&quot;, &quot;precinct&quot;, &quot;off_in_unif&quot;)</code></pre>
-<pre class="r"><code># creating x and y
-x = model.matrix(arst_made ~ ., train_lasso_arst)[,-1]
-y = train_lasso_arst$arst_made
-
-# lasso fit
-lasso_fit = glmnet(x, y, family = &quot;binomial&quot;)
-
-# cross validation
-lasso_cv = cv.glmnet(x, y, family = &quot;binomial&quot;, type = &quot;mse&quot;)
-
-lambda_opt = lasso_cv$lambda.min
-
-# visualizing best lambda
-broom::tidy(lasso_fit) %&gt;% 
-  select(term, lambda, estimate) %&gt;% 
-  complete(term, lambda, fill = list(estimate = 0) ) %&gt;% 
-  filter(term != &quot;(Intercept)&quot;) %&gt;% 
-  ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
-  geom_path() + 
-  geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
-  theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
-<pre class="r"><code>broom::tidy(lasso_cv) %&gt;% 
-  ggplot(aes(x = log(lambda, 10), y = estimate)) + 
-  geom_point()  </code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-11-2.png" width="90%" /></p>
-<pre class="r"><code># coefficients from the optimal model
-lasso_fit = glmnet(x, y, lambda = lambda_opt)
-lasso_fit %&gt;% broom::tidy()</code></pre>
-<pre><code>## # A tibble: 10 x 5
-##    term                step  estimate  lambda dev.ratio
-##    &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1 (Intercept)            1  0.413    0.00554    0.0465
-##  2 sexZ                   1 -0.0745   0.00554    0.0465
-##  3 raceblack-hispanic     1  0.00185  0.00554    0.0465
-##  4 racewhite-hispanic     1  0.0389   0.00554    0.0465
-##  5 weight                 1 -0.000119 0.00554    0.0465
-##  6 hair_colbrown          1  0.00118  0.00554    0.0465
-##  7 buildthin              1  0.0101   0.00554    0.0465
-##  8 stop_in_outoutside     1 -0.195    0.00554    0.0465
-##  9 precinct               1 -0.000304 0.00554    0.0465
-## 10 off_in_unif            1 -0.0200   0.00554    0.0465</code></pre>
-<p>Tsting the data</p>
-<pre class="r"><code>#min value of lambda
-lambda_min &lt;- lasso_cv$lambda.min
-#best value of lambda
-lambda_1se &lt;- lasso_cv$lambda.1se
-#regression coefficients
-coef(lasso_cv, s = lambda_1se)</code></pre>
-<pre><code>## 24 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
-##                             1
-## (Intercept)        -0.8682186
-## sexM                .        
-## sexZ                .        
-## raceblack           .        
-## raceblack-hispanic  .        
-## racewhite           .        
-## racewhite-hispanic  .        
-## age                 .        
-## height_inch         .        
-## weight              .        
-## hair_colblack       .        
-## hair_colblond       .        
-## hair_colbrown       .        
-## hair_colother       .        
-## eye_colblue         .        
-## eye_colbrown        .        
-## eye_colother        .        
-## buildmedium         .        
-## buildother          .        
-## buildthin           .        
-## buildunknown        .        
-## stop_in_outoutside -0.5515999
-## precinct            .        
-## off_in_unif         .</code></pre>
-<pre class="r"><code>#get test data
-x_test &lt;- model.matrix(arst_made ~ ., test_lasso_arst)
-x_test = x_test[,-1]
-
-#predict class, type=”class”
-lasso_prob &lt;- predict(lasso_cv, newx = x_test, s = lambda_1se, type = &quot;response&quot;)
-
-#translate probabilities to predictions
-lasso_predict &lt;- rep(&quot;neg&quot;, nrow(test_lasso_arst))
-lasso_predict[lasso_prob &gt; 0.5] &lt;- &quot;pos&quot;
-
-#confusion matrix
-table(pred = lasso_predict, true = test_lasso_arst$arst_made)</code></pre>
-<pre><code>##      true
-## pred     0    1
-##   neg 4663 1285</code></pre>
-<pre class="r"><code>auc(test_lasso_arst$arst_made, lasso_predict)</code></pre>
-<pre><code>## [1] 0.5</code></pre>
+## Number of Fisher Scoring iterations: 4</code></pre>
 <pre class="r"><code>stop_frisk_log %&gt;% group_by(frisked, searched, arst_made) %&gt;% 
   summarise(
     n_obs = n())</code></pre>
@@ -1352,7 +1044,18 @@ demographics %&gt;%
 demographics %&gt;% 
   plot_ly(y = ~ age, color = ~sex, type = &quot;violin&quot;, colors = &quot;Set2&quot;)
 
+
+# percentage of races stopped
+demographics %&gt;% 
+  count(race) %&gt;% 
+  mutate(percent = (n / nrow(demographics))* 100,
+         # percent = str_replace(percent, &quot;[0-9]$&quot;, &quot;%&quot;),
+         race = as.factor(race),
+         race = fct_reorder(race, n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ percent, type = &quot;bar&quot;, color = ~ race)
+
   
+
 # subjects count of frisked subjects by race, sex 
 frisked_plot = 
   stop_frisk_df %&gt;% 
@@ -1397,7 +1100,25 @@ arrested_plot =
 # devtools::install_github(&quot;thomasp85/patchwork&quot;)
 library(patchwork)
 
-(frisked_plot+searched_plot + arrested_plot)</code></pre>
+(frisked_plot+searched_plot + arrested_plot)
+
+# final plot
+stop_frisk_log %&gt;% 
+  drop_na() %&gt;% 
+  mutate(stopped = as.numeric(stop_in_out),
+         stopped = case_when(
+           stopped &gt; 0 ~ &#39;1&#39;,
+           TRUE ~&quot;&quot;),
+         stopped = as.numeric(stopped)) %&gt;% 
+  select(race, arst_made, frisked, stopped) %&gt;% 
+  pivot_longer(
+      arst_made:stopped,
+      names_to = &quot;action&quot;,
+      values_to = &quot;value&quot;) %&gt;% 
+  filter(value == &#39;1&#39;) %&gt;% 
+  count(race, action) %&gt;% 
+  mutate(race = fct_infreq(race, n)) %&gt;% 
+  plot_ly(x = ~action, y = ~n, type = &quot;bar&quot;, color = ~ race)</code></pre>
 <p>Regression model for demographics</p>
 <pre class="r"><code>dem_model = glm(arst_made ~ sex:build + height_inch, family = binomial, data = stop_frisk_log)
 summary(dem_model)
@@ -1418,91 +1139,36 @@ stop_frisk_relevel =
 arrest_model_2 = 
   glm(arst_made ~ sex + age + weight, family = binomial, data = stop_frisk_relevel)
 summary(arrest_model_2)</code></pre>
-<p>Stops of subjects below 18</p>
-<pre class="r"><code>stop_frisk_log %&gt;% 
-  filter(
-    age &lt; &#39;18&#39;) %&gt;% 
-  group_by(sex, race) %&gt;% 
-  summarize(count = n()) %&gt;% 
-  knitr::kable()</code></pre>
+<p>Stops of subjects below 18. Maybe shny?</p>
+<pre class="r"><code># percent innocent under 18
+under_18 = stop_frisk_log %&gt;% 
+  filter(age&lt;&#39;18&#39;)
+
+stop_frisk_log %&gt;% 
+  filter(age &lt; &#39;18&#39;) %&gt;% 
+  count(arst_made) %&gt;%
+  mutate(
+    percent = (n /nrow(under_18)* 100)
+  ) %&gt;% 
+  knitr::kable(digits = 2)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">sex</th>
-<th align="left">race</th>
-<th align="right">count</th>
+<th align="right">arst_made</th>
+<th align="right">n</th>
+<th align="right">percent</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">F</td>
-<td align="left">other</td>
-<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">1486</td>
+<td align="right">80.45</td>
 </tr>
 <tr class="even">
-<td align="left">F</td>
-<td align="left">black</td>
-<td align="right">90</td>
-</tr>
-<tr class="odd">
-<td align="left">F</td>
-<td align="left">black-hispanic</td>
-<td align="right">14</td>
-</tr>
-<tr class="even">
-<td align="left">F</td>
-<td align="left">white</td>
-<td align="right">12</td>
-</tr>
-<tr class="odd">
-<td align="left">F</td>
-<td align="left">white-hispanic</td>
-<td align="right">32</td>
-</tr>
-<tr class="even">
-<td align="left">M</td>
-<td align="left">other</td>
-<td align="right">123</td>
-</tr>
-<tr class="odd">
-<td align="left">M</td>
-<td align="left">black</td>
-<td align="right">969</td>
-</tr>
-<tr class="even">
-<td align="left">M</td>
-<td align="left">black-hispanic</td>
-<td align="right">137</td>
-</tr>
-<tr class="odd">
-<td align="left">M</td>
-<td align="left">white</td>
-<td align="right">101</td>
-</tr>
-<tr class="even">
-<td align="left">M</td>
-<td align="left">white-hispanic</td>
-<td align="right">344</td>
-</tr>
-<tr class="odd">
-<td align="left">Z</td>
-<td align="left">other</td>
-<td align="right">12</td>
-</tr>
-<tr class="even">
-<td align="left">Z</td>
-<td align="left">black</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="left">Z</td>
-<td align="left">white</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">Z</td>
-<td align="left">white-hispanic</td>
 <td align="right">1</td>
+<td align="right">361</td>
+<td align="right">19.55</td>
 </tr>
 </tbody>
 </table>
@@ -1510,132 +1176,96 @@ summary(arrest_model_2)</code></pre>
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;,
-    frisked == &#39;1&#39;) %&gt;% 
-  group_by( race) %&gt;% 
-  summarize(count = n()) %&gt;% 
-  knitr::kable()</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">race</th>
-<th align="right">count</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">other</td>
-<td align="right">82</td>
-</tr>
-<tr class="even">
-<td align="left">black</td>
-<td align="right">659</td>
-</tr>
-<tr class="odd">
-<td align="left">black-hispanic</td>
-<td align="right">106</td>
-</tr>
-<tr class="even">
-<td align="left">white</td>
-<td align="right">52</td>
-</tr>
-<tr class="odd">
-<td align="left">white-hispanic</td>
-<td align="right">243</td>
-</tr>
-</tbody>
-</table>
+    frisked == &#39;1&#39;) %&gt;%
+  count(race) %&gt;% 
+  mutate(
+    race = fct_reorder(race, n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
+<div id="htmlwidget-7dcb88dec9a078cf7a93" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7dcb88dec9a078cf7a93">{"x":{"visdat":{"2d92322bf628":["function () ","plotlyVisDat"]},"cur_data":"2d92322bf628","attrs":{"2d92322bf628":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[52],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[82],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[106],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[243],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[659],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>#searched under 18
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;,
-    searched == &#39;1&#39;) %&gt;% 
-  group_by( race) %&gt;% 
-  summarize(count = n()) %&gt;% 
-  knitr::kable()</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">race</th>
-<th align="right">count</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">other</td>
-<td align="right">41</td>
-</tr>
-<tr class="even">
-<td align="left">black</td>
-<td align="right">245</td>
-</tr>
-<tr class="odd">
-<td align="left">black-hispanic</td>
-<td align="right">35</td>
-</tr>
-<tr class="even">
-<td align="left">white</td>
-<td align="right">25</td>
-</tr>
-<tr class="odd">
-<td align="left">white-hispanic</td>
-<td align="right">99</td>
-</tr>
-</tbody>
-</table>
+    searched == &#39;1&#39;) %&gt;%
+  count(race) %&gt;% 
+  mutate(
+    race = fct_reorder(race, n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
+<div id="htmlwidget-4fb3cb686be0c81f6467" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4fb3cb686be0c81f6467">{"x":{"visdat":{"2d927c0b2508":["function () ","plotlyVisDat"]},"cur_data":"2d927c0b2508","attrs":{"2d927c0b2508":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","black-hispanic","other","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[25],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[35],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[41],"type":"bar","name":"other","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[99],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[245],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>#arrested under 18
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;,
-    arst_made ==&#39;1&#39;) %&gt;% 
-  group_by(race) %&gt;% 
-  summarize(count = n()) %&gt;% 
-  knitr::kable()</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">race</th>
-<th align="right">count</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">other</td>
-<td align="right">31</td>
-</tr>
-<tr class="even">
-<td align="left">black</td>
-<td align="right">185</td>
-</tr>
-<tr class="odd">
-<td align="left">black-hispanic</td>
-<td align="right">36</td>
-</tr>
-<tr class="even">
-<td align="left">white</td>
-<td align="right">19</td>
-</tr>
-<tr class="odd">
-<td align="left">white-hispanic</td>
-<td align="right">90</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code># bar chart for age below 18 for each race
+    arst_made ==&#39;1&#39;) %&gt;%
+  count(race) %&gt;% 
+  mutate(
+    race = fct_reorder(race, n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
+<div id="htmlwidget-36df8266787ca55cb23e" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-36df8266787ca55cb23e">{"x":{"visdat":{"2d92171cf3a4":["function () ","plotlyVisDat"]},"cur_data":"2d92171cf3a4","attrs":{"2d92171cf3a4":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[19],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[31],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[36],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[90],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[185],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># stoped under 18
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;) %&gt;%
-  ggplot(aes(x = race, fill = race))+
-  geom_bar()</code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
-<pre class="r"><code>#violin plot of age below 18 for each race
+  count(race) %&gt;% 
+  mutate(
+    race = fct_reorder(race, n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
+<div id="htmlwidget-48b94242a8d8f576d93c" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-48b94242a8d8f576d93c">{"x":{"visdat":{"2d921bb97871":["function () ","plotlyVisDat"]},"cur_data":"2d921bb97871","attrs":{"2d921bb97871":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># innocent under 18
 stop_frisk_log %&gt;% 
   filter(
+<<<<<<< HEAD
+    age &lt; &#39;18&#39;,
+    arst_made ==&#39;0&#39;) %&gt;% 
+  count(race) %&gt;% 
+  mutate(
+    percent_innocent = (n/nrow(under_18)* 100),
+    race = fct_reorder(race, n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ percent_innocent, type = &quot;bar&quot;, color = ~ race)</code></pre>
+<div id="htmlwidget-a956267de492e58500ac" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a956267de492e58500ac">{"x":{"visdat":{"2d92caf5004":["function () ","plotlyVisDat"]},"cur_data":"2d92caf5004","attrs":{"2d92caf5004":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"percent_innocent"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[5.19761775852734],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[6.06388738494856],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[6.22631293990254],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[15.5387114239307],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[47.428262046562],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code># reasons for stoping under 18
+stop_frisk_df %&gt;% 
+  filter(age &lt; &#39;18&#39;) %&gt;%
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspcious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+  filter(stops == 1) %&gt;%
+  group_by(reason_stopped) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate(prob = total/sum(total)) %&gt;% 
+  plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<div id="htmlwidget-83d5fd84b6e1d862924b" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-83d5fd84b6e1d862924b">{"x":{"visdat":{"2d924d28b205":["function () ","plotlyVisDat"]},"cur_data":"2d924d28b205","attrs":{"2d924d28b205":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"reason_stopped","type":"category","categoryorder":"array","categoryarray":["actions engaging in violent crime","actions indicative of drug transaction","carrying suspicious object","casing a victim or location","fits a relevant description","furtive movements","other","suspcious bulge","suspect acting as a lookout","wearing clothes commonly used in crimes"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["actions engaging in violent crime"],"y":[141],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["actions indicative of drug transaction"],"y":[59],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["carrying suspicious object"],"y":[32],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,152,157,1)","line":{"color":"rgba(201,152,157,1)"}},"textfont":{"color":"rgba(201,152,157,1)"},"error_y":{"color":"rgba(201,152,157,1)"},"error_x":{"color":"rgba(201,152,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["casing a victim or location"],"y":[233],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["fits a relevant description"],"y":[1052],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["furtive movements"],"y":[334],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,208,99,1)","line":{"color":"rgba(176,208,99,1)"}},"textfont":{"color":"rgba(176,208,99,1)"},"error_y":{"color":"rgba(176,208,99,1)"},"error_x":{"color":"rgba(176,208,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[740],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspcious bulge"],"y":[112],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspect acting as a lookout"],"y":[98],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["wearing clothes commonly used in crimes"],"y":[86],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+=======
     age &lt; &#39;18&#39;) %&gt;%
   plot_ly(y = ~age, color = ~race, type = &quot;violin&quot;, colors = &quot;Set2&quot;)</code></pre>
 <div id="htmlwidget-b527785a29050d7871ad" style="width:90%;height:576px;" class="plotly html-widget"></div>
 <script type="application/json" data-for="htmlwidget-b527785a29050d7871ad">{"x":{"visdat":{"bf14bdf41d3":["function () ","plotlyVisDat"]},"cur_data":"bf14bdf41d3","attrs":{"bf14bdf41d3":{"y":{},"color":{},"colors":"Set2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"violin"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"age"},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"fillcolor":"rgba(102,194,165,0.5)","y":[16,17,16,17,16,17,16,16,17,15,15,15,15,17,17,17,17,16,17,17,11,13,16,17,16,16,16,16,16,15,16,16,13,16,17,17,14,17,16,14,15,14,1,1,16,16,17,16,16,16,15,15,15,15,16,1,17,17,16,17,17,17,17,17,17,15,17,16,16,17,16,17,15,13,17,16,16,16,16,17,16,16,17,17,16,17,17,16,16,16,16,17,17,15,14,12,15,15,16,16,15,16,17,17,16,15,16,17,16,14,16,16,14,16,15,14,1,13,13,13,13,17,12,17,12,13,10,17,16,14,17,15,14,17,17,17,1,17,17,15,17,16,16],"type":"violin","name":"other","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(178,156,177,0.5)","y":[14,17,17,15,16,14,16,14,17,16,16,15,17,16,16,16,17,12,15,15,16,14,14,15,15,16,15,17,16,14,15,1,15,1,1,17,16,17,16,17,17,14,15,15,17,15,17,17,16,16,15,17,15,12,13,17,17,16,14,15,15,17,17,16,14,17,16,15,17,16,17,17,17,17,16,16,17,16,16,16,17,11,16,16,16,16,16,17,13,14,13,13,17,16,14,11,15,15,15,16,14,16,17,13,16,17,16,17,17,17,16,17,16,16,17,17,17,14,17,16,17,15,15,15,14,17,14,14,16,17,15,15,15,16,17,16,17,17,16,17,16,17,17,17,17,16,17,15,16,14,17,16,15,17,16,16,17,15,17,17,15,16,17,17,16,13,16,15,16,17,12,10,17,17,17,17,16,17,15,15,1,15,14,16,16,16,17,17,15,15,15,16,17,17,17,15,17,15,15,16,16,16,17,16,17,17,17,14,15,14,14,17,17,15,16,16,16,17,17,17,16,16,16,17,16,16,16,15,15,17,12,16,16,16,16,14,16,15,16,15,16,16,17,16,17,15,16,15,15,15,15,15,15,17,16,17,15,15,17,17,17,16,15,16,17,17,16,17,15,16,16,15,17,17,17,12,16,14,15,14,17,15,16,12,14,1,1,16,17,14,16,14,15,15,14,1,1,14,17,16,16,17,13,16,15,16,17,17,16,17,15,14,15,15,16,15,16,17,17,17,17,16,15,15,17,17,16,14,14,14,17,16,16,16,15,15,17,15,16,16,17,17,16,17,16,16,16,16,15,16,15,17,16,16,14,16,16,16,17,14,15,16,17,16,17,17,16,17,16,15,15,16,17,16,17,14,14,13,17,17,16,12,13,13,17,14,17,15,15,16,15,15,15,16,14,15,15,14,16,16,17,14,17,14,17,16,15,15,12,17,16,14,17,17,17,16,1,16,16,16,16,16,17,13,15,17,15,17,16,16,16,14,16,15,17,17,17,17,17,16,17,17,17,17,17,15,16,15,14,15,17,13,15,13,17,16,16,17,17,17,13,15,13,15,12,13,11,12,13,12,16,16,16,16,17,15,17,17,17,17,15,15,15,17,15,15,14,15,15,13,16,14,17,15,14,15,15,17,16,17,17,17,15,15,16,15,13,13,13,13,14,15,16,15,17,14,1,17,17,15,16,16,16,16,15,15,17,16,15,17,17,16,16,16,15,13,15,17,17,15,15,15,16,17,17,17,15,15,13,12,13,16,17,15,16,16,17,16,17,1,17,13,16,17,17,16,16,15,15,15,16,1,16,15,16,15,15,15,16,16,16,16,16,14,17,15,17,17,17,16,17,17,17,16,15,17,13,17,17,16,17,17,17,17,17,16,15,16,17,17,16,15,16,16,17,16,17,15,16,16,17,11,15,14,16,16,14,17,15,15,15,12,14,16,13,16,17,14,15,16,14,15,16,1,1,1,13,15,13,17,16,17,16,17,16,16,17,17,17,15,17,16,15,13,15,15,16,17,17,17,17,15,16,15,12,15,15,17,16,15,16,16,17,14,15,17,16,17,14,14,17,16,17,17,17,16,15,17,14,16,15,17,16,17,15,16,17,17,17,15,15,17,15,16,15,16,16,16,13,15,15,16,16,16,15,16,15,15,16,15,17,17,16,14,14,15,14,16,15,14,16,13,13,15,12,12,14,14,13,14,13,12,16,16,17,17,16,14,17,16,16,16,17,17,15,14,17,17,15,16,15,16,15,17,17,16,13,14,17,16,14,13,14,16,1,13,14,13,16,17,13,16,17,15,16,14,16,17,1,14,14,14,12,1,15,14,16,15,16,17,17,15,14,16,16,14,14,14,16,17,15,17,15,16,14,17,15,17,16,16,15,15,15,15,15,16,17,17,16,16,16,1,1,16,16,16,16,13,16,16,14,15,15,1,12,12,16,16,14,1,1,16,15,16,15,15,15,16,15,16,15,17,17,13,15,14,16,16,16,16,13,17,16,16,17,16,15,14,13,15,16,17,15,17,1,14,17,17,17,15,15,17,15,15,14,15,15,17,14,15,16,14,17,17,16,17,17,16,14,13,17,17,17,17,17,15,13,16,16,16,17,17,17,15,17,17,15,16,17,17,16,16,14,17,16,15,16,17,15,15,14,16,17,16,17,17,17,17,15,16,14,16,16,15,16,17,17,16,16,15,13,15,15,14,12,15,17,17,14,16,14,16,15,15,15,15,16,17,14,15,15,16,16,13,13,10,10,17,17,17,14,16,17,14,13,14,13,15,13,12,15,15,14,14,16,17,16,17,17,17,17,17,17,16,14,16,15,17,16,1,14,14,17,14,17,17,14,17,15,17,17,15,17,16,16,17,17,15,17,16,16,15,15,14,11,15,15,16,16,14,16],"type":"violin","name":"black","marker":{"color":"rgba(178,156,177,1)","line":{"color":"rgba(178,156,177,1)"}},"line":{"color":"rgba(178,156,177,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(205,181,144,0.5)","y":[15,16,16,16,15,16,17,16,14,15,15,17,17,15,16,15,15,16,17,17,15,17,13,17,16,13,16,16,17,17,15,17,17,16,17,17,17,17,14,16,17,17,15,16,14,15,16,16,14,15,15,15,15,16,16,14,15,15,15,10,16,17,17,16,15,17,16,15,16,16,17,16,15,15,16,17,17,17,16,16,15,17,16,17,16,15,14,15,17,16,17,15,17,15,15,16,17,17,17,15,17,13,16,16,17,16,16,15,15,17,16,17,16,17,16,15,15,15,16,16,14,13,14,13,16,17,17,17,15,14,16,16,14,15,17,15,15,12,16,13,13,16,17,17,1,15,17,16,14,14,15],"type":"violin","name":"black-hispanic","marker":{"color":"rgba(205,181,144,1)","line":{"color":"rgba(205,181,144,1)"}},"line":{"color":"rgba(205,181,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(250,212,80,0.5)","y":[17,17,16,1,15,16,16,16,16,15,16,15,15,15,15,15,16,15,16,16,16,15,15,15,14,17,16,16,17,17,16,16,16,14,15,14,14,14,14,14,15,16,17,14,16,16,17,16,12,16,16,16,16,16,16,16,15,14,17,15,14,15,17,16,15,15,14,17,16,16,16,16,17,17,17,17,15,16,15,14,13,16,14,17,17,16,16,15,16,13,17,14,17,15,16,17,17,14,16,15,12,16,15,16,16,16,17,17,17,17,14,16,17,15,14],"type":"violin","name":"white","marker":{"color":"rgba(250,212,80,1)","line":{"color":"rgba(250,212,80,1)"}},"line":{"color":"rgba(250,212,80,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(179,179,179,0.5)","y":[17,12,17,14,16,17,15,16,17,16,16,17,16,17,16,14,16,16,17,17,17,17,17,17,17,17,17,16,17,17,16,15,16,16,13,13,17,17,16,17,17,17,13,15,16,17,17,17,14,17,15,16,16,17,17,16,17,17,17,16,14,17,16,16,17,16,15,16,16,17,17,16,15,16,15,14,15,16,15,15,16,15,16,17,13,15,16,16,17,15,15,16,17,17,15,15,15,16,17,17,13,17,16,16,15,17,15,14,15,15,16,17,17,15,15,16,16,15,17,13,15,16,17,16,16,17,16,16,17,17,17,17,17,16,15,17,17,16,17,17,16,15,14,15,15,16,15,16,16,17,16,15,17,16,16,16,16,16,15,17,17,17,17,17,14,16,17,15,16,17,17,1,16,16,17,16,17,17,17,17,17,15,16,16,14,16,15,17,16,16,17,17,16,15,17,17,16,16,16,14,17,16,16,15,17,15,17,15,16,17,17,17,16,16,15,16,17,14,17,16,17,17,16,16,15,16,17,17,14,15,16,1,17,17,15,17,17,13,17,16,16,17,17,15,16,16,14,15,16,16,17,15,17,12,15,15,17,17,15,12,16,16,14,17,15,1,17,17,15,15,17,14,17,17,15,15,14,17,16,16,16,16,16,17,17,17,16,15,17,13,17,17,17,15,17,15,14,16,16,13,17,17,17,15,14,15,16,17,1,1,14,14,14,16,15,17,16,17,17,15,16,17,14,15,16,16,15,16,14,16,17,16,17,16,16,16,16,16,16,15,16,16,16,15,15,14,17,17,17,17,17,16,17,17,17,16,16,17,12,12,16,15,17,17,15,15,17,17,15,15,15,15,15,13,14,14,16],"type":"violin","name":"white-hispanic","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"line":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code># weapon found on a child (&lt;18)
 # top reasons for stopping children</code></pre>
+>>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
 <div id="converting-x-y-coordinates" class="section level2">
 <h2>Converting X Y Coordinates</h2>
 <pre class="r"><code>test_df= 

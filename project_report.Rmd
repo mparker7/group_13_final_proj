@@ -491,6 +491,10 @@ stops_per_month =
   scale_x_continuous(
     breaks = 1:12,
     labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+  ) +
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 6)
   )
 
 # Number of stops per hour over the day
@@ -513,7 +517,12 @@ stops_per_hour =
     x = "Hour of stop",
     y = "Number of stops",
     fill = "Part of day"
-  )
+  ) +
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 6)
+  ) +
+  scale_fill_viridis_d(direction = -1, option = "magma")
 
 # Number of stops per day of week 
 stops_per_dow = stop_frisk_df %>% 
@@ -533,7 +542,7 @@ stops_per_dow = stop_frisk_df %>%
   ) +
   theme(legend.position = "none")
 
-(stops_per_month + stops_per_dow) / (stops_per_hour + stops_per_day)
+(stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)
 ```
 
 

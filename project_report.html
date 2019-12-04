@@ -359,7 +359,7 @@ div.tocify {
   <a href="project_report.html">Project Report</a>
 </li>
 <li>
-  <a href="shiny_map.html">Map</a>
+  <a href="https://mparker7.shinyapps.io/shiny/">Map</a>
 </li>
 <li>
   <a href="mailto:&lt;mp3745@cumc.columbia.edu&gt;">
@@ -528,8 +528,10 @@ stop_frisk_df =
   # remove the single row of NAs
   filter(!is.na(build))</code></pre>
 </div>
-<div id="demographics-distribution" class="section level2">
-<h2>Demographics Distribution</h2>
+<div id="demographics" class="section level2">
+<h2>Demographics</h2>
+<p>The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop.</p>
+<p>The age range of the reported stops is from ages 1-99. The distribution</p>
 </div>
 <div id="logistic-regression-analysis" class="section level2">
 <h2>Logistic Regression Analysis</h2>
@@ -838,6 +840,10 @@ stops_per_month =
   scale_x_continuous(
     breaks = 1:12,
     labels = c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;)
+  ) +
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 6)
   )
 
 # Number of stops per hour over the day
@@ -860,7 +866,12 @@ stops_per_hour =
     x = &quot;Hour of stop&quot;,
     y = &quot;Number of stops&quot;,
     fill = &quot;Part of day&quot;
-  )
+  ) +
+  theme(
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 6)
+  ) +
+  scale_fill_viridis_d(direction = -1, option = &quot;magma&quot;)
 
 # Number of stops per day of week 
 stops_per_dow = stop_frisk_df %&gt;% 
@@ -880,7 +891,7 @@ stops_per_dow = stop_frisk_df %&gt;%
   ) +
   theme(legend.position = &quot;none&quot;)
 
-(stops_per_month + stops_per_dow) / (stops_per_hour + stops_per_day)</code></pre>
+(stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)</code></pre>
 <p><img src="project_report_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
 </div>
 </div>

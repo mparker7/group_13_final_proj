@@ -10,8 +10,6 @@ output:
       
 ---
 
-<<<<<<< HEAD
-=======
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(viridis)
@@ -23,6 +21,7 @@ library(rgdal)
 library(sp)
 library(sf)
 library(leaflet)
+library(patchwork)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -42,7 +41,6 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 
 
->>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
 # Motivation
 
 Terry Stop is a crime-preventing program that has been used by the police around the country for more than 40 years. In New York City this program is known as stop-and-frisk and consists of possible temporary detention and questioning of an individual with possible searching for weapons or other contraband. During Michael Bloomberg’s tenure as a mayor of the City of New York, this program became increasingly aggressive and subsequently turned out to be the hot topic of discussion throughout the nation. In 2011 stop-and-frisk reached almost 700,000 stops. During the same year the New York Civil Liberties Union successfully sued the New York Police Department and forced it to regularly report to public all stop-and-frisk related activities. From the obtained data, it was concluded, that majority of stopped individuals were black and Hispanic men. Bloomberg and then NYC Police Commissioner Raymond W. Kelly, were accused of racial profiling. 
@@ -440,8 +438,105 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(c
 
 # Additional Analysis
 
+<<<<<<< HEAD
 Additional analysis was performed for stopped individuals under age of 18.
 14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. 
+=======
+## Minors
+
+Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. 
+>>>>>>> 74f88d134d1c921ecf3702e0c5573919aa46f58f
+
+## Trends over time
+
+We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.
+
+```{r, message=FALSE}
+# Number of stops per day
+stops_per_day =
+  stop_frisk_df %>% 
+  group_by(date_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = date_stop, y = count)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Number of stops per day in 2016",
+    x = "Date of stop",
+    y = "Number of stops"
+  )
+
+# Number of stops per month (broken down by boro) 
+stops_per_month =
+  stop_frisk_df %>% 
+  mutate(
+    month_stop = month(date_stop),
+    boro = str_to_title(boro)
+  ) %>%   
+  group_by(month_stop, boro) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = month_stop, y = count, color = boro)) + 
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Number of stops per month by borough",
+    x = "Month of stop",
+    y = "Number of stops",
+    color = "Borough"
+  ) +
+  scale_x_continuous(
+    breaks = 1:12,
+    labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+  )
+
+# Number of stops per hour over the day
+stops_per_hour =
+  stop_frisk_df %>% 
+  mutate(
+    hour_stop = hour(time_stop),
+    part_of_day = cut(hour_stop, breaks = c(0, 5, 12, 17, 21, 24), labels = c("Night", "Morning", "Afternoon", "Evening", "Night"), right = FALSE),
+    part_of_day = fct_relevel(part_of_day, "Morning", "Afternoon", "Evening")
+  ) %>% 
+  select(hour_stop, part_of_day) %>% 
+  group_by(hour_stop, part_of_day) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = hour_stop, y = count)) + 
+  geom_bar(stat = "Identity", aes(fill = part_of_day)) +
+  labs(
+    title = "Number of stops per hour over the day",
+    x = "Hour of stop",
+    y = "Number of stops",
+    fill = "Part of day"
+  )
+
+# Number of stops per day of week 
+stops_per_dow = stop_frisk_df %>% 
+  mutate(
+    dow_stop = wday(date_stop, label = TRUE)
+  ) %>% 
+  group_by(dow_stop) %>% 
+  summarize(
+    count = n()
+  ) %>% 
+  ggplot(aes(x = dow_stop, y = count)) + 
+  geom_bar(stat = "Identity") +
+  labs(
+    title = "Number of stops per day of week",
+    x = "Day of week",
+    y = "Number of stops"
+  ) +
+  theme(legend.position = "none")
+
+(stops_per_month + stops_per_dow) / (stops_per_hour + stops_per_day)
+```
+
+
 
 
 # Discussion

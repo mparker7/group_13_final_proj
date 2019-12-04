@@ -498,6 +498,24 @@ library(patchwork)
 
 (frisked_plot+searched_plot + arrested_plot)
 
+# final plot
+stop_frisk_log %>% 
+  drop_na() %>% 
+  mutate(stopped = as.numeric(stop_in_out),
+         stopped = case_when(
+           stopped > 0 ~ '1',
+           TRUE ~""),
+         stopped = as.numeric(stopped)) %>% 
+  select(race, arst_made, frisked, stopped) %>% 
+  pivot_longer(
+      arst_made:stopped,
+      names_to = "action",
+      values_to = "value") %>% 
+  filter(value == '1') %>% 
+  count(race, action) %>% 
+  mutate(race = fct_infreq(race, n)) %>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race)
+
 ```
 
 Regression model for demographics

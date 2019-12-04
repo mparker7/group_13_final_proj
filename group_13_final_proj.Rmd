@@ -546,10 +546,10 @@ summary(arrest_model_2)
 
 
 Stops of subjects below 18. Maybe shny?
-```{r}
+```{r, eval = FALSE}
 # percent innocent under 18
 under_18 = stop_frisk_log %>% 
-  filter(age<'18')
+  filter(age<'18') 
 
 stop_frisk_log %>% 
   filter(age < '18') %>% 
@@ -566,7 +566,7 @@ stop_frisk_log %>%
     frisked == '1') %>%
   count(race) %>% 
   mutate(
-    race = fct_reorder(race, n)) %>% 
+    race = fct_reorder(race, -n)) %>% 
   plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
 
 
@@ -577,7 +577,7 @@ stop_frisk_log %>%
     searched == '1') %>%
   count(race) %>% 
   mutate(
-    race = fct_reorder(race, n)) %>% 
+    race = fct_reorder(race, -n)) %>% 
   plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
 
 
@@ -588,7 +588,7 @@ stop_frisk_log %>%
     arst_made =='1') %>%
   count(race) %>% 
   mutate(
-    race = fct_reorder(race, n)) %>% 
+    race = fct_reorder(race, -n)) %>% 
   plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
 
 
@@ -598,7 +598,7 @@ stop_frisk_log %>%
     age < '18') %>%
   count(race) %>% 
   mutate(
-    race = fct_reorder(race, n)) %>% 
+    race = fct_reorder(race, -n)) %>% 
   plot_ly(x = ~ race, y = ~ n, type = "bar", color = ~ race)
 
 # innocent under 18
@@ -609,7 +609,7 @@ stop_frisk_log %>%
   count(race) %>% 
   mutate(
     percent_innocent = (n/nrow(under_18)* 100),
-    race = fct_reorder(race, n)) %>% 
+    race = fct_reorder(race, -n)) %>% 
   plot_ly(x = ~ race, y = ~ percent_innocent, type = "bar", color = ~ race)
 
 # reasons for stoping under 18
@@ -641,6 +641,39 @@ stop_frisk_df %>%
   mutate(prob = total/sum(total)) %>% 
   plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped)
 
+# percent innocent in that race category
+stop_frisk_log %>% 
+  filter(age < 18,
+         race == 'black') %>% 
+  group_by(race, arst_made) %>% 
+  count() %>% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %>% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %>% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+
+# function
+under_18_inn = function(x) {
+  stop_frisk_log %>% 
+  filter(age < 18,
+         race == 'x') %>% 
+  group_by(race, arst_made) %>% 
+  count() %>% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %>% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %>% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+}
+
+output = map(stop_frisk_df$race, under_18_inn)
 ```
 
 

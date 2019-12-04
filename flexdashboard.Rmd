@@ -121,6 +121,27 @@ stop_frisk_df =
   mutate_if(is.character, as.factor) %>% 
   # remove the single row of NAs
   filter(!is.na(build))
+
+
+
+afs = stop_frisk_df %>% 
+  mutate(stopped = as.numeric(stop_in_out),
+         stopped = case_when(
+           stopped > 0 ~ '1',
+           TRUE ~""),
+         stopped = as.numeric(stopped)) %>% 
+  select(race, arst_made, frisked, stopped, age) %>% 
+  pivot_longer(
+      arst_made:stopped,
+      names_to = "action",
+      values_to = "value") %>% 
+  filter(value == '1') %>% 
+  count(race, action) %>% 
+  mutate(race = fct_infreq(race, n),
+         action = recode(action,
+                         "arst_made" = "Arrest",
+                         "frisked" = "Frisk",
+                         "stopped" = "Stop"))
 ```
 
 
@@ -178,48 +199,21 @@ ggplotly(age_dist)
 ### Total Count of Frisked, Searched, and Arrested of Subjects by Race and Sex 
 
 ```{r}
+afs %>% 
+  mutate(action = fct_relevel(action, c("Stop", "Frisk")),
+         race = fct_relevel(race, c("black", "white-hispanic", "white", "other"))
+         ) %>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race)%>% 
+  layout(
+    title = 'Frequency of race for Stop, Frisk, Arrest',
+    xaxis = list(
+      type = 'category',
+      title  = 'Action'), 
+    yaxis = list(
+      title = 'Frequency',
+      range = c(0, 6500)
+    ) 
+    )
 
-frisked_plot = 
-  stop_frisk_df %>% 
-  drop_na() %>% 
-  mutate(
-    race = fct_infreq(race)
-    ) %>% 
-  filter( 
-    frisked == '1') %>% 
-  ggplot(aes(x = race, fill = sex))+
-  geom_bar(alpha = .5, position = "dodge")+
-  labs(
-    title = "Frisked")+
-  theme(axis.text.x = element_text(angle = 80, hjust = 1))
-
-# subjects count of searched subjects by race, sex
-searched_plot = 
-  stop_frisk_df  %>% 
-  drop_na() %>% 
-  mutate(
-    race = fct_infreq(race)) %>% 
-  filter(searched =='1') %>% 
-  ggplot(aes(x = race, fill = sex))+
-  geom_bar(alpha = .5, position = "dodge")+
-  labs(
-    title = "Searched")+
-  theme(axis.text.x = element_text(angle = 80, hjust = 1))
-
-# subjects count of arrested subjects by race, sex
-arrested_plot = 
-  stop_frisk_df  %>% 
-  drop_na() %>% 
-  mutate(
-    race = fct_infreq(race)) %>% 
-  filter(arst_made =='1') %>% 
-  ggplot(aes(x = race, fill = sex))+
-  geom_bar(alpha = .5, position = "dodge")+
-  labs(
-    title = "Arrested")+
-  theme(axis.text.x = element_text(angle = 80, hjust = 1))
-
-
-(frisked_plot + searched_plot + arrested_plot)
 ```
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="cs3779, kd2640, ob2305, mp3745, lef2147" />
 
-<meta name="date" content="2019-12-03" />
+<meta name="date" content="2019-12-04" />
 
 <title>Group 13 Final Project</title>
 
@@ -25,13 +25,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="site_libs/plotly-binding-4.9.1/plotly.js"></script>
-<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
-<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
-<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="site_libs/plotly-htmlwidgets-css-1.49.4/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="site_libs/plotly-main-1.49.4/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -317,7 +310,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Group 13 Final Project</h1>
 <h4 class="author">cs3779, kd2640, ob2305, mp3745, lef2147</h4>
-<h4 class="date">2019-12-03</h4>
+<h4 class="date">2019-12-04</h4>
 
 </div>
 
@@ -327,7 +320,8 @@ $(document).ready(function () {
 <li>Describe the goal/motivation of the project; have some stats and facts to explain our purpose in investigating this dataset</li>
 <li>Describe the dataset: where is it from, what does it contain</li>
 <li>Review the questions we intend on answering</li>
-<li>Exploratory Data Analysis</li>
+<li>Exploratory Data Analysis
+<ul>
 <li>Give an overview of the demographics of our dataset, any conclusion we make is only relevant to those who were stopped which is why it is good to give an idea of who is represented
 <ul>
 <li>histogram of race/build/etc.</li>
@@ -343,6 +337,7 @@ $(document).ready(function () {
 <li>could maybe find a way to test this, i.e. linear regression, is the slope equal to zero, or something of that nature. the plot shows a funnel pattern so maybe we could look into that more</li>
 </ul></li>
 <li>other things</li>
+</ul></li>
 <li>Findings/Discussion</li>
 </ul>
 <p>Read in and tidy the data</p>
@@ -977,42 +972,10 @@ summary(model_7)</code></pre>
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
-<<<<<<< HEAD
 ##     Null deviance: 12821  on 12369  degrees of freedom
 ## Residual deviance: 12319  on 12355  degrees of freedom
 ##   (34 observations deleted due to missingness)
 ## AIC: 12349
-=======
-##     precision, recall</code></pre>
-<pre class="r"><code>pr = prediction(log_pred, test$arst_made)
-perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
-plot(perf)</code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
-<pre class="r"><code>auc(test$arst_made, log_pred)</code></pre>
-<pre><code>## [1] 0.50115</code></pre>
-<pre class="r"><code># predict results for frisked model
-model_4_pred = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
-
-log_pred = predict(model_4_pred, newdata = test, type = &quot;response&quot;)
-
-log_pred = ifelse(log_pred &gt; 0.5, 1, 0)
-
-library(ROCR)
-library(Metrics)
-
-pr = prediction(log_pred, test$frisked)
-perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
-plot(perf)</code></pre>
-<p><img src="group_13_final_proj_files/figure-html/unnamed-chunk-8-2.png" width="90%" /></p>
-<pre class="r"><code>auc(test$frisked, log_pred)</code></pre>
-<pre><code>## [1] 0.5762162</code></pre>
-<p>LASSO Frisked</p>
-<pre class="r"><code>library(glmnet)</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre><code>## 
-## Attaching package: &#39;Matrix&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
->>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <pre class="r"><code>stop_frisk_log %&gt;% group_by(frisked, searched, arst_made) %&gt;% 
@@ -1142,7 +1105,7 @@ summary(arrest_model_2)</code></pre>
 <p>Stops of subjects below 18. Maybe shny?</p>
 <pre class="r"><code># percent innocent under 18
 under_18 = stop_frisk_log %&gt;% 
-  filter(age&lt;&#39;18&#39;)
+  filter(age&lt;&#39;18&#39;) 
 
 stop_frisk_log %&gt;% 
   filter(age &lt; &#39;18&#39;) %&gt;% 
@@ -1150,85 +1113,62 @@ stop_frisk_log %&gt;%
   mutate(
     percent = (n /nrow(under_18)* 100)
   ) %&gt;% 
-  knitr::kable(digits = 2)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="right">arst_made</th>
-<th align="right">n</th>
-<th align="right">percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">0</td>
-<td align="right">1486</td>
-<td align="right">80.45</td>
-</tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="right">361</td>
-<td align="right">19.55</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code># frisked under 18 by race
+  knitr::kable(digits = 2)
+  
+# frisked under 18 by race
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;,
     frisked == &#39;1&#39;) %&gt;%
   count(race) %&gt;% 
   mutate(
-    race = fct_reorder(race, n)) %&gt;% 
-  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
-<div id="htmlwidget-7dcb88dec9a078cf7a93" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7dcb88dec9a078cf7a93">{"x":{"visdat":{"2d92322bf628":["function () ","plotlyVisDat"]},"cur_data":"2d92322bf628","attrs":{"2d92322bf628":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[52],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[82],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[106],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[243],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[659],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code>#searched under 18
+    race = fct_reorder(race, -n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)
+
+
+#searched under 18
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;,
     searched == &#39;1&#39;) %&gt;%
   count(race) %&gt;% 
   mutate(
-    race = fct_reorder(race, n)) %&gt;% 
-  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
-<div id="htmlwidget-4fb3cb686be0c81f6467" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4fb3cb686be0c81f6467">{"x":{"visdat":{"2d927c0b2508":["function () ","plotlyVisDat"]},"cur_data":"2d927c0b2508","attrs":{"2d927c0b2508":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","black-hispanic","other","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[25],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[35],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[41],"type":"bar","name":"other","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[99],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[245],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code>#arrested under 18
+    race = fct_reorder(race, -n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)
+
+
+#arrested under 18
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;,
     arst_made ==&#39;1&#39;) %&gt;%
   count(race) %&gt;% 
   mutate(
-    race = fct_reorder(race, n)) %&gt;% 
-  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
-<div id="htmlwidget-36df8266787ca55cb23e" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-36df8266787ca55cb23e">{"x":{"visdat":{"2d92171cf3a4":["function () ","plotlyVisDat"]},"cur_data":"2d92171cf3a4","attrs":{"2d92171cf3a4":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[19],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[31],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[36],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[90],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[185],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code># stoped under 18
+    race = fct_reorder(race, -n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)
+
+
+# stoped under 18
 stop_frisk_log %&gt;% 
   filter(
     age &lt; &#39;18&#39;) %&gt;%
   count(race) %&gt;% 
   mutate(
-    race = fct_reorder(race, n)) %&gt;% 
-  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)</code></pre>
-<div id="htmlwidget-48b94242a8d8f576d93c" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-48b94242a8d8f576d93c">{"x":{"visdat":{"2d921bb97871":["function () ","plotlyVisDat"]},"cur_data":"2d921bb97871","attrs":{"2d921bb97871":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code># innocent under 18
+    race = fct_reorder(race, -n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ n, type = &quot;bar&quot;, color = ~ race)
+
+# innocent under 18
 stop_frisk_log %&gt;% 
   filter(
-<<<<<<< HEAD
     age &lt; &#39;18&#39;,
     arst_made ==&#39;0&#39;) %&gt;% 
   count(race) %&gt;% 
   mutate(
     percent_innocent = (n/nrow(under_18)* 100),
-    race = fct_reorder(race, n)) %&gt;% 
-  plot_ly(x = ~ race, y = ~ percent_innocent, type = &quot;bar&quot;, color = ~ race)</code></pre>
-<div id="htmlwidget-a956267de492e58500ac" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a956267de492e58500ac">{"x":{"visdat":{"2d92caf5004":["function () ","plotlyVisDat"]},"cur_data":"2d92caf5004","attrs":{"2d92caf5004":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"race","type":"category","categoryorder":"array","categoryarray":["white","other","black-hispanic","white-hispanic","black"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"percent_innocent"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["white"],"y":[5.19761775852734],"type":"bar","name":"white","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[6.06388738494856],"type":"bar","name":"other","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[6.22631293990254],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[15.5387114239307],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black"],"y":[47.428262046562],"type":"bar","name":"black","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code># reasons for stoping under 18
+    race = fct_reorder(race, -n)) %&gt;% 
+  plot_ly(x = ~ race, y = ~ percent_innocent, type = &quot;bar&quot;, color = ~ race)
+
+# reasons for stoping under 18
 stop_frisk_df %&gt;% 
   filter(age &lt; &#39;18&#39;) %&gt;%
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other) %&gt;% 
@@ -1255,17 +1195,41 @@ stop_frisk_df %&gt;%
   group_by(reason_stopped) %&gt;% 
   summarize(total =n()) %&gt;% 
   mutate(prob = total/sum(total)) %&gt;% 
-  plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
-<div id="htmlwidget-83d5fd84b6e1d862924b" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-83d5fd84b6e1d862924b">{"x":{"visdat":{"2d924d28b205":["function () ","plotlyVisDat"]},"cur_data":"2d924d28b205","attrs":{"2d924d28b205":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"reason_stopped","type":"category","categoryorder":"array","categoryarray":["actions engaging in violent crime","actions indicative of drug transaction","carrying suspicious object","casing a victim or location","fits a relevant description","furtive movements","other","suspcious bulge","suspect acting as a lookout","wearing clothes commonly used in crimes"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["actions engaging in violent crime"],"y":[141],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["actions indicative of drug transaction"],"y":[59],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(228,156,113,1)","line":{"color":"rgba(228,156,113,1)"}},"textfont":{"color":"rgba(228,156,113,1)"},"error_y":{"color":"rgba(228,156,113,1)"},"error_x":{"color":"rgba(228,156,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["carrying suspicious object"],"y":[32],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(201,152,157,1)","line":{"color":"rgba(201,152,157,1)"}},"textfont":{"color":"rgba(201,152,157,1)"},"error_y":{"color":"rgba(201,152,157,1)"},"error_x":{"color":"rgba(201,152,157,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["casing a victim or location"],"y":[233],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["fits a relevant description"],"y":[1052],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(226,148,184,1)","line":{"color":"rgba(226,148,184,1)"}},"textfont":{"color":"rgba(226,148,184,1)"},"error_y":{"color":"rgba(226,148,184,1)"},"error_x":{"color":"rgba(226,148,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["furtive movements"],"y":[334],"type":"bar","name":"furtive movements","marker":{"color":"rgba(176,208,99,1)","line":{"color":"rgba(176,208,99,1)"}},"textfont":{"color":"rgba(176,208,99,1)"},"error_y":{"color":"rgba(176,208,99,1)"},"error_x":{"color":"rgba(176,208,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[740],"type":"bar","name":"other","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspcious bulge"],"y":[112],"type":"bar","name":"suspcious bulge","marker":{"color":"rgba(245,207,100,1)","line":{"color":"rgba(245,207,100,1)"}},"textfont":{"color":"rgba(245,207,100,1)"},"error_y":{"color":"rgba(245,207,100,1)"},"error_x":{"color":"rgba(245,207,100,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspect acting as a lookout"],"y":[98],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(219,192,155,1)","line":{"color":"rgba(219,192,155,1)"}},"textfont":{"color":"rgba(219,192,155,1)"},"error_y":{"color":"rgba(219,192,155,1)"},"error_x":{"color":"rgba(219,192,155,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["wearing clothes commonly used in crimes"],"y":[86],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-=======
-    age &lt; &#39;18&#39;) %&gt;%
-  plot_ly(y = ~age, color = ~race, type = &quot;violin&quot;, colors = &quot;Set2&quot;)</code></pre>
-<div id="htmlwidget-b527785a29050d7871ad" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b527785a29050d7871ad">{"x":{"visdat":{"bf14bdf41d3":["function () ","plotlyVisDat"]},"cur_data":"bf14bdf41d3","attrs":{"bf14bdf41d3":{"y":{},"color":{},"colors":"Set2","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"violin"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"yaxis":{"domain":[0,1],"automargin":true,"title":"age"},"xaxis":{"domain":[0,1],"automargin":true},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"fillcolor":"rgba(102,194,165,0.5)","y":[16,17,16,17,16,17,16,16,17,15,15,15,15,17,17,17,17,16,17,17,11,13,16,17,16,16,16,16,16,15,16,16,13,16,17,17,14,17,16,14,15,14,1,1,16,16,17,16,16,16,15,15,15,15,16,1,17,17,16,17,17,17,17,17,17,15,17,16,16,17,16,17,15,13,17,16,16,16,16,17,16,16,17,17,16,17,17,16,16,16,16,17,17,15,14,12,15,15,16,16,15,16,17,17,16,15,16,17,16,14,16,16,14,16,15,14,1,13,13,13,13,17,12,17,12,13,10,17,16,14,17,15,14,17,17,17,1,17,17,15,17,16,16],"type":"violin","name":"other","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"line":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(178,156,177,0.5)","y":[14,17,17,15,16,14,16,14,17,16,16,15,17,16,16,16,17,12,15,15,16,14,14,15,15,16,15,17,16,14,15,1,15,1,1,17,16,17,16,17,17,14,15,15,17,15,17,17,16,16,15,17,15,12,13,17,17,16,14,15,15,17,17,16,14,17,16,15,17,16,17,17,17,17,16,16,17,16,16,16,17,11,16,16,16,16,16,17,13,14,13,13,17,16,14,11,15,15,15,16,14,16,17,13,16,17,16,17,17,17,16,17,16,16,17,17,17,14,17,16,17,15,15,15,14,17,14,14,16,17,15,15,15,16,17,16,17,17,16,17,16,17,17,17,17,16,17,15,16,14,17,16,15,17,16,16,17,15,17,17,15,16,17,17,16,13,16,15,16,17,12,10,17,17,17,17,16,17,15,15,1,15,14,16,16,16,17,17,15,15,15,16,17,17,17,15,17,15,15,16,16,16,17,16,17,17,17,14,15,14,14,17,17,15,16,16,16,17,17,17,16,16,16,17,16,16,16,15,15,17,12,16,16,16,16,14,16,15,16,15,16,16,17,16,17,15,16,15,15,15,15,15,15,17,16,17,15,15,17,17,17,16,15,16,17,17,16,17,15,16,16,15,17,17,17,12,16,14,15,14,17,15,16,12,14,1,1,16,17,14,16,14,15,15,14,1,1,14,17,16,16,17,13,16,15,16,17,17,16,17,15,14,15,15,16,15,16,17,17,17,17,16,15,15,17,17,16,14,14,14,17,16,16,16,15,15,17,15,16,16,17,17,16,17,16,16,16,16,15,16,15,17,16,16,14,16,16,16,17,14,15,16,17,16,17,17,16,17,16,15,15,16,17,16,17,14,14,13,17,17,16,12,13,13,17,14,17,15,15,16,15,15,15,16,14,15,15,14,16,16,17,14,17,14,17,16,15,15,12,17,16,14,17,17,17,16,1,16,16,16,16,16,17,13,15,17,15,17,16,16,16,14,16,15,17,17,17,17,17,16,17,17,17,17,17,15,16,15,14,15,17,13,15,13,17,16,16,17,17,17,13,15,13,15,12,13,11,12,13,12,16,16,16,16,17,15,17,17,17,17,15,15,15,17,15,15,14,15,15,13,16,14,17,15,14,15,15,17,16,17,17,17,15,15,16,15,13,13,13,13,14,15,16,15,17,14,1,17,17,15,16,16,16,16,15,15,17,16,15,17,17,16,16,16,15,13,15,17,17,15,15,15,16,17,17,17,15,15,13,12,13,16,17,15,16,16,17,16,17,1,17,13,16,17,17,16,16,15,15,15,16,1,16,15,16,15,15,15,16,16,16,16,16,14,17,15,17,17,17,16,17,17,17,16,15,17,13,17,17,16,17,17,17,17,17,16,15,16,17,17,16,15,16,16,17,16,17,15,16,16,17,11,15,14,16,16,14,17,15,15,15,12,14,16,13,16,17,14,15,16,14,15,16,1,1,1,13,15,13,17,16,17,16,17,16,16,17,17,17,15,17,16,15,13,15,15,16,17,17,17,17,15,16,15,12,15,15,17,16,15,16,16,17,14,15,17,16,17,14,14,17,16,17,17,17,16,15,17,14,16,15,17,16,17,15,16,17,17,17,15,15,17,15,16,15,16,16,16,13,15,15,16,16,16,15,16,15,15,16,15,17,17,16,14,14,15,14,16,15,14,16,13,13,15,12,12,14,14,13,14,13,12,16,16,17,17,16,14,17,16,16,16,17,17,15,14,17,17,15,16,15,16,15,17,17,16,13,14,17,16,14,13,14,16,1,13,14,13,16,17,13,16,17,15,16,14,16,17,1,14,14,14,12,1,15,14,16,15,16,17,17,15,14,16,16,14,14,14,16,17,15,17,15,16,14,17,15,17,16,16,15,15,15,15,15,16,17,17,16,16,16,1,1,16,16,16,16,13,16,16,14,15,15,1,12,12,16,16,14,1,1,16,15,16,15,15,15,16,15,16,15,17,17,13,15,14,16,16,16,16,13,17,16,16,17,16,15,14,13,15,16,17,15,17,1,14,17,17,17,15,15,17,15,15,14,15,15,17,14,15,16,14,17,17,16,17,17,16,14,13,17,17,17,17,17,15,13,16,16,16,17,17,17,15,17,17,15,16,17,17,16,16,14,17,16,15,16,17,15,15,14,16,17,16,17,17,17,17,15,16,14,16,16,15,16,17,17,16,16,15,13,15,15,14,12,15,17,17,14,16,14,16,15,15,15,15,16,17,14,15,15,16,16,13,13,10,10,17,17,17,14,16,17,14,13,14,13,15,13,12,15,15,14,14,16,17,16,17,17,17,17,17,17,16,14,16,15,17,16,1,14,14,17,14,17,17,14,17,15,17,17,15,17,16,16,17,17,15,17,16,16,15,15,14,11,15,15,16,16,14,16],"type":"violin","name":"black","marker":{"color":"rgba(178,156,177,1)","line":{"color":"rgba(178,156,177,1)"}},"line":{"color":"rgba(178,156,177,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(205,181,144,0.5)","y":[15,16,16,16,15,16,17,16,14,15,15,17,17,15,16,15,15,16,17,17,15,17,13,17,16,13,16,16,17,17,15,17,17,16,17,17,17,17,14,16,17,17,15,16,14,15,16,16,14,15,15,15,15,16,16,14,15,15,15,10,16,17,17,16,15,17,16,15,16,16,17,16,15,15,16,17,17,17,16,16,15,17,16,17,16,15,14,15,17,16,17,15,17,15,15,16,17,17,17,15,17,13,16,16,17,16,16,15,15,17,16,17,16,17,16,15,15,15,16,16,14,13,14,13,16,17,17,17,15,14,16,16,14,15,17,15,15,12,16,13,13,16,17,17,1,15,17,16,14,14,15],"type":"violin","name":"black-hispanic","marker":{"color":"rgba(205,181,144,1)","line":{"color":"rgba(205,181,144,1)"}},"line":{"color":"rgba(205,181,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(250,212,80,0.5)","y":[17,17,16,1,15,16,16,16,16,15,16,15,15,15,15,15,16,15,16,16,16,15,15,15,14,17,16,16,17,17,16,16,16,14,15,14,14,14,14,14,15,16,17,14,16,16,17,16,12,16,16,16,16,16,16,16,15,14,17,15,14,15,17,16,15,15,14,17,16,16,16,16,17,17,17,17,15,16,15,14,13,16,14,17,17,16,16,15,16,13,17,14,17,15,16,17,17,14,16,15,12,16,15,16,16,16,17,17,17,17,14,16,17,15,14],"type":"violin","name":"white","marker":{"color":"rgba(250,212,80,1)","line":{"color":"rgba(250,212,80,1)"}},"line":{"color":"rgba(250,212,80,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(179,179,179,0.5)","y":[17,12,17,14,16,17,15,16,17,16,16,17,16,17,16,14,16,16,17,17,17,17,17,17,17,17,17,16,17,17,16,15,16,16,13,13,17,17,16,17,17,17,13,15,16,17,17,17,14,17,15,16,16,17,17,16,17,17,17,16,14,17,16,16,17,16,15,16,16,17,17,16,15,16,15,14,15,16,15,15,16,15,16,17,13,15,16,16,17,15,15,16,17,17,15,15,15,16,17,17,13,17,16,16,15,17,15,14,15,15,16,17,17,15,15,16,16,15,17,13,15,16,17,16,16,17,16,16,17,17,17,17,17,16,15,17,17,16,17,17,16,15,14,15,15,16,15,16,16,17,16,15,17,16,16,16,16,16,15,17,17,17,17,17,14,16,17,15,16,17,17,1,16,16,17,16,17,17,17,17,17,15,16,16,14,16,15,17,16,16,17,17,16,15,17,17,16,16,16,14,17,16,16,15,17,15,17,15,16,17,17,17,16,16,15,16,17,14,17,16,17,17,16,16,15,16,17,17,14,15,16,1,17,17,15,17,17,13,17,16,16,17,17,15,16,16,14,15,16,16,17,15,17,12,15,15,17,17,15,12,16,16,14,17,15,1,17,17,15,15,17,14,17,17,15,15,14,17,16,16,16,16,16,17,17,17,16,15,17,13,17,17,17,15,17,15,14,16,16,13,17,17,17,15,14,15,16,17,1,1,14,14,14,16,15,17,16,17,17,15,16,17,14,15,16,16,15,16,14,16,17,16,17,16,16,16,16,16,16,15,16,16,16,15,15,14,17,17,17,17,17,16,17,17,17,16,16,17,12,12,16,15,17,17,15,15,17,17,15,15,15,15,15,13,14,14,16],"type":"violin","name":"white-hispanic","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"line":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code># weapon found on a child (&lt;18)
-# top reasons for stopping children</code></pre>
->>>>>>> 1748dc498d88d0c9cfff9e413bc6807d0b80d49a
+  plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)
+
+# percent innocent in that race category
+stop_frisk_log %&gt;% 
+  filter(age &lt; 18,
+         race == &#39;black&#39;) %&gt;% 
+  group_by(race, arst_made) %&gt;% 
+  count() %&gt;% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %&gt;% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %&gt;% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+
+# function
+under_18_inn = function(x) {
+  stop_frisk_log %&gt;% 
+  filter(age &lt; 18,
+         race == &#39;x&#39;) %&gt;% 
+  group_by(race, arst_made) %&gt;% 
+  count() %&gt;% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %&gt;% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %&gt;% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+}
+
+output = map(stop_frisk_df$race, under_18_inn)</code></pre>
 <div id="converting-x-y-coordinates" class="section level2">
 <h2>Converting X Y Coordinates</h2>
 <pre class="r"><code>test_df= 

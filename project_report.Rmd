@@ -440,7 +440,8 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(c
 
 # Additional Analysis
 
-Additional analysis was performed for stopped individuals under age of 18. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. 
+Additional analysis was performed for stopped individuals under age of 18.
+14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping underaged kids are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of children stopped were innocent and 20% were arrested. Out of children who have been arrested 86% were black or Hispanic. 
 
 
 # Discussion

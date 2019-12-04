@@ -77,11 +77,17 @@ colordata <- nypd_prec[[input$heatmap]]
 palfact <- colorFactor("viridis", domain = stops_by_race$race)
     
   if (input[["analysis_type"]] == "Individual Borough") {
-  
-  map <- nypd_prec %>% 
+
+nypd_prec <- nypd_prec %>% 
     filter(
       boro == input[["boro_choice"]]
-    ) %>% 
+    )
+    
+pal <- colorNumeric("YlOrRd", domain = nypd_prec[[input$heatmap]])
+
+colordata <- nypd_prec[[input$heatmap]]
+    
+  map <- nypd_prec %>% 
   leaflet() %>% 
   addTiles() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 

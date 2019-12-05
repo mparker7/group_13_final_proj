@@ -656,6 +656,8 @@ stops_per_dow = stop_frisk_df %>%
 
 The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race. Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. For example, it is understood that race is a strong factor in whether or not 
 
+Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
+
 
 
   

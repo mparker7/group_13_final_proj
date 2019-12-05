@@ -48,7 +48,7 @@ Our data source, [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/repo
 
 [Map](https://group-13-final-proj.shinyapps.io/shiny_map/) : An interactive map of NYC to explore where stops, frisks, and arrests happened in NYC in 2016.
 
-
+An overview of our website can be seen [here](https://vimeo.com/377632358).
 
 <h4> Authors: Matthew Parker|Lauren Franks|Olya Besedina|Keyanna Davis|Clayton Snyder <h4> 
 

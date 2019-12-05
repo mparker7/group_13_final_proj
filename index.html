@@ -312,31 +312,43 @@ $(document).ready(function () {
 
 
 <center>
-<div class="figure">
-<img src="images/cartoon.jpeg" />
-
-</div>
+<p><img src="images/cartoon.jpeg" /></p>
 </center>
-<center>
 <h2>
-The motivation for this project
+Motivation
 </h2>
 <p>Stop and Frisk has been a controversial police tactic used for years as a way to briefly stop and search civilians who are of suspect. Police must have “reasonable suspicion” according to the fourth amendment to legally stop a person. Utilizing NYC Stop and Frisk data, we want to develop a predictive model, visualize the data across the five New York City Boroughs, and describe the scope of our dataset.</p>
 <h2>
-The intended final products
+Data Sources
 </h2>
-<p>Our final products will include a report summarizing our final results, the process we took to analyz the 2016 Stop &amp; Frisk Data Set, as well as a complimentary website that will detail the final report. There will also be interactive visualizations and displays to help guide readers through our report’s findings.</p>
+<p>Our data source, <a href="https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page">Stop and Frisk Data</a>, is publicly available data from the NYPD. We used the data set published from 2016, due to its completeness within the data as well as its data dictionary. For future analysis, data can be acquired from from NYC’s public database <a href="https://opendata.cityofnewyork.us/">additional data</a> to explore neighborhood demographics.</p>
 <h2>
-Data sources
+Questions
 </h2>
-<p>Our data source is going to be the publicly available data from NYC/the NYPD located <a href="https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page">Stop and Frisk Data</a></p>
-<p>We intend on using the data set published from 2016, due to its completeness within the data as well as its data dictionary.</p>
-<p>If we should need any additional data (like neighborhood demographics, etc.), we will acquire it from NYC’s public database <a href="https://opendata.cityofnewyork.us/">additional data</a>.</p>
+<ul>
+<li><p>Can we accurately predict if someone will be frisked or arrested after they have been stopped?</p></li>
+<li><p>How successful is the Stop and Frisk program?</p></li>
+<li><p>Are there trends over time of when stops occur?</p></li>
+<li>What does the geographic distribution of stops/frisks/arrests look like in NYC by precinct?
+<ul>
+<li>What are the leading reasons for stop and most common race stopped in each precinct?</li>
+</ul></li>
+</ul>
 <h2>
-The planned analyses/visualizations/coding challenges
+Key Results
 </h2>
-<p>We plan to develop a logistic regression model through variable selection and LASSO regression modeling, visualize demographics, and develop an interactive map to display the data.</p>
-</center>
+<ul>
+<li><p>After being stopped, using information about demographics, stop location, officer information, and reason for stop were not exceptionally useful for predicting frisk or arrest.</p></li>
+<li><p>Approximately 20% of stops do not lead to arrest.</p></li>
+<li><p>The frequency of stops decreased over 2016, less stops occur on Sunday and Monday compared to other days of the week, and most stops in a day occur during the evening/night.</p></li>
+<li><p>Take a look at our <a href="https://group-13-final-proj.shinyapps.io/shiny_map/">map</a> to discover other results!</p></li>
+</ul>
+<h2>
+The Website
+</h2>
+<p><a href="flexdashboard.html">Demographics</a> : Exploratory plots highlighting demographic features broken down by people stopped, frisked, and arrested.</p>
+<p><a href="project_report.html">Project Report</a> : The complete report with regression analysis along with additional analysis about minors only and stop trends over time.</p>
+<p><a href="https://group-13-final-proj.shinyapps.io/shiny_map/">Map</a> : An interactive map of NYC to explore where stops, frisks, and arrests happened in NYC in 2016.</p>
 
 
 

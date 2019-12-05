@@ -1,5 +1,5 @@
 ---
-title: "Visualizations"
+title: "Demographics Among Individuals Who Were Stopped, Frisked, and Arrested"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -143,6 +143,10 @@ afs = stop_frisk_df %>%
                          "arst_made" = "Arrest",
                          "frisked" = "Frisk",
                          "stopped" = "Stop")) 
+
+afs %>% 
+  group_by(action) %>% 
+  summarize(total = n())
 ```
 
 
@@ -160,17 +164,17 @@ afs %>%
   mutate(action = fct_relevel(action, c("Stop", "Frisk")),
          race = fct_relevel(race, c("black", "white-hispanic", "white", "other"))
          ) %>% 
-  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race, colors = viridis_pal(option = "D")(3))%>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race, colors = viridis_pal(option = "D")(4)) %>% 
   layout(
     xaxis = list(
       type = 'category',
       title  = 'Action'), 
     yaxis = list(
-      title = 'Frequency',
-      range = c(0, 6500)
+      title = 'Frequency'
     ) 
     )
 ```
+
 
 ### Frequency of Frisked, Searched, and Arrested of Subjects by Borough
 
@@ -183,7 +187,8 @@ afs %>%
     "manhattan" = "Manhattan",
     "queens" = "Queens",
     "staten is" = "Staten Island"
-  )) %>% 
+  ),
+  action = fct_relevel(action, c("Stop", "Frisk"))) %>% 
   count(boro, action) %>% 
   plot_ly(x = ~action, y = ~n, type = "bar", color = ~boro, colors = viridis_pal(option = "D")(3)) %>% 
    layout(
@@ -191,7 +196,7 @@ afs %>%
       type = 'category',
       title  = 'Action'), 
     yaxis = list(
-      title = 'Frequency')) 
+      title = 'Frequency'))
 ```
 
 
@@ -204,10 +209,18 @@ Column {data-width=500}
 
 afs %>% 
   count(age, action) %>% 
-  plot_ly(x = ~action, y = ~age, type = "box", color = ~action, colors = viridis_pal(option = "D")(3)) 
-
+  mutate(action = fct_relevel(action, c("Stop", "Frisk"))) %>% 
+  plot_ly(x = ~action, y = ~age, type = "box", color = ~action, colors = viridis_pal(option = "D")(3)) %>% 
+  layout(
+    xaxis = list(
+      title  = 'Action'), 
+    yaxis = list(
+      title = 'Age'
+    ) 
+    )
   
 ```
+
 
 ### Frequency of Frisked, Searched, and Arrested of Subjects by Sex
 
@@ -219,9 +232,16 @@ subset(sex %in% c("F","M")) %>%
              sex,
              "F" = "Female",
              "M" = "Male"
-           )) %>% 
+           ), action = fct_relevel(action, c("Stop", "Frisk"))) %>% 
   count(sex, action) %>% 
-  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ sex, colors = viridis_pal(option = "D")(3)) 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ sex, colors = viridis_pal(option = "D")(3)) %>% 
+  layout(
+    xaxis = list(
+      title  = 'Action'), 
+    yaxis = list(
+      title = 'Frequency'
+    ) 
+    )
 
 ```
 

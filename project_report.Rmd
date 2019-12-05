@@ -64,12 +64,14 @@ We are interested in determining if there is a predictive nature to this dataset
 * What are the trends in stops across different areas of New York City? 
 
 # Data
+
 Our dataset is from the New York Police Department and was obtained through the NYC Open Data resource. It contains data from 12,404 stops that occurred during 2016. The original dataset contained 112 variables, however to narrow our focus, the dataset was reduced down to 45 categorical, binary, and numerical variables that describe each stop and are relevant to the questions at hand. The data cleaning and tidying process recoded variables, implemented understandable variable names, and converted categorical variables to factors and binary variables into ‘0’ and ‘1’ within R. The outcome variables that we are interested in building models for are FRISKED and ARST_MADE. These variables are binary in nature and describe whether the stopped individual was frisked and/or arrested. 
 
 
 # Exploratory Analysis
 
-## Loading and tidying the data
+
+### Loading and tidying the data
 
 To obtain a dataset that could be used in LASSO and modeling logistic regression, several categorical variables with levels that had representation of less than 2% were regrouped into 'other' to ensure that both the testing and training dataset have individuals represented from all categorical levels. This included regrouping levels within the variables build, race, hair color, and eye color.
 
@@ -176,10 +178,12 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
-## Demographics 
-The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop. 
+### Demographics
 
-The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old.  Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location". 
+The 12,404 reported stops in 2016 were spread unevenly amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked, and 2643 were arrested and among those different races who were frisked  and arrested blacks were the highest amongst the other races. Also, of the reported stops there were 11,450 males, 896 females, and 58 unknowns.   
+
+The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location".
+
 
 ```{r, message = FALSE, eval = FALSE}
 # Percent innocent for each race category
@@ -227,7 +231,7 @@ plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>%
   )
 ```
 
-## Logistic Regression Analysis
+### Logistic Regression Analysis
  
 **Goal:** To select for models that will best answer the following questions:
 
@@ -240,7 +244,11 @@ Only variables that preceded the individual being stopped were used in logistic 
 
 **FRISKED Model:**
 
+Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only slightly better than guessing (0.50).
+
+
 Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only mildly better than guessing (0.50).
+
 ```{r, results='hide', message=FALSE}
 set.seed(1)
 train = sample_frac(stop_frisk_df, size = 0.8)
@@ -284,12 +292,17 @@ log_pred = ifelse(log_pred == 1, "Predicted Frisk", "Predicted No Frisk")
 
 
 **FRISKED AUC Curve**
+
 ```{r, message=FALSE}
 plot(perf)
 ```
 
 
+
+**FRISKED Confusion Matrix**
+
 **Confusion Matrix: Predicted Frisked Status vs True Frisked Status**
+
 ```{r}
 #confusion matrix
 table(pred = log_pred, true = test$frisked) %>% knitr::kable(col.names = c("No Frisk", "Frisk"))
@@ -298,7 +311,10 @@ table(pred = log_pred, true = test$frisked) %>% knitr::kable(col.names = c("No F
 
 **ARST_MADE Model:**
 
+The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5283.
+
 The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5179. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.
+
 ```{r, results='hide', message=FALSE}
 model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, data = train)
 
@@ -339,18 +355,24 @@ log_pred = ifelse(log_pred == 1, "Predicted Arrest", "Predicted No Arrest")
 ```
 
 **ARST_MADE AUC Curve**
+
 ```{r}
 plot(perf)
 ```
 
+
+**ARST_MADE Confusion Matrix**
+
+
 **Confusion Matrix: Predicted Arrest Status vs True Arrest Status**
+
 ```{r}
 
 table(pred = log_pred, true = test$arst_made) %>% knitr::kable(col.names = c("No Arrest", "Arrest"))
 ```
 
 
-## LASSO Regression
+### LASSO Regression
 
 LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the "positive" prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix. 
 
@@ -416,6 +438,7 @@ auc(test_lasso$frisked, lasso_predict)
 ```
 
 **Confusion Matrix: Predicted Frisked Status vs True Frisked Status**
+
 ```{r}
 #confusion matrix
 table(pred = lasso_predict, true = test_lasso$frisked) %>% knitr::kable(col.names = c("No Frisk", "Frisk"))
@@ -489,6 +512,7 @@ auc(test_lasso_arst$arst_made, lasso_predict)
 ```
 
 **Confusion Matrix: Predicted Arrested Status vs True Arrested Status**
+
 ```{r}
 #confusion matrix
 table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(col.names = c("No Arrest", "Arrest"))
@@ -496,7 +520,7 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(c
 
 
 # Additional Analysis
-## Minors
+### Minors
 
 Additional analysis was performed for stopped individuals under age of 18.
 
@@ -548,7 +572,7 @@ under_18 %>%
 
 `r round(count(under_18) / count(stop_frisk_df) * 100, 2)`% of people who were stopped were underage of 18; out of those `r under_18 %>% filter(sex == "F") %>% count()` were female, `r under_18 %>% filter(sex == "M") %>% count()` were male and `r under_18 %>% filter(sex == "Z") %>% count()` were identified as other. Most minors that were stopped were of race `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% select(1) %>% head(1)` with a total of `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% ungroup() %>%  select(n) %>% head(1)` stops.
 
-## Trends over time
+### Trends over time
 
 We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.
 
@@ -647,14 +671,55 @@ stops_per_dow = stop_frisk_df %>%
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)
 ```
 
+
+### Reasons for Being Stopped
+
+We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are actions engaging in violent crimes, actions indicative of drug transaction, carrying suspicious object, casing a victim or location, fits a relevant description, furtive movements, suspicious bulge, suspect acting as a lookout, wearing clothes commonly used in crimes, and other reasons. Amongst these different reasons "fits a relevant description" had a total of 5870, falling close behind was "other" with a total of 5378, and the reasons with the least amount of 402 was "wearing clothes commonly used in crimes" and the amount of 365 was "carrying a suspicious object".
+
+```{r, message = FALSE}
+stop_frisk_df %>% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = "reason_stopped",
+    values_to = "stops"
+  ) %>% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    "cs_objcs" = "carrying suspicious object",
+    "cs_descr" = "fits a relevant description",
+    "cs_casng" = "casing a victim or location",
+    "cs_lkout" = "suspect acting as a lookout",
+    "cs_cloth" = "wearing clothes commonly used in crimes",
+    "cs_drgtr" = "actions indicative of drug transaction",
+    "cs_furtv" = "furtive movements",
+    "cs_vcrim" = "actions engaging in violent crime",
+    "cs_bulge" = "suspicious bulge",
+    "cs_other" = "other"
+  )) %>% 
+  filter(stops == 1) %>% 
+  group_by(reason_stopped) %>% 
+  summarize(total =n()) %>% 
+  mutate(prop = total/sum(total)) %>% 
+ plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, colors = "Set1") %>% 
+    layout(
+    xaxis = list(
+      title  = 'Reasons Stopped'), 
+    yaxis = list(
+      title = 'Total')) 
+```
+
+
 # Discussion
 
-The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race. Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. 
+The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more successful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race.
+
+Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. For arrest made model, it did not predict any probability of being arrested greater than 0.50. This is due to the fact that only ##% of individuals from the dataset were arrested. This problem was anticipated to be nullified by splitting the dataset 50/50 to make sure there were enough arrest observations in both the testing and the training dataset, however this was not the case. To create better predictions for the arrest made confusion matrix, we lowered the “positive” probability cut off to be 0.30 instead of 0.50. 
 
 Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
 
+Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample.
 
-
-  
-
+After looking at the total count of reasons for being stopped for each category there was sum of 19,110. This could be misleading given that our data set only contain 12,404 subjects. It appears that individuals could have been stopped for more than one reason which could possibly be why the "other" category is such a high quantity. For future analysis we could exclude people who were stopped for multiple reasons and just look at the people who were stopped for only one reason just so we could get a more feasible count of each category of reasons for being stopped.
 

@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="kd2640_total_stops" />
 
-<meta name="date" content="2019-12-04" />
+<meta name="date" content="2019-12-05" />
 
 <title>total_stops</title>
 
@@ -236,6 +235,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -310,7 +310,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">total_stops</h1>
 <h4 class="author">kd2640_total_stops</h4>
-<h4 class="date">2019-12-04</h4>
+<h4 class="date">2019-12-05</h4>
 
 </div>
 
@@ -651,6 +651,15 @@ stop_by_boro %&gt;%
 ##   frisked     n
 ##     &lt;dbl&gt; &lt;int&gt;
 ## 1       1  7939</code></pre>
+<pre class="r"><code> stop_frisk_df %&gt;% 
+   group_by(sex) %&gt;% 
+   summarize(n = n())</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   sex       n
+##   &lt;fct&gt; &lt;int&gt;
+## 1 F       896
+## 2 M     11450
+## 3 Z        58</code></pre>
 
 
 

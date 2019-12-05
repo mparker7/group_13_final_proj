@@ -11,13 +11,13 @@
 
 <meta name="author" content="kd2640_total_stops" />
 
-<meta name="date" content="2019-12-04" />
+<meta name="date" content="2019-12-05" />
 
 <title>total_stops</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -106,33 +106,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 51px;
+  padding-top: 41px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .dropdown-submenu {
   position: relative;
@@ -279,7 +279,7 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="flexdashboard.html">Demographics</a>
+  <a href="flexdashboard.html">Demographics Analysis</a>
 </li>
 <li>
   <a href="project_report.html">Project Report</a>
@@ -310,7 +310,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">total_stops</h1>
 <h4 class="author">kd2640_total_stops</h4>
-<h4 class="date">2019-12-04</h4>
+<h4 class="date">2019-12-05</h4>
 
 </div>
 
@@ -651,6 +651,15 @@ stop_by_boro %&gt;%
 ##   frisked     n
 ##     &lt;dbl&gt; &lt;int&gt;
 ## 1       1  7939</code></pre>
+<pre class="r"><code> stop_frisk_df %&gt;% 
+   group_by(sex) %&gt;% 
+   summarize(n = n())</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   sex       n
+##   &lt;fct&gt; &lt;int&gt;
+## 1 F       896
+## 2 M     11450
+## 3 Z        58</code></pre>
 
 
 

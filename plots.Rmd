@@ -250,7 +250,6 @@ stop_frisk_df %>%
 PLOT 5: Total number of reasons for being stopped
 
 ```{r, plot5, eval = FALSE}
-frisks_total =
 stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
   pivot_longer(
@@ -275,9 +274,7 @@ stop_frisk_df %>%
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
   summarize(total =n()) %>% 
-  mutate(prop = total/sum(total)) 
-
-frisks_total %>% 
+  mutate(prop = total/sum(total)) %>% 
  plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped) 
 ```
 

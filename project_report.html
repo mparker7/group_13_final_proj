@@ -16,7 +16,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -116,33 +116,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 51px;
+  padding-top: 41px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
+  padding-top: 46px;
+  margin-top: -46px;
 }
 .dropdown-submenu {
   position: relative;
@@ -365,11 +365,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-<<<<<<< HEAD
-  <a href="flexdashboard.html">Demographics</a>
-=======
   <a href="flexdashboard.html">Demographics Analysis</a>
->>>>>>> b127df1e19e85823bc2affc19eaa3697999d2f74
 </li>
 <li>
   <a href="project_report.html">Project Report</a>
@@ -438,8 +434,8 @@ div.tocify {
 </div>
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory Analysis</h1>
-<div id="loading-and-tidying-the-data" class="section level2">
-<h2>Loading and tidying the data</h2>
+<div id="loading-and-tidying-the-data" class="section level3">
+<h3>Loading and tidying the data</h3>
 <p>To obtain a dataset that could be used in LASSO and modeling logistic regression, several categorical variables with levels that had representation of less than 2% were regrouped into ‘other’ to ensure that both the testing and training dataset have individuals represented from all categorical levels. This included regrouping levels within the variables build, race, hair color, and eye color.</p>
 <pre class="r"><code># Read in data
 stop_frisk_df = 
@@ -542,10 +538,10 @@ stop_frisk_df =
   # remove the single row of NAs
   filter(!is.na(build))</code></pre>
 </div>
-<div id="demographics" class="section level2">
-<h2>Demographics</h2>
-<p>The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop.</p>
-<p>The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be “fits a relevant description”, “furtive movements”, “other” and “casing a victim or location”.</p>
+<div id="demographics" class="section level3">
+<h3>Demographics</h3>
+<p>The 12,404 reported stops in 2016 were spread unevenly amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked, and 2643 were arrested and among those different races who were frisked and arrested blacks were the highest amongst the other races. Also, of the reported stops there were 11,450 males, 896 females, and 58 unknowns.</p>
+<p>The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be “fits a relevant description”, “furtive movements”, “other” and “casing a victim or location”.</p>
 <pre class="r"><code># Percent innocent for each race category
 percent_innocent = function(x) {
   stop_frisk_df %&gt;% 
@@ -590,8 +586,8 @@ plot_ly(x = ~race, y = ~percentage, type = &quot;bar&quot;, color = ~race) %&gt;
     ) 
   )</code></pre>
 </div>
-<div id="logistic-regression-analysis" class="section level2">
-<h2>Logistic Regression Analysis</h2>
+<div id="logistic-regression-analysis" class="section level3">
+<h3>Logistic Regression Analysis</h3>
 <p><strong>Goal:</strong> To select for models that will best answer the following questions:</p>
 <ul>
 <li>Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be frisked or not?</li>
@@ -732,8 +728,8 @@ table(pred = log_pred, true = test$arst_made)</code></pre>
 </tbody>
 </table>
 </div>
-<div id="lasso-regression" class="section level2">
-<h2>LASSO Regression</h2>
+<div id="lasso-regression" class="section level3">
+<h3>LASSO Regression</h3>
 <p>LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling. LASSO regression for the arrest made model selected 2 of the 33 variables and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above.</p>
 <pre class="r"><code>library(glmnet)
 
@@ -901,8 +897,8 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %&gt;% knitr::kabl
 </div>
 <div id="additional-analysis" class="section level1">
 <h1>Additional Analysis</h1>
-<div id="minors" class="section level2">
-<h2>Minors</h2>
+<div id="minors" class="section level3">
+<h3>Minors</h3>
 <p>Additional analysis was performed for stopped individuals under age of 18.</p>
 <p>14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping minors are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of minors stopped were innocent and 20% were arrested. Out of minors who have been arrested 86% were black, white-hispanic or black-hispanic.</p>
 <p>Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.</p>
@@ -934,20 +930,11 @@ under_18 %&gt;%
       range = c(0, 1100)
     ) 
   )</code></pre>
-<<<<<<< HEAD
-<div id="htmlwidget-b564a01e9cb40a84024a" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b564a01e9cb40a84024a">{"x":{"visdat":{"2aae1e4d4ed8":["function () ","plotlyVisDat"]},"cur_data":"2aae1e4d4ed8","attrs":{"2aae1e4d4ed8":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-=======
-<div id="htmlwidget-16609bd8a66a5ea4d468" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<<<<<<< HEAD
-<script type="application/json" data-for="htmlwidget-16609bd8a66a5ea4d468">{"x":{"visdat":{"16541ce74f5":["function () ","plotlyVisDat"]},"cur_data":"16541ce74f5","attrs":{"16541ce74f5":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-=======
-<script type="application/json" data-for="htmlwidget-16609bd8a66a5ea4d468">{"x":{"visdat":{"8e131561212":["function () ","plotlyVisDat"]},"cur_data":"8e131561212","attrs":{"8e131561212":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
->>>>>>> 5a3f81f42c7db78a47150505062f95e7d5e33c26
->>>>>>> b127df1e19e85823bc2affc19eaa3697999d2f74
+<div id="htmlwidget-782c1c051580d705abdf" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-782c1c051580d705abdf">{"x":{"visdat":{"39fc2c800299":["function () ","plotlyVisDat"]},"cur_data":"39fc2c800299","attrs":{"39fc2c800299":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="trends-over-time" class="section level2">
-<h2>Trends over time</h2>
+<div id="trends-over-time" class="section level3">
+<h3>Trends over time</h3>
 <p>We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.</p>
 <pre class="r"><code># Number of stops per day
 stops_per_day =
@@ -1043,11 +1030,50 @@ stops_per_dow = stop_frisk_df %&gt;%
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)</code></pre>
 <p><img src="project_report_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
 </div>
+<div id="reasons-for-being-stopped" class="section level3">
+<h3>Reasons for Being Stopped</h3>
+<p>We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are actions engaging in violent crimes, actions indicative of drug transaction, carrying suspicious object, casing a victim or location, fits a relevant description, furtive movements, suspicious bulge, suspect acting as a lookout, wearing clothes commonly used in crimes, and other reasons. Amongst these different reasons “fits a relevant description” had a total of 5870, falling close behind was “other” with a total of 5378, and the reasons with the least amount of 402 was “wearing clothes commonly used in crimes” and the amount of 365 was “carrying a suspicious object”.</p>
+<pre class="r"><code>stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspicious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+  filter(stops == 1) %&gt;% 
+  group_by(reason_stopped) %&gt;% 
+  summarize(total =n()) %&gt;% 
+  mutate(prop = total/sum(total)) %&gt;% 
+ plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped, colors = &quot;Set1&quot;) %&gt;% 
+    layout(
+    xaxis = list(
+      title  = &#39;Reasons Stopped&#39;), 
+    yaxis = list(
+      title = &#39;Total&#39;)) </code></pre>
+<div id="htmlwidget-4bc3f1956b95fa57a651" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4bc3f1956b95fa57a651">{"x":{"visdat":{"39fc173fdcbf":["function () ","plotlyVisDat"]},"cur_data":"39fc173fdcbf","attrs":{"39fc173fdcbf":{"x":{},"y":{},"color":{},"colors":"Set1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Reasons Stopped","type":"category","categoryorder":"array","categoryarray":["actions engaging in violent crime","actions indicative of drug transaction","carrying suspicious object","casing a victim or location","fits a relevant description","furtive movements","other","suspect acting as a lookout","suspicious bulge","wearing clothes commonly used in crimes"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["actions engaging in violent crime"],"y":[758],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(228,26,28,1)","line":{"color":"rgba(228,26,28,1)"}},"textfont":{"color":"rgba(228,26,28,1)"},"error_y":{"color":"rgba(228,26,28,1)"},"error_x":{"color":"rgba(228,26,28,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["actions indicative of drug transaction"],"y":[636],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(101,120,166,1)","line":{"color":"rgba(101,120,166,1)"}},"textfont":{"color":"rgba(101,120,166,1)"},"error_y":{"color":"rgba(101,120,166,1)"},"error_x":{"color":"rgba(101,120,166,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["carrying suspicious object"],"y":[365],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(83,164,102,1)","line":{"color":"rgba(83,164,102,1)"}},"textfont":{"color":"rgba(83,164,102,1)"},"error_y":{"color":"rgba(83,164,102,1)"},"error_x":{"color":"rgba(83,164,102,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["casing a victim or location"],"y":[1698],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(139,116,136,1)","line":{"color":"rgba(139,116,136,1)"}},"textfont":{"color":"rgba(139,116,136,1)"},"error_y":{"color":"rgba(139,116,136,1)"},"error_x":{"color":"rgba(139,116,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["fits a relevant description"],"y":[5870],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(216,103,94,1)","line":{"color":"rgba(216,103,94,1)"}},"textfont":{"color":"rgba(216,103,94,1)"},"error_y":{"color":"rgba(216,103,94,1)"},"error_x":{"color":"rgba(216,103,94,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["furtive movements"],"y":[2234],"type":"bar","name":"furtive movements","marker":{"color":"rgba(255,186,23,1)","line":{"color":"rgba(255,186,23,1)"}},"textfont":{"color":"rgba(255,186,23,1)"},"error_y":{"color":"rgba(255,186,23,1)"},"error_x":{"color":"rgba(255,186,23,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[5378],"type":"bar","name":"other","marker":{"color":"rgba(227,197,50,1)","line":{"color":"rgba(227,197,50,1)"}},"textfont":{"color":"rgba(227,197,50,1)"},"error_y":{"color":"rgba(227,197,50,1)"},"error_x":{"color":"rgba(227,197,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspect acting as a lookout"],"y":[875],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(185,95,74,1)","line":{"color":"rgba(185,95,74,1)"}},"textfont":{"color":"rgba(185,95,74,1)"},"error_y":{"color":"rgba(185,95,74,1)"},"error_x":{"color":"rgba(185,95,74,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspicious bulge"],"y":[894],"type":"bar","name":"suspicious bulge","marker":{"color":"rgba(237,133,187,1)","line":{"color":"rgba(237,133,187,1)"}},"textfont":{"color":"rgba(237,133,187,1)"},"error_y":{"color":"rgba(237,133,187,1)"},"error_x":{"color":"rgba(237,133,187,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["wearing clothes commonly used in crimes"],"y":[402],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(153,153,153,1)","line":{"color":"rgba(153,153,153,1)"}},"textfont":{"color":"rgba(153,153,153,1)"},"error_y":{"color":"rgba(153,153,153,1)"},"error_x":{"color":"rgba(153,153,153,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
 <p>The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race. Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. For example, it is understood that race is a strong factor in whether or not</p>
 <p>Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.</p>
+<p>Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample.</p>
+<p>After looking at the total count of reasons for being stopped for each category there was sum of 19,110. This could be misleading given that our data set only contain 12,404 subjects. It appears that individuals could have been stopped for more than one reason which could possibly be why the “other” category is such a high quantity. For future analysis we could exclude people who were stopped for multiple reasons and just look at the people who were stopped for only one reason just so we could get a more feasible count of each category of reasons for being stopped.</p>
 </div>
 
 

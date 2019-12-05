@@ -24,7 +24,6 @@ library(patchwork)
 
 
 ```{r, include=FALSE}
-# Read in data
 stop_frisk_df = 
   # Read in data from internet
   GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
@@ -47,6 +46,10 @@ stop_frisk_df =
     boro = city
   )  %>% 
   mutate(
+    # Change values to missing
+    weight = ifelse(weight == 999, NA, weight),
+    age = ifelse(age == 1, NA, age),
+    weight = ifelse(weight == 1, NA, weight),
     # Combine height columns
     height_inch = ht_feet * 12 + ht_inch,
     # Convert date to proper format
@@ -123,8 +126,9 @@ stop_frisk_df =
   # converts all character variables to factors (this does the same as the for loop)
   mutate_if(is.character, as.factor) %>% 
   # remove the single row of NAs
-  filter(!is.na(build))
-
+  filter(
+    !is.na(build)
+  )
 
 
 afs = stop_frisk_df %>% 

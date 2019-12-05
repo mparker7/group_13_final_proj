@@ -188,8 +188,11 @@ The `r nrow(stop_frisk_df)` reported stops in 2016 were spread unevenly amongst 
 
 The age of the stopped individuals ranges from `r min(pull(stop_frisk_df, age), na.rm = TRUE)` to `r max(pull(stop_frisk_df, age), na.rm = TRUE)`, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location."
 
+Check out the demographic plots [here](flexdashboard.html).
 
-```{r, message = FALSE, eval = FALSE}
+We also investigated into innocent individuals, those who were not arrested after being stopped, and found that the percent innocent within each race is approximately equally distributed among the races and is around 80%.
+
+```{r, message = FALSE}
 # Percent innocent for each race category
 percent_innocent = 
   stop_frisk_df %>% 
@@ -217,7 +220,7 @@ percent_innocent %>%
     ) %>% 
 plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>% 
   layout(
-    title = 'Percent Innocent Minors Among Each Race Category',
+    title = 'Percent Innocent Among Each Race Category',
     xaxis = list(
       type = 'category',
       title  = 'Race'), 
@@ -227,6 +230,7 @@ plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>%
     ) 
   )
 ```
+
 
 ### Logistic Regression Analysis
  

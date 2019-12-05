@@ -5,6 +5,6 @@ account: group-13-final-proj
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1562654
-bundleId: 2641838
+bundleId: 2642376
 url: https://group-13-final-proj.shinyapps.io/shiny_map/
-when: 1575496272.6172
+when: 1575510875.00408

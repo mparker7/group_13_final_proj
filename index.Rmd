@@ -2,7 +2,7 @@
 title: "Stop! You Are Being Frisked!"
 ---
 
-
+ 
 
 <center>
 
@@ -50,6 +50,6 @@ Our data source, [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/repo
 
 
 
-<h4> Subscribers: Matthew Parker|Lauren Franks|Olya Besedina|Keyanna Davis|Clayton Snyder <h4> 
+<h4> Authors: Matthew Parker|Lauren Franks|Olya Besedina|Keyanna Davis|Clayton Snyder <h4> 
 
 

@@ -4,7 +4,7 @@ navbar:
   title: "Home"
   right:
 
-
+ 
     - text: "Demographics Analysis"
       href: flexdashboard.html
     - text: "Project Report"

@@ -644,6 +644,32 @@ stop_by_boro %&gt;%
 
 stop_by_boro %&gt;% 
   plot_ly(x = ~boro, y= ~total, type = &quot;bar&quot; , color = ~reason_stopped)</code></pre>
+<pre class="r"><code>reason_stopped = 
+  stop_frisk_df %&gt;% 
+  select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %&gt;% 
+  pivot_longer(
+    cs_objcs:cs_other,
+    names_to = &quot;reason_stopped&quot;,
+    values_to = &quot;stops&quot;
+  ) %&gt;% 
+  mutate(
+    reason_stopped = recode(
+    reason_stopped,
+    &quot;cs_objcs&quot; = &quot;carrying suspicious object&quot;,
+    &quot;cs_descr&quot; = &quot;fits a relevant description&quot;,
+    &quot;cs_casng&quot; = &quot;casing a victim or location&quot;,
+    &quot;cs_lkout&quot; = &quot;suspect acting as a lookout&quot;,
+    &quot;cs_cloth&quot; = &quot;wearing clothes commonly used in crimes&quot;,
+    &quot;cs_drgtr&quot; = &quot;actions indicative of drug transaction&quot;,
+    &quot;cs_furtv&quot; = &quot;furtive movements&quot;,
+    &quot;cs_vcrim&quot; = &quot;actions engaging in violent crime&quot;,
+    &quot;cs_bulge&quot; = &quot;suspicious bulge&quot;,
+    &quot;cs_other&quot; = &quot;other&quot;
+  )) %&gt;% 
+  filter(stops == 1) %&gt;% 
+  group_by(reason_stopped) %&gt;% 
+  summarize(total =n()) </code></pre>
+<p>actions engaging in violent crime, actions indicative of drug transaction, carrying suspicious object, casing a victim or location, fits a relevant description, furtive movements, other, suspect acting as a lookout, suspicious bulge, wearing clothes commonly used in crimes</p>
 <pre class="r"><code>stop_frisk_df %&gt;% 
   filter(frisked==1) %&gt;% 
   count(frisked) </code></pre>

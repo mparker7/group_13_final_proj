@@ -668,10 +668,10 @@ stops_per_dow = stop_frisk_df %>%
 
 ### Reasons for Being Stopped
 
-We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are actions engaging in violent crimes, actions indicative of drug transaction, carrying suspicious object, casing a victim or location, fits a relevant description, furtive movements, suspicious bulge, suspect acting as a lookout, wearing clothes commonly used in crimes, and other reasons. Amongst these different reasons "fits a relevant description" had a total of 5870, falling close behind was "other" with a total of 5378, and the reasons with the least amount of 402 was "wearing clothes commonly used in crimes" and the amount of 365 was "carrying a suspicious object".
 
 ```{r, message = FALSE}
-stop_frisk_df %>% 
+reasons = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -694,16 +694,27 @@ stop_frisk_df %>%
   )) %>% 
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
-  summarize(total =n()) %>% 
-  mutate(prop = total/sum(total)) %>% 
- plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, colors = "Set1") %>% 
+  summarize(total =n()) 
+ 
+plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, colors = "Set1", data = reasons) %>% 
     layout(
     xaxis = list(
       title  = 'Reasons Stopped'), 
     yaxis = list(
-      title = 'Total')) 
+      title = 'Total'))
+
+fits_desc = reasons%>% 
+  filter(reason_stopped == "fits a relevant description")
+pull(fits_desc, total)
+
+other = reasons %>% 
+   filter(reason_stopped == "other")
+pull(other, total)
+
+pull(reasons, reason_stopped)
 ```
 
+We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was "other" with a total of `r pull(other, total)`, and the reasons with the least amount of 402 was `wearing clothes commonly used in crimes` and the amount of 365 was "carrying a suspicious object".
 
 # Discussion
 
@@ -712,6 +723,8 @@ The models created for FRISKED and ARST_MADE were not very successful at predict
 Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. For arrest made model, it did not predict any probability of being arrested greater than 0.50. This is due to the fact that only ##% of individuals from the dataset were arrested. This problem was anticipated to be nullified by splitting the dataset 50/50 to make sure there were enough arrest observations in both the testing and the training dataset, however this was not the case. To create better predictions for the arrest made confusion matrix, we lowered the “positive” probability cut off to be 0.30 instead of 0.50. 
 
 Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
+
+Innocent individuals were determined to be those who were not arrested, after being stopped. It was calculated that the percent innocent within each race is equally distributed among the races and is around 80%. Taking into account the equal rates of innocence within each race and the fact that black or African American race make up only 25% of the New York City population, while composing over 50% of stopped individuals it can be concluded that NYPD expresses bias toward and conducting racial profiling of black individuals. 
 
 Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample.
 

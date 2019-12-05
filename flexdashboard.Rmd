@@ -1,5 +1,5 @@
 ---
-title: "Demographics"
+title: "Demographics Among Individuals Who Were Stopped, Frisked, and Arrested"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns

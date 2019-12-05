@@ -24,7 +24,10 @@ library(leaflet)
 library(rsconnect)
 ```
 
-```{r}
+```{r, results='hide'}
+getwd()
+setwd("C:/Users/csnyd/Documents/School Documents/Fall Semester - 2019/Data Science/Final Project/group_13_final_proj/shiny")
+
 load('stop_frisk_df.rda')
 load('stop_frisk_map_df.rda')
 load('stops_by_race.rda')

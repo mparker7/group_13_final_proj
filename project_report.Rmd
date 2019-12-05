@@ -238,7 +238,7 @@ plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>%
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be frisked or not?
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be arrested or not? 
 
-**Methods:**
+**Methods:** 
 
 Only variables that preceded the individual being stopped were used in logistic regression models. Thus, all variables that described reason for frisk or reason for search were omitted. We focused on the characteristics, demographics, location, and reasons for stopping in the model. To build models for ARST_MADE and FRISKED, we evaluated GVIF to verify that there is no multicollinearity present and removed any variables suspected of having high collinearity. Model selection was based on consideration of AIC values, inflated standard errors, and p values. When AIC values did not change between models, ANOVA was used to compare similar models to determine whether the larger or smaller model was significantly better. Above all, we wanted to keep the concept of parsimony in mind when selecting models and minimize overfitting. Finally, the models were evaluated using a training and testing dataset to assess the preditive ability of the model using Area Under the Curve (AUC). 
 
@@ -560,22 +560,11 @@ under_18 %>%
       range = c(0, 1100)
     ) 
   )
-
-
-under_18 %>% 
-  group_by(race) %>% 
-  count() %>% 
-  dplyr::arrange(!n) %>% 
-  ungroup() %>% 
-  select(n) %>% 
-  head(1)
 ```
 
 `r round(count(under_18) / count(stop_frisk_df) * 100, 2)`% of people who were stopped were underage of 18; out of those `r under_18 %>% filter(sex == "F") %>% count()` were female, `r under_18 %>% filter(sex == "M") %>% count()` were male and `r under_18 %>% filter(sex == "Z") %>% count()` were identified as other. Most minors that were stopped were of race `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% select(1) %>% head(1)` with a total of `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% ungroup() %>%  select(n) %>% head(1)` stops.
 
 ### Trends over time
-
-We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.
 
 ```{r, message=FALSE}
 # Number of stops per day
@@ -672,13 +661,14 @@ stops_per_dow = stop_frisk_df %>%
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)
 ```
 
+We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.
 
 ### Reasons for Being Stopped
 
-We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are actions engaging in violent crimes, actions indicative of drug transaction, carrying suspicious object, casing a victim or location, fits a relevant description, furtive movements, suspicious bulge, suspect acting as a lookout, wearing clothes commonly used in crimes, and other reasons. Amongst these different reasons "fits a relevant description" had a total of 5870, falling close behind was "other" with a total of 5378, and the reasons with the least amount of 402 was "wearing clothes commonly used in crimes" and the amount of 365 was "carrying a suspicious object".
 
 ```{r, message = FALSE}
-stop_frisk_df %>% 
+reasons = 
+  stop_frisk_df %>% 
   select(cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
   pivot_longer(
     cs_objcs:cs_other,
@@ -701,16 +691,27 @@ stop_frisk_df %>%
   )) %>% 
   filter(stops == 1) %>% 
   group_by(reason_stopped) %>% 
-  summarize(total =n()) %>% 
-  mutate(prop = total/sum(total)) %>% 
- plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, colors = "Set1") %>% 
+  summarize(total =n()) 
+ 
+plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, colors = "Set1", data = reasons) %>% 
     layout(
     xaxis = list(
       title  = 'Reasons Stopped'), 
     yaxis = list(
-      title = 'Total')) 
+      title = 'Total'))
+
+fits_desc = reasons%>% 
+  filter(reason_stopped == "fits a relevant description")
+pull(fits_desc, total)
+
+other = reasons %>% 
+   filter(reason_stopped == "other")
+pull(other, total)
+
+pull(reasons, reason_stopped)
 ```
 
+We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was "other" with a total of `r pull(other, total)`, and the reasons with the least amount of 402 was `wearing clothes commonly used in crimes` and the amount of 365 was "carrying a suspicious object".
 
 # Discussion
 
@@ -720,5 +721,13 @@ Machine learning did not improve our predictive modeling. This may be due to the
 
 Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
 
+<<<<<<< HEAD
 Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample. After thorough analysis of the data, it was discovered that a single stop could contain multiple 'reason for stop'. Considering this, our analysis of the different reasons for stop could be misleading. This could explain why the "other" category for is among the highest. 
+=======
+Innocent individuals were determined to be those who were not arrested, after being stopped. It was calculated that the percent innocent within each race is equally distributed among the races and is around 80%. Taking into account the equal rates of innocence within each race and the fact that black or African American race make up only 25% of the New York City population, while composing over 50% of stopped individuals it can be concluded that NYPD expresses bias toward and conducting racial profiling of black individuals. 
+
+Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample.
+
+After looking at the total count of reasons for being stopped for each category there was sum of 19,110. This could be misleading given that our data set only contain 12,404 subjects. It appears that individuals could have been stopped for more than one reason which could possibly be why the "other" category is such a high quantity. For future analysis we could exclude people who were stopped for multiple reasons and just look at the people who were stopped for only one reason just so we could get a more feasible count of each category of reasons for being stopped.
+>>>>>>> e44fae6072a3869e149e7e913a0e893e7c500f18
 

@@ -99,6 +99,9 @@ stop_frisk_df =
     boro = city
   )  %>% 
   mutate(
+    # Change values to missing
+    weight = ifelse(weight == 999, NA, weight),
+    age = ifelse(age == 1, NA, age),
     # Combine height columns
     height_inch = ht_feet * 12 + ht_inch,
     # Convert date to proper format
@@ -175,7 +178,9 @@ stop_frisk_df =
   # converts all character variables to factors (this does the same as the for loop)
   mutate_if(is.character, as.factor) %>% 
   # remove the single row of NAs
-  filter(!is.na(build))
+  filter(
+    !is.na(build)
+  )
 ```
 
 ### Demographics
@@ -702,16 +707,20 @@ plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, 
 
 fits_desc = reasons%>% 
   filter(reason_stopped == "fits a relevant description")
-pull(fits_desc, total)
 
 other = reasons %>% 
    filter(reason_stopped == "other")
-pull(other, total)
 
-pull(reasons, reason_stopped)
+clothes = 
+  reasons %>% 
+   filter(reason_stopped == "wearing clothes commonly used in crimes")
+object =
+    reasons %>% 
+   filter(reason_stopped == "carrying suspicious object")
+
 ```
 
-We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was "other" with a total of `r pull(other, total)`, and the reasons with the least amount of 402 was `wearing clothes commonly used in crimes` and the amount of 365 was "carrying a suspicious object".
+We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was `other` with a total of `r pull(other, total)`, and the reasons with the least amount of `r pull(clothes, total)` was `wearing clothes commonly used in crimes` and the amount of `r pull(object, total)` was `carrying a suspicious object`.
 
 # Discussion
 
@@ -721,10 +730,21 @@ Machine learning did not improve our predictive modeling. This may be due to the
 
 Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
 
+<<<<<<< HEAD
 After thorough analysis of the data, it was discovered that a single stop could contain multiple 'reason for stop'. Considering this, our analysis of the different reasons for stop could be misleading. This could explain why the "other" category for is among the highest. Our data also had a interesting distribution in age, ranging from 1 to 99. While we cannot question 
 
 Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample. Innocent individuals were determined to be those who were not arrested, after being stopped. It was calculated that the percent innocent within each race is equally distributed among the races and is around 80%. Taking into account the equal rates of innocence within each race and the fact that black or African American race make up only 25% of the New York City population, while composing over 50% of stopped individuals it can be concluded that NYPD expresses bias toward and conducting racial profiling of black individuals. 
 
+=======
+Distribution of race for stopped minors is consistent with the trend of the whole sample. Majority of minors stopped are black (1061 individuals) followed by the white-Hispanic (377 individuals). Percent of innocent minors per each race is around 80%, which is also consistent with the trend of the whole sample. After thorough analysis of the data, it was discovered that a single stop could contain multiple 'reason for stop'. Considering this, our analysis of the different reasons for stop could be misleading. This could explain why the "other" category for is among the highest. 
+
+Innocent individuals were determined to be those who were not arrested, after being stopped. It was calculated that the percent innocent within each race is equally distributed among the races and is around 80%. Taking into account the equal rates of innocence within each race and the fact that black or African American race make up only 25% of the New York City population, while composing over 50% of stopped individuals it can be concluded that NYPD expresses bias toward and conducting racial profiling of black individuals. 
+>>>>>>> d057081a9f3020c499d99afab33706d8f797c57e
 
 
+<<<<<<< HEAD
+=======
+After looking at the total count of reasons for being stopped for each category there was sum of `19,110`. This could be misleading given that our data set only contain `r nrow(stop_frisk_df)` subjects. It appears that individuals could have been stopped for more than one reason which could possibly be why the "other" category is such a high quantity. For future analysis we could exclude people who were stopped for multiple reasons and just look at the people who were stopped for only one reason just so we could get a more feasible count of each category of reasons for being stopped.
+
+>>>>>>> d057081a9f3020c499d99afab33706d8f797c57e
 

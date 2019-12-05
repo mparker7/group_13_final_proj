@@ -177,13 +177,63 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
+
+# Exploratory Analysis
+*Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.*
+
+```{r, message = FALSE, eval = FALSE}
+# Percent innocent for each race category
+percent_innocent = function(x) {
+  stop_frisk_df %>% 
+  filter(
+         #age < 18,
+         race == x) %>% 
+  group_by(race, arst_made) %>% 
+  count() %>% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %>% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %>% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+}
+
+output = map_df(stop_frisk_df$race, percent_innocent) %>% 
+  distinct(race, percentage)
+
+output %>% 
+  ungroup(race) %>% 
+  mutate(
+    race = fct_relevel(race, c("white", "black", "other", "white-hispanic")),
+    race = recode(race, 
+                  "white" = "White",
+                  "black" = "Black",
+                  "other" = "Other",
+                  "white-hispanic" = "White-Hispanic",
+                  "black-hispanic" = "Black-Hispanic")
+    ) %>% 
+plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>% 
+  layout(
+    title = 'Percent innocent Minors among each race category',
+    xaxis = list(
+      type = 'category',
+      title  = 'Race'), 
+    yaxis = list(
+      title = 'Percent innocent, %',
+      range = c(0, 100)
+    ) 
+  )
+```
+
 ## Demographics 
 The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop. 
 
-The age range of the reported stops is from ages 1-99. The distribution 
+The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old.  Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location". 
 
 ## Logistic Regression Analysis
-
+ 
 **Goal:** To select for models that will best answer the following questions:
 
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be frisked or not?
@@ -444,7 +494,22 @@ Additional analysis was performed for stopped individuals under age of 18.
 
 Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.
 
-```{r, message = FALSE, eval=FALSE}
+```{r, message = FALSE, results = 'hide'}
+
+under_18 = stop_frisk_df %>% 
+  filter(age<'18') 
+
+# percent innocent and arrested amoung minors 
+under_18 %>% 
+  count(arst_made) %>%
+  mutate(
+    percent = (n /nrow(under_18)* 100)
+  ) %>% 
+  knitr::kable(digits = 2)
+```
+
+
+```{r, message = FALSE}
 under_18 = stop_frisk_df %>% 
   filter(age<'18') 
 
@@ -464,56 +529,6 @@ under_18 %>%
     ) 
   )
 
-# percent innocent and arrested amoung minors 
-under_18 %>% 
-  count(arst_made) %>%
-  mutate(
-    percent = (n /nrow(under_18)* 100)
-  ) %>% 
-  knitr::kable(digits = 2)
-
-# Percent innocent minors among each race category
-under_18_inn = function(x) {
-  stop_frisk_df %>% 
-  filter(age < 18,
-         race == x) %>% 
-  group_by(race, arst_made) %>% 
-  count() %>% 
-  pivot_wider(
-    names_from = arst_made,
-    values_from = n) %>% 
-  rename(
-    innocent = `0`,
-    arrested = `1`) %>% 
-  mutate(
-    percentage = (innocent/(innocent + arrested)) *100)
-}
-
-output = map_df(stop_frisk_df$race, under_18_inn) %>% 
-  distinct(race, percentage)
-
-output %>% 
-  ungroup(race) %>% 
-  mutate(
-    race = fct_relevel(race, c("white", "black", "other", "white-hispanic")),
-    race = recode(race, 
-                  "white" = "White",
-                  "black" = "Black",
-                  "other" = "Other",
-                  "white-hispanic" = "White-Hispanic",
-                  "black-hispanic" = "Black-Hispanic")
-    ) %>% 
-plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>% 
-  layout(
-    title = 'Percent innocent Minors among each race category',
-    xaxis = list(
-      type = 'category',
-      title  = 'Race'), 
-    yaxis = list(
-      title = 'Percent innocent, %',
-      range = c(0, 100)
-    ) 
-  )
 ```
 
 
@@ -615,9 +630,6 @@ stops_per_dow = stop_frisk_df %>%
 
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)
 ```
-
-
-
 
 # Discussion
 

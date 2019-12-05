@@ -1,5 +1,5 @@
 ---
-title: "Stop! You are being frisked!"
+title: "Stop! You Are Being Frisked!"
 ---
 
 
@@ -10,25 +10,44 @@ title: "Stop! You are being frisked!"
 
 </center>
 
-<center>
 
-<h2> The motivation for this project </h2>
+<h2> Motivation </h2>
 
 Stop and Frisk has been a controversial police tactic used for years as a way to briefly stop and search civilians who are of suspect. Police must have "reasonable suspicion" according to the fourth amendment to legally stop a person. Utilizing NYC Stop and Frisk data, we want to develop a predictive model, visualize the data across the five New York City Boroughs, and describe the scope of our dataset.
 
-<h2> The intended final products </h2>
-Our final products will include a report summarizing our final results, the process we took to analyz the 2016 Stop & Frisk Data Set, as well as a complimentary website that will detail the final report. There will also be interactive visualizations and displays to help guide readers through our report's findings. 
+<h2> Data Sources </h2>
 
-<h2> Data sources </h2>
-Our data source is going to be the publicly available data from NYC/the NYPD located [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page)
+Our data source, [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/reports-analysis/stopfrisk.page), is publicly available data from the NYPD. We used the data set published from 2016, due to its completeness within the data as well as its data dictionary. For future analysis, data can be acquired from from NYC's public database [additional data](https://opendata.cityofnewyork.us/) to explore neighborhood demographics. 
 
-We intend on using the data set published from 2016, due to its completeness within the data as well as its data dictionary. 
+<h2> Questions </h2>
 
-If we should need any additional data (like neighborhood demographics, etc.), we will acquire it from NYC's public database [additional data](https://opendata.cityofnewyork.us/).
+* Can we accurately predict if someone will be frisked or arrested after they have been stopped?
 
-<h2> The planned analyses/visualizations/coding challenges </h2>
+* How successful is the Stop and Frisk program?
 
-We plan to develop a logistic regression model through variable selection and LASSO regression modeling, visualize demographics, and develop an interactive map to display the data.
-  
-</center>
+* Are there trends over time of when stops occur?
+
+* What does the geographic distribution of stops/frisks/arrests look like in NYC by precinct?
+  + What are the leading reasons for stop and most common race stopped in each precinct?
+
+<h2> Key Results </h2>
+
+* After being stopped, using information about demographics, stop location, officer information, and reason for stop were not exceptionally useful for predicting frisk or arrest.
+
+* Approximately 20% of stops do not lead to arrest.
+
+* The frequency of stops decreased over 2016, less stops occur on Sunday and Monday compared to other days of the week, and most stops in a day occur during the evening/night.
+
+* Take a look at our [map](https://group-13-final-proj.shinyapps.io/shiny_map/) to discover other results!
+
+<h2> The Website </h2>
+
+[Demographics](flexdashboard.html) : Exploratory plots highlighting demographic features broken down by people stopped, frisked, and arrested.
+
+[Project Report](project_report.html) : The complete report with regression analysis along with additional analysis about minors only and stop trends over time.
+
+[Map](https://group-13-final-proj.shinyapps.io/shiny_map/) : An interactive map of NYC to explore where stops, frisks, and arrests happened in NYC in 2016.
+
+
+
 

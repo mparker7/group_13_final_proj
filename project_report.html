@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -17,7 +16,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -28,6 +27,13 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -110,33 +116,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 61px;
+  padding-top: 51px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 66px;
-  margin-top: -66px;
+  padding-top: 56px;
+  margin-top: -56px;
 }
 .section h2 {
-  padding-top: 66px;
-  margin-top: -66px;
+  padding-top: 56px;
+  margin-top: -56px;
 }
 .section h3 {
-  padding-top: 66px;
-  margin-top: -66px;
+  padding-top: 56px;
+  margin-top: -56px;
 }
 .section h4 {
-  padding-top: 66px;
-  margin-top: -66px;
+  padding-top: 56px;
+  margin-top: -56px;
 }
 .section h5 {
-  padding-top: 66px;
-  margin-top: -66px;
+  padding-top: 56px;
+  margin-top: -56px;
 }
 .section h6 {
-  padding-top: 66px;
-  margin-top: -66px;
+  padding-top: 56px;
+  margin-top: -56px;
 }
 .dropdown-submenu {
   position: relative;
@@ -239,6 +245,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -270,6 +277,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -352,7 +365,7 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="flexdashboard.html">Analysis</a>
+  <a href="flexdashboard.html">Demographics</a>
 </li>
 <li>
   <a href="project_report.html">Project Report</a>
@@ -525,10 +538,57 @@ stop_frisk_df =
   # remove the single row of NAs
   filter(!is.na(build))</code></pre>
 </div>
+</div>
+<div id="exploratory-analysis-1" class="section level1">
+<h1>Exploratory Analysis</h1>
+<p><em>Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.</em></p>
+<pre class="r"><code># Percent innocent for each race category
+percent_innocent = function(x) {
+  stop_frisk_df %&gt;% 
+  filter(
+         #age &lt; 18,
+         race == x) %&gt;% 
+  group_by(race, arst_made) %&gt;% 
+  count() %&gt;% 
+  pivot_wider(
+    names_from = arst_made,
+    values_from = n) %&gt;% 
+  rename(
+    innocent = `0`,
+    arrested = `1`) %&gt;% 
+  mutate(
+    percentage = (innocent/(innocent + arrested)) *100)
+}
+
+output = map_df(stop_frisk_df$race, percent_innocent) %&gt;% 
+  distinct(race, percentage)
+
+output %&gt;% 
+  ungroup(race) %&gt;% 
+  mutate(
+    race = fct_relevel(race, c(&quot;white&quot;, &quot;black&quot;, &quot;other&quot;, &quot;white-hispanic&quot;)),
+    race = recode(race, 
+                  &quot;white&quot; = &quot;White&quot;,
+                  &quot;black&quot; = &quot;Black&quot;,
+                  &quot;other&quot; = &quot;Other&quot;,
+                  &quot;white-hispanic&quot; = &quot;White-Hispanic&quot;,
+                  &quot;black-hispanic&quot; = &quot;Black-Hispanic&quot;)
+    ) %&gt;% 
+plot_ly(x = ~race, y = ~percentage, type = &quot;bar&quot;, color = ~race) %&gt;% 
+  layout(
+    title = &#39;Percent innocent Minors among each race category&#39;,
+    xaxis = list(
+      type = &#39;category&#39;,
+      title  = &#39;Race&#39;), 
+    yaxis = list(
+      title = &#39;Percent innocent, %&#39;,
+      range = c(0, 100)
+    ) 
+  )</code></pre>
 <div id="demographics" class="section level2">
 <h2>Demographics</h2>
 <p>The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop.</p>
-<p>The age range of the reported stops is from ages 1-99. The distribution</p>
+<p>The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be “fits a relevant description”, “furtive movements”, “other” and “casing a victim or location”.</p>
 </div>
 <div id="logistic-regression-analysis" class="section level2">
 <h2>Logistic Regression Analysis</h2>
@@ -579,7 +639,7 @@ perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
 auc(test$frisked, log_pred)</code></pre>
 <p><strong>FRISKED AUC Curve</strong></p>
 <pre class="r"><code>plot(perf)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p><img src="project_report_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
 <p><strong>ARST_MADE Model:</strong></p>
 <p>The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5283.</p>
 <pre class="r"><code>model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, data = train)
@@ -617,7 +677,7 @@ perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
 auc(test$arst_made, log_pred)</code></pre>
 <p><strong>ARST_MADE AUC Curve</strong></p>
 <pre class="r"><code>plot(perf)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p><img src="project_report_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
 </div>
 <div id="lasso-regression" class="section level2">
 <h2>LASSO Regression</h2>
@@ -657,7 +717,7 @@ broom::tidy(lasso_fit) %&gt;%
   geom_path() + 
   geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p><img src="project_report_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
 <pre class="r"><code>lasso_fit = glmnet(x, y, lambda = lambda_opt)
 lasso_fit %&gt;% broom::tidy()</code></pre>
 <pre class="r"><code>#min value of lambda
@@ -735,7 +795,7 @@ broom::tidy(lasso_fit) %&gt;%
    geom_path() + 
    geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
    theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p><img src="project_report_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
 <pre class="r"><code># coefficients from the optimal model
 lasso_fit = glmnet(x, y, lambda = lambda_opt)
 lasso_fit %&gt;% broom::tidy()
@@ -798,6 +858,16 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %&gt;% knitr::kabl
 <pre class="r"><code>under_18 = stop_frisk_df %&gt;% 
   filter(age&lt;&#39;18&#39;) 
 
+# percent innocent and arrested amoung minors 
+under_18 %&gt;% 
+  count(arst_made) %&gt;%
+  mutate(
+    percent = (n /nrow(under_18)* 100)
+  ) %&gt;% 
+  knitr::kable(digits = 2)</code></pre>
+<pre class="r"><code>under_18 = stop_frisk_df %&gt;% 
+  filter(age&lt;&#39;18&#39;) 
+
 under_18 %&gt;%
   count(race) %&gt;% 
   mutate(
@@ -812,58 +882,9 @@ under_18 %&gt;%
       title = &#39;Count&#39;,
       range = c(0, 1100)
     ) 
-  )
-
-# percent innocent and arrested amoung minors 
-under_18 %&gt;% 
-  count(arst_made) %&gt;%
-  mutate(
-    percent = (n /nrow(under_18)* 100)
-  ) %&gt;% 
-  knitr::kable(digits = 2)
-
-# Percent innocent minors among each race category
-under_18_inn = function(x) {
-  stop_frisk_df %&gt;% 
-  filter(age &lt; 18,
-         race == x) %&gt;% 
-  group_by(race, arst_made) %&gt;% 
-  count() %&gt;% 
-  pivot_wider(
-    names_from = arst_made,
-    values_from = n) %&gt;% 
-  rename(
-    innocent = `0`,
-    arrested = `1`) %&gt;% 
-  mutate(
-    percentage = (innocent/(innocent + arrested)) *100)
-}
-
-output = map_df(stop_frisk_df$race, under_18_inn) %&gt;% 
-  distinct(race, percentage)
-
-output %&gt;% 
-  ungroup(race) %&gt;% 
-  mutate(
-    race = fct_relevel(race, c(&quot;white&quot;, &quot;black&quot;, &quot;other&quot;, &quot;white-hispanic&quot;)),
-    race = recode(race, 
-                  &quot;white&quot; = &quot;White&quot;,
-                  &quot;black&quot; = &quot;Black&quot;,
-                  &quot;other&quot; = &quot;Other&quot;,
-                  &quot;white-hispanic&quot; = &quot;White-Hispanic&quot;,
-                  &quot;black-hispanic&quot; = &quot;Black-Hispanic&quot;)
-    ) %&gt;% 
-plot_ly(x = ~race, y = ~percentage, type = &quot;bar&quot;, color = ~race) %&gt;% 
-  layout(
-    title = &#39;Percent innocent Minors among each race category&#39;,
-    xaxis = list(
-      type = &#39;category&#39;,
-      title  = &#39;Race&#39;), 
-    yaxis = list(
-      title = &#39;Percent innocent, %&#39;,
-      range = c(0, 100)
-    ) 
   )</code></pre>
+<div id="htmlwidget-b564a01e9cb40a84024a" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b564a01e9cb40a84024a">{"x":{"visdat":{"2aae1e4d4ed8":["function () ","plotlyVisDat"]},"cur_data":"2aae1e4d4ed8","attrs":{"2aae1e4d4ed8":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="trends-over-time" class="section level2">
 <h2>Trends over time</h2>
@@ -960,7 +981,7 @@ stops_per_dow = stop_frisk_df %&gt;%
   theme(legend.position = &quot;none&quot;)
 
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-14-1.png" width="90%" /></p>
+<p><img src="project_report_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
 </div>
 </div>
 <div id="discussion" class="section level1">

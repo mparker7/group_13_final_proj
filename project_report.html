@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
 <meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Lauren, Olya, Matt, Cj, &amp; Keyanna" />
 
+<meta name="date" content="2019-12-05" />
 
 <title>Stop! You Are Being Frisked!</title>
 
@@ -245,7 +247,6 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
-  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -277,12 +278,6 @@ $(document).ready(function () {
 }
 }
 
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
 
 .toc-content {
   padding-left: 30px;
@@ -540,8 +535,8 @@ stop_frisk_df =
 </div>
 <div id="demographics" class="section level3">
 <h3>Demographics</h3>
-<p>The 12,404 reported stops in 2016 were spread unevenly amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked, and 2643 were arrested and among those different races who were frisked and arrested blacks were the highest amongst the other races. Also, of the reported stops there were 11,450 males, 896 females, and 58 unknowns.</p>
-<p>The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be “fits a relevant description”, “furtive movements”, “other” and “casing a victim or location”.</p>
+<p>The 12404 reported stops in 2016 were spread unevenly amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12404 reported stops 7939 individuals were frisked, and 2643 individuals were arrested. The most frequently frisked and arrested race was black. Of the 12404 reported stops, 11450 individuals were male, 896 female, and 58 unknown.</p>
+<p>The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be “fits a relevant description”, “furtive movements”, “other” and “casing a victim or location.”</p>
 <pre class="r"><code># Percent innocent for each race category
 percent_innocent = function(x) {
   stop_frisk_df %&gt;% 
@@ -596,8 +591,6 @@ plot_ly(x = ~race, y = ~percentage, type = &quot;bar&quot;, color = ~race) %&gt;
 <p><strong>Methods:</strong></p>
 <p>Only variables that preceded the individual being stopped were used in logistic regression models. Thus, all variables that described reason for frisk or reason for search were omitted. We focused on the characteristics, demographics, location, and reasons for stopping in the model. To build models for ARST_MADE and FRISKED, we evaluated GVIF to verify that there is no multicollinearity present and removed any variables suspected of having high collinearity. Model selection was based on consideration of AIC values, inflated standard errors, and p values. When AIC values did not change between models, ANOVA was used to compare similar models to determine whether the larger or smaller model was significantly better. Above all, we wanted to keep the concept of parsimony in mind when selecting models and minimize overfitting. Finally, the models were evaluated using a training and testing dataset to assess the preditive ability of the model using Area Under the Curve (AUC).</p>
 <p><strong>FRISKED Model:</strong></p>
-<p>Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only slightly better than guessing (0.50).</p>
-<p>Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only mildly better than guessing (0.50).</p>
 <pre class="r"><code>set.seed(1)
 train = sample_frac(stop_frisk_df, size = 0.8)
 test = anti_join(stop_frisk_df, train)
@@ -636,10 +629,10 @@ perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
 auc(test$frisked, log_pred)
 
 log_pred = ifelse(log_pred == 1, &quot;Predicted Frisk&quot;, &quot;Predicted No Frisk&quot;)</code></pre>
+<p>Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.567. This value is only slightly better than guessing (0.50).</p>
 <p><strong>FRISKED AUC Curve</strong></p>
 <pre class="r"><code>plot(perf)</code></pre>
 <p><img src="project_report_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
-<p><strong>FRISKED Confusion Matrix</strong></p>
 <p><strong>Confusion Matrix: Predicted Frisked Status vs True Frisked Status</strong></p>
 <pre class="r"><code>#confusion matrix
 table(pred = log_pred, true = test$frisked) %&gt;% knitr::kable(col.names = c(&quot;No Frisk&quot;, &quot;Frisk&quot;))</code></pre>
@@ -665,8 +658,6 @@ table(pred = log_pred, true = test$frisked) %&gt;% knitr::kable(col.names = c(&q
 </tbody>
 </table>
 <p><strong>ARST_MADE Model:</strong></p>
-<p>The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5283.</p>
-<p>The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5179. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.</p>
 <pre class="r"><code>model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, data = train)
 
 summary(model_5)
@@ -702,10 +693,10 @@ perf = performance(pr, measure = &quot;tpr&quot;, x.measure = &quot;fpr&quot;)
 auc(test$arst_made, log_pred)
 
 log_pred = ifelse(log_pred == 1, &quot;Predicted Arrest&quot;, &quot;Predicted No Arrest&quot;)</code></pre>
+<p>The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.512. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.</p>
 <p><strong>ARST_MADE AUC Curve</strong></p>
 <pre class="r"><code>plot(perf)</code></pre>
 <p><img src="project_report_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
-<p><strong>ARST_MADE Confusion Matrix</strong></p>
 <p><strong>Confusion Matrix: Predicted Arrest Status vs True Arrest Status</strong></p>
 <pre class="r"><code>table(pred = log_pred, true = test$arst_made) %&gt;% knitr::kable(col.names = c(&quot;No Arrest&quot;, &quot;Arrest&quot;))</code></pre>
 <table>
@@ -732,16 +723,15 @@ log_pred = ifelse(log_pred == 1, &quot;Predicted Arrest&quot;, &quot;Predicted N
 </div>
 <div id="lasso-regression" class="section level3">
 <h3>LASSO Regression</h3>
-<p>LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the “positive” prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix.</p>
+<p>LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data were removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.414, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the “positive” prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix.</p>
 <pre class="r"><code>library(glmnet)
 
 set.seed(1)
 
-# getting rid of incomplete observations
-stop_frisk_lasso = stop_frisk_df[complete.cases(stop_frisk_df), ]
-
 # keeping only variables we want to use with frisked logistic prediction
-stop_frisk_lasso = stop_frisk_lasso %&gt;% select(frisked, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
+stop_frisk_lasso = stop_frisk_df %&gt;% select(frisked, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other) 
+
+stop_frisk_lasso = stop_frisk_lasso[complete.cases(stop_frisk_lasso), ]
 
 # create test and train datasets
 train_lasso = sample_frac(stop_frisk_lasso, size = 0.5)
@@ -759,16 +749,15 @@ lasso_cv = cv.glmnet(x, y, family = &quot;binomial&quot;, type = &quot;mse&quot;
 
 lambda_opt = lasso_cv$lambda.min
 
-# visualizing best lambda
-broom::tidy(lasso_fit) %&gt;% 
-   select(term, lambda, estimate) %&gt;% 
-   complete(term, lambda, fill = list(estimate = 0) ) %&gt;% 
-   filter(term != &quot;(Intercept)&quot;) %&gt;% 
-   ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
-   geom_path() + 
-   geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
-   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+# # visualizing best lambda
+# broom::tidy(lasso_fit) %&gt;% 
+#    select(term, lambda, estimate) %&gt;% 
+#    complete(term, lambda, fill = list(estimate = 0) ) %&gt;% 
+#    filter(term != &quot;(Intercept)&quot;) %&gt;% 
+#    ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+#    geom_path() + 
+#    geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
+#    theme(legend.position = &quot;none&quot;)</code></pre>
 <pre class="r"><code>#min value of lambda
 lambda_min &lt;- lasso_cv$lambda.min
 #best value of lambda
@@ -788,6 +777,17 @@ lasso_predict &lt;- rep(&quot;Pred No Frisk&quot;, nrow(test_lasso))
 lasso_predict[lasso_prob &gt; 0.5] &lt;- &quot;Pred Frisk&quot;
 
 auc(test_lasso$frisked, lasso_predict)</code></pre>
+<p><strong>Visualizing Best Lambda</strong></p>
+<pre class="r"><code># visualizing best lambda
+broom::tidy(lasso_fit) %&gt;% 
+   select(term, lambda, estimate) %&gt;% 
+   complete(term, lambda, fill = list(estimate = 0) ) %&gt;% 
+   filter(term != &quot;(Intercept)&quot;) %&gt;% 
+   ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+   geom_path() + 
+   geom_vline(xintercept = log(lambda_opt, 10), color = &quot;blue&quot;, size = 1.2) +
+   theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="project_report_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
 <p><strong>Confusion Matrix: Predicted Frisked Status vs True Frisked Status</strong></p>
 <pre class="r"><code>#confusion matrix
 table(pred = lasso_predict, true = test_lasso$frisked) %&gt;% knitr::kable(col.names = c(&quot;No Frisk&quot;, &quot;Frisk&quot;))</code></pre>
@@ -802,23 +802,23 @@ table(pred = lasso_predict, true = test_lasso$frisked) %&gt;% knitr::kable(col.n
 <tbody>
 <tr class="odd">
 <td>Pred Frisk</td>
-<td align="right">1949</td>
-<td align="right">3646</td>
+<td align="right">1946</td>
+<td align="right">3775</td>
 </tr>
 <tr class="even">
 <td>Pred No Frisk</td>
-<td align="right">243</td>
-<td align="right">125</td>
+<td align="right">277</td>
+<td align="right">151</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code>set.seed(1)
-# getting rid of incomplete observations
-stop_frisk_lasso_arst = stop_frisk_df[complete.cases(stop_frisk_df), ]
 
 # keeping only variables we want to use with frisked logistic prediction
-stop_frisk_lasso_arst = stop_frisk_lasso_arst %&gt;% select(arst_made, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
+stop_frisk_lasso_arst = stop_frisk_df %&gt;% select(arst_made, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
 
+# getting rid of incomplete observations
+stop_frisk_lasso_arst = stop_frisk_lasso_arst[complete.cases(stop_frisk_lasso_arst), ]
 
 # create test and train datasets
 train_lasso_arst = sample_frac(stop_frisk_lasso_arst, size = 0.5)
@@ -834,8 +834,9 @@ lasso_fit = glmnet(x, y, family = &quot;binomial&quot;)
 # cross validation
 lasso_cv = cv.glmnet(x, y, family = &quot;binomial&quot;, type = &quot;mse&quot;)
 
-lambda_opt = lasso_cv$lambda.min</code></pre>
-<pre class="r"><code># # visualizing best lambda
+lambda_opt = lasso_cv$lambda.min
+
+# # visualizing best lambda
 broom::tidy(lasso_fit) %&gt;% 
    select(term, lambda, estimate) %&gt;% 
    complete(term, lambda, fill = list(estimate = 0) ) %&gt;% 
@@ -885,13 +886,13 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %&gt;% knitr::kabl
 <tbody>
 <tr class="odd">
 <td>Predicted Arrest</td>
-<td align="right">713</td>
+<td align="right">778</td>
 <td align="right">434</td>
 </tr>
 <tr class="even">
 <td>Predicted No Arrest</td>
-<td align="right">3964</td>
-<td align="right">849</td>
+<td align="right">4063</td>
+<td align="right">874</td>
 </tr>
 </tbody>
 </table>
@@ -902,20 +903,18 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %&gt;% knitr::kabl
 <div id="minors" class="section level3">
 <h3>Minors</h3>
 <p>Additional analysis was performed for stopped individuals under age of 18.</p>
-<p>14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping minors are consistent with the overall trend in the data set. The most common reasons are “fits a relevant description”, “furtive movements” and the “other”. In 2016 80% of minors stopped were innocent and 20% were arrested. Out of minors who have been arrested 86% were black, white-hispanic or black-hispanic.</p>
-<p>Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.</p>
 <pre class="r"><code>under_18 = stop_frisk_df %&gt;% 
-  filter(age&lt;&#39;18&#39;) 
+  filter(age &lt; &#39;18&#39;) 
 
 # percent innocent and arrested amoung minors 
 under_18 %&gt;% 
   count(arst_made) %&gt;%
   mutate(
-    percent = (n /nrow(under_18)* 100)
+    percent = (n / nrow(under_18) * 100)
   ) %&gt;% 
   knitr::kable(digits = 2)</code></pre>
 <pre class="r"><code>under_18 = stop_frisk_df %&gt;% 
-  filter(age&lt;&#39;18&#39;) 
+  filter(age &lt; &#39;18&#39;) 
 
 under_18 %&gt;%
   count(race) %&gt;% 
@@ -932,8 +931,35 @@ under_18 %&gt;%
       range = c(0, 1100)
     ) 
   )</code></pre>
+<<<<<<< HEAD
 <div id="htmlwidget-16609bd8a66a5ea4d468" style="width:90%;height:576px;" class="plotly html-widget"></div>
 <script type="application/json" data-for="htmlwidget-16609bd8a66a5ea4d468">{"x":{"visdat":{"4425952a90d":["function () ","plotlyVisDat"]},"cur_data":"4425952a90d","attrs":{"4425952a90d":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+=======
+<<<<<<< HEAD
+<div id="htmlwidget-c661332bf4392502af51" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c661332bf4392502af51">{"x":{"visdat":{"17b57151a1976":["function () ","plotlyVisDat"]},"cur_data":"17b57151a1976","attrs":{"17b57151a1976":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+=======
+<<<<<<< HEAD
+<div id="htmlwidget-16609bd8a66a5ea4d468" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-16609bd8a66a5ea4d468">{"x":{"visdat":{"51ee35fce091":["function () ","plotlyVisDat"]},"cur_data":"51ee35fce091","attrs":{"51ee35fce091":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>under_18 %&gt;% 
+  group_by(race) %&gt;% 
+  count() %&gt;% 
+  dplyr::arrange(!n) %&gt;% 
+  ungroup() %&gt;% 
+  select(n) %&gt;% 
+  head(1)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       n
+##   &lt;int&gt;
+## 1  1061</code></pre>
+<p>14.89% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Most minors that were stopped were of race black with a total of 1061 stops.</p>
+=======
+<div id="htmlwidget-3ed08eae468ca6c90134" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3ed08eae468ca6c90134">{"x":{"visdat":{"4057387b0e38":["function () ","plotlyVisDat"]},"cur_data":"4057387b0e38","attrs":{"4057387b0e38":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+>>>>>>> af99ba209519f2e94ecb7ac4da9443652b19b35c
+>>>>>>> bd0fa94c4ef4e4f46d30adc1f0eb9d81e4387686
+>>>>>>> 1cbfd219a53c9e686d0d99f7a152c7a41e0a4785
 </div>
 <div id="trends-over-time" class="section level3">
 <h3>Trends over time</h3>
@@ -1065,6 +1091,7 @@ plot_ly(x = ~reason_stopped, y= ~total, type = &quot;bar&quot; , color = ~reason
     xaxis = list(
       title  = &#39;Reasons Stopped&#39;), 
     yaxis = list(
+<<<<<<< HEAD
       title = &#39;Total&#39;))</code></pre>
 <div id="htmlwidget-e0425d4fa8e99defe9bd" style="width:90%;height:576px;" class="plotly html-widget"></div>
 <script type="application/json" data-for="htmlwidget-e0425d4fa8e99defe9bd">{"x":{"visdat":{"44252ffc6793":["function () ","plotlyVisDat"]},"cur_data":"44252ffc6793","attrs":{"44252ffc6793":{"x":{},"y":{},"color":{},"colors":"Set1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Reasons Stopped","type":"category","categoryorder":"array","categoryarray":["actions engaging in violent crime","actions indicative of drug transaction","carrying suspicious object","casing a victim or location","fits a relevant description","furtive movements","other","suspect acting as a lookout","suspicious bulge","wearing clothes commonly used in crimes"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["actions engaging in violent crime"],"y":[758],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(228,26,28,1)","line":{"color":"rgba(228,26,28,1)"}},"textfont":{"color":"rgba(228,26,28,1)"},"error_y":{"color":"rgba(228,26,28,1)"},"error_x":{"color":"rgba(228,26,28,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["actions indicative of drug transaction"],"y":[636],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(101,120,166,1)","line":{"color":"rgba(101,120,166,1)"}},"textfont":{"color":"rgba(101,120,166,1)"},"error_y":{"color":"rgba(101,120,166,1)"},"error_x":{"color":"rgba(101,120,166,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["carrying suspicious object"],"y":[365],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(83,164,102,1)","line":{"color":"rgba(83,164,102,1)"}},"textfont":{"color":"rgba(83,164,102,1)"},"error_y":{"color":"rgba(83,164,102,1)"},"error_x":{"color":"rgba(83,164,102,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["casing a victim or location"],"y":[1698],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(139,116,136,1)","line":{"color":"rgba(139,116,136,1)"}},"textfont":{"color":"rgba(139,116,136,1)"},"error_y":{"color":"rgba(139,116,136,1)"},"error_x":{"color":"rgba(139,116,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["fits a relevant description"],"y":[5870],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(216,103,94,1)","line":{"color":"rgba(216,103,94,1)"}},"textfont":{"color":"rgba(216,103,94,1)"},"error_y":{"color":"rgba(216,103,94,1)"},"error_x":{"color":"rgba(216,103,94,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["furtive movements"],"y":[2234],"type":"bar","name":"furtive movements","marker":{"color":"rgba(255,186,23,1)","line":{"color":"rgba(255,186,23,1)"}},"textfont":{"color":"rgba(255,186,23,1)"},"error_y":{"color":"rgba(255,186,23,1)"},"error_x":{"color":"rgba(255,186,23,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[5378],"type":"bar","name":"other","marker":{"color":"rgba(227,197,50,1)","line":{"color":"rgba(227,197,50,1)"}},"textfont":{"color":"rgba(227,197,50,1)"},"error_y":{"color":"rgba(227,197,50,1)"},"error_x":{"color":"rgba(227,197,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspect acting as a lookout"],"y":[875],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(185,95,74,1)","line":{"color":"rgba(185,95,74,1)"}},"textfont":{"color":"rgba(185,95,74,1)"},"error_y":{"color":"rgba(185,95,74,1)"},"error_x":{"color":"rgba(185,95,74,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspicious bulge"],"y":[894],"type":"bar","name":"suspicious bulge","marker":{"color":"rgba(237,133,187,1)","line":{"color":"rgba(237,133,187,1)"}},"textfont":{"color":"rgba(237,133,187,1)"},"error_y":{"color":"rgba(237,133,187,1)"},"error_x":{"color":"rgba(237,133,187,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["wearing clothes commonly used in crimes"],"y":[402],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(153,153,153,1)","line":{"color":"rgba(153,153,153,1)"}},"textfont":{"color":"rgba(153,153,153,1)"},"error_y":{"color":"rgba(153,153,153,1)"},"error_x":{"color":"rgba(153,153,153,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
@@ -1088,6 +1115,11 @@ pull(other, total)</code></pre>
 ##  [9] &quot;suspicious bulge&quot;                       
 ## [10] &quot;wearing clothes commonly used in crimes&quot;</code></pre>
 <p>We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are actions engaging in violent crime, actions indicative of drug transaction, carrying suspicious object, casing a victim or location, fits a relevant description, furtive movements, other, suspect acting as a lookout, suspicious bulge, wearing clothes commonly used in crimes Amongst these different reasons “fits a relevant description” had a total of 5870, falling close behind was “other” with a total of 5378, and the reasons with the least amount of 402 was <code>wearing clothes commonly used in crimes</code> and the amount of 365 was “carrying a suspicious object”.</p>
+=======
+      title = &#39;Total&#39;)) </code></pre>
+<div id="htmlwidget-c0038c798b5bcbeede3f" style="width:90%;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c0038c798b5bcbeede3f">{"x":{"visdat":{"17b573b75370c":["function () ","plotlyVisDat"]},"cur_data":"17b573b75370c","attrs":{"17b573b75370c":{"x":{},"y":{},"color":{},"colors":"Set1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Reasons Stopped","type":"category","categoryorder":"array","categoryarray":["actions engaging in violent crime","actions indicative of drug transaction","carrying suspicious object","casing a victim or location","fits a relevant description","furtive movements","other","suspect acting as a lookout","suspicious bulge","wearing clothes commonly used in crimes"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Total"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["actions engaging in violent crime"],"y":[758],"type":"bar","name":"actions engaging in violent crime","marker":{"color":"rgba(228,26,28,1)","line":{"color":"rgba(228,26,28,1)"}},"textfont":{"color":"rgba(228,26,28,1)"},"error_y":{"color":"rgba(228,26,28,1)"},"error_x":{"color":"rgba(228,26,28,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["actions indicative of drug transaction"],"y":[636],"type":"bar","name":"actions indicative of drug transaction","marker":{"color":"rgba(101,120,166,1)","line":{"color":"rgba(101,120,166,1)"}},"textfont":{"color":"rgba(101,120,166,1)"},"error_y":{"color":"rgba(101,120,166,1)"},"error_x":{"color":"rgba(101,120,166,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["carrying suspicious object"],"y":[365],"type":"bar","name":"carrying suspicious object","marker":{"color":"rgba(83,164,102,1)","line":{"color":"rgba(83,164,102,1)"}},"textfont":{"color":"rgba(83,164,102,1)"},"error_y":{"color":"rgba(83,164,102,1)"},"error_x":{"color":"rgba(83,164,102,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["casing a victim or location"],"y":[1698],"type":"bar","name":"casing a victim or location","marker":{"color":"rgba(139,116,136,1)","line":{"color":"rgba(139,116,136,1)"}},"textfont":{"color":"rgba(139,116,136,1)"},"error_y":{"color":"rgba(139,116,136,1)"},"error_x":{"color":"rgba(139,116,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["fits a relevant description"],"y":[5870],"type":"bar","name":"fits a relevant description","marker":{"color":"rgba(216,103,94,1)","line":{"color":"rgba(216,103,94,1)"}},"textfont":{"color":"rgba(216,103,94,1)"},"error_y":{"color":"rgba(216,103,94,1)"},"error_x":{"color":"rgba(216,103,94,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["furtive movements"],"y":[2234],"type":"bar","name":"furtive movements","marker":{"color":"rgba(255,186,23,1)","line":{"color":"rgba(255,186,23,1)"}},"textfont":{"color":"rgba(255,186,23,1)"},"error_y":{"color":"rgba(255,186,23,1)"},"error_x":{"color":"rgba(255,186,23,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[5378],"type":"bar","name":"other","marker":{"color":"rgba(227,197,50,1)","line":{"color":"rgba(227,197,50,1)"}},"textfont":{"color":"rgba(227,197,50,1)"},"error_y":{"color":"rgba(227,197,50,1)"},"error_x":{"color":"rgba(227,197,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspect acting as a lookout"],"y":[875],"type":"bar","name":"suspect acting as a lookout","marker":{"color":"rgba(185,95,74,1)","line":{"color":"rgba(185,95,74,1)"}},"textfont":{"color":"rgba(185,95,74,1)"},"error_y":{"color":"rgba(185,95,74,1)"},"error_x":{"color":"rgba(185,95,74,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["suspicious bulge"],"y":[894],"type":"bar","name":"suspicious bulge","marker":{"color":"rgba(237,133,187,1)","line":{"color":"rgba(237,133,187,1)"}},"textfont":{"color":"rgba(237,133,187,1)"},"error_y":{"color":"rgba(237,133,187,1)"},"error_x":{"color":"rgba(237,133,187,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["wearing clothes commonly used in crimes"],"y":[402],"type":"bar","name":"wearing clothes commonly used in crimes","marker":{"color":"rgba(153,153,153,1)","line":{"color":"rgba(153,153,153,1)"}},"textfont":{"color":"rgba(153,153,153,1)"},"error_y":{"color":"rgba(153,153,153,1)"},"error_x":{"color":"rgba(153,153,153,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+>>>>>>> 1cbfd219a53c9e686d0d99f7a152c7a41e0a4785
 </div>
 </div>
 <div id="discussion" class="section level1">

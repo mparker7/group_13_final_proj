@@ -180,9 +180,9 @@ stop_frisk_df =
 
 ### Demographics
 
-The 12,404 reported stops in 2016 were spread unevenly amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked, and 2643 were arrested and among those different races who were frisked  and arrested blacks were the highest amongst the other races. Also, of the reported stops there were 11,450 males, 896 females, and 58 unknowns.   
+The `r nrow(stop_frisk_df)` reported stops in 2016 were spread unevenly amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those `r nrow(stop_frisk_df)` reported stops `r sum(stop_frisk_df$frisked)` individuals were frisked, and `r sum(stop_frisk_df$arst_made)` individuals were arrested. The most frequently frisked and arrested race was black. Of the `r nrow(stop_frisk_df)` reported stops, 11450 individuals were male, 896 female, and 58 unknown.
 
-The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location".
+The age of the stopped individuals ranges from `r min(pull(stop_frisk_df, age), na.rm = TRUE)` to `r max(pull(stop_frisk_df, age), na.rm = TRUE)`, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old. Most stops occurred in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location."
 
 
 ```{r, message = FALSE, eval = FALSE}
@@ -238,16 +238,12 @@ plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>%
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be frisked or not?
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be arrested or not? 
 
-**Methods:**
+**Methods:** 
 
 Only variables that preceded the individual being stopped were used in logistic regression models. Thus, all variables that described reason for frisk or reason for search were omitted. We focused on the characteristics, demographics, location, and reasons for stopping in the model. To build models for ARST_MADE and FRISKED, we evaluated GVIF to verify that there is no multicollinearity present and removed any variables suspected of having high collinearity. Model selection was based on consideration of AIC values, inflated standard errors, and p values. When AIC values did not change between models, ANOVA was used to compare similar models to determine whether the larger or smaller model was significantly better. Above all, we wanted to keep the concept of parsimony in mind when selecting models and minimize overfitting. Finally, the models were evaluated using a training and testing dataset to assess the preditive ability of the model using Area Under the Curve (AUC). 
 
 **FRISKED Model:**
 
-Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only slightly better than guessing (0.50).
-
-
-Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only mildly better than guessing (0.50).
 
 ```{r, results='hide', message=FALSE}
 set.seed(1)
@@ -290,16 +286,13 @@ auc(test$frisked, log_pred)
 log_pred = ifelse(log_pred == 1, "Predicted Frisk", "Predicted No Frisk")
 ```
 
+Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.567. This value is only slightly better than guessing (0.50).
 
 **FRISKED AUC Curve**
 
 ```{r, message=FALSE}
 plot(perf)
 ```
-
-
-
-**FRISKED Confusion Matrix**
 
 **Confusion Matrix: Predicted Frisked Status vs True Frisked Status**
 
@@ -310,10 +303,6 @@ table(pred = log_pred, true = test$frisked) %>% knitr::kable(col.names = c("No F
 
 
 **ARST_MADE Model:**
-
-The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5283.
-
-The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5179. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.
 
 ```{r, results='hide', message=FALSE}
 model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, data = train)
@@ -354,14 +343,13 @@ log_pred = ifelse(log_pred == 1, "Predicted Arrest", "Predicted No Arrest")
 
 ```
 
+The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.512. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.
+
 **ARST_MADE AUC Curve**
 
 ```{r}
 plot(perf)
 ```
-
-
-**ARST_MADE Confusion Matrix**
 
 
 **Confusion Matrix: Predicted Arrest Status vs True Arrest Status**
@@ -374,18 +362,17 @@ table(pred = log_pred, true = test$arst_made) %>% knitr::kable(col.names = c("No
 
 ### LASSO Regression
 
-LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the "positive" prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix. 
+LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data were removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.414, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the "positive" prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix. 
 
 ```{r, results = 'hide', message=FALSE}
 library(glmnet)
 
 set.seed(1)
 
-# getting rid of incomplete observations
-stop_frisk_lasso = stop_frisk_df[complete.cases(stop_frisk_df), ]
-
 # keeping only variables we want to use with frisked logistic prediction
-stop_frisk_lasso = stop_frisk_lasso %>% select(frisked, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
+stop_frisk_lasso = stop_frisk_df %>% select(frisked, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other) 
+
+stop_frisk_lasso = stop_frisk_lasso[complete.cases(stop_frisk_lasso), ]
 
 # create test and train datasets
 train_lasso = sample_frac(stop_frisk_lasso, size = 0.5)
@@ -403,15 +390,15 @@ lasso_cv = cv.glmnet(x, y, family = "binomial", type = "mse")
 
 lambda_opt = lasso_cv$lambda.min
 
-# visualizing best lambda
-broom::tidy(lasso_fit) %>% 
-   select(term, lambda, estimate) %>% 
-   complete(term, lambda, fill = list(estimate = 0) ) %>% 
-   filter(term != "(Intercept)") %>% 
-   ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
-   geom_path() + 
-   geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
-   theme(legend.position = "none")
+# # visualizing best lambda
+# broom::tidy(lasso_fit) %>% 
+#    select(term, lambda, estimate) %>% 
+#    complete(term, lambda, fill = list(estimate = 0) ) %>% 
+#    filter(term != "(Intercept)") %>% 
+#    ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+#    geom_path() + 
+#    geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
+#    theme(legend.position = "none")
 ```
 
 
@@ -437,6 +424,20 @@ lasso_predict[lasso_prob > 0.5] <- "Pred Frisk"
 auc(test_lasso$frisked, lasso_predict)
 ```
 
+**Visualizing Best Lambda**
+```{r}
+# visualizing best lambda
+broom::tidy(lasso_fit) %>% 
+   select(term, lambda, estimate) %>% 
+   complete(term, lambda, fill = list(estimate = 0) ) %>% 
+   filter(term != "(Intercept)") %>% 
+   ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
+   geom_path() + 
+   geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
+   theme(legend.position = "none")
+```
+
+
 **Confusion Matrix: Predicted Frisked Status vs True Frisked Status**
 
 ```{r}
@@ -446,12 +447,12 @@ table(pred = lasso_predict, true = test_lasso$frisked) %>% knitr::kable(col.name
 
 ```{r, message=FALSE, results='hide'}
 set.seed(1)
-# getting rid of incomplete observations
-stop_frisk_lasso_arst = stop_frisk_df[complete.cases(stop_frisk_df), ]
 
 # keeping only variables we want to use with frisked logistic prediction
-stop_frisk_lasso_arst = stop_frisk_lasso_arst %>% select(arst_made, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
+stop_frisk_lasso_arst = stop_frisk_df %>% select(arst_made, sex, race, age, height_inch, weight, hair_col, eye_col, build, stop_in_out, precinct, off_in_unif, cs_objcs, cs_descr, cs_casng, cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim, cs_bulge, cs_other)
 
+# getting rid of incomplete observations
+stop_frisk_lasso_arst = stop_frisk_lasso_arst[complete.cases(stop_frisk_lasso_arst), ]
 
 # create test and train datasets
 train_lasso_arst = sample_frac(stop_frisk_lasso_arst, size = 0.5)
@@ -468,9 +469,7 @@ lasso_fit = glmnet(x, y, family = "binomial")
 lasso_cv = cv.glmnet(x, y, family = "binomial", type = "mse")
 
 lambda_opt = lasso_cv$lambda.min
-```
 
-```{r}
 # # visualizing best lambda
 broom::tidy(lasso_fit) %>% 
    select(term, lambda, estimate) %>% 
@@ -481,6 +480,7 @@ broom::tidy(lasso_fit) %>%
    geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
    theme(legend.position = "none")
 ```
+
 
 ```{r, results='hide', message=FALSE}
 # coefficients from the optimal model
@@ -511,6 +511,7 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made)
 auc(test_lasso_arst$arst_made, lasso_predict)
 ```
 
+
 **Confusion Matrix: Predicted Arrested Status vs True Arrested Status**
 
 ```{r}
@@ -524,20 +525,17 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(c
 
 Additional analysis was performed for stopped individuals under age of 18.
 
-14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping minors are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of minors stopped were innocent and 20% were arrested. Out of minors who have been arrested 86% were black, white-hispanic or black-hispanic. 
-
-Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.
 
 ```{r, message = FALSE, results = 'hide'}
 
 under_18 = stop_frisk_df %>% 
-  filter(age<'18') 
+  filter(age < '18') 
 
 # percent innocent and arrested amoung minors 
 under_18 %>% 
   count(arst_made) %>%
   mutate(
-    percent = (n /nrow(under_18)* 100)
+    percent = (n / nrow(under_18) * 100)
   ) %>% 
   knitr::kable(digits = 2)
 ```
@@ -545,7 +543,7 @@ under_18 %>%
 
 ```{r, message = FALSE}
 under_18 = stop_frisk_df %>% 
-  filter(age<'18') 
+  filter(age < '18') 
 
 under_18 %>%
   count(race) %>% 
@@ -563,8 +561,17 @@ under_18 %>%
     ) 
   )
 
+
+under_18 %>% 
+  group_by(race) %>% 
+  count() %>% 
+  dplyr::arrange(!n) %>% 
+  ungroup() %>% 
+  select(n) %>% 
+  head(1)
 ```
 
+`r round(count(under_18) / count(stop_frisk_df) * 100, 2)`% of people who were stopped were underage of 18; out of those `r under_18 %>% filter(sex == "F") %>% count()` were female, `r under_18 %>% filter(sex == "M") %>% count()` were male and `r under_18 %>% filter(sex == "Z") %>% count()` were identified as other. Most minors that were stopped were of race `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% select(1) %>% head(1)` with a total of `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% ungroup() %>%  select(n) %>% head(1)` stops.
 
 ### Trends over time
 

@@ -712,16 +712,20 @@ plot_ly(x = ~reason_stopped, y= ~total, type = "bar" , color = ~reason_stopped, 
 
 fits_desc = reasons%>% 
   filter(reason_stopped == "fits a relevant description")
-pull(fits_desc, total)
 
 other = reasons %>% 
    filter(reason_stopped == "other")
-pull(other, total)
 
-pull(reasons, reason_stopped)
+clothes = 
+  reasons %>% 
+   filter(reason_stopped == "wearing clothes commonly used in crimes")
+object =
+    reasons %>% 
+   filter(reason_stopped == "carrying suspicious object")
+
 ```
 
-We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was "other" with a total of `r pull(other, total)`, and the reasons with the least amount of 402 was `wearing clothes commonly used in crimes` and the amount of 365 was "carrying a suspicious object".
+We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was `other` with a total of `r pull(other, total)`, and the reasons with the least amount of `r pull(clothes, total)` was `wearing clothes commonly used in crimes` and the amount of `r pull(object, total)` was `carrying a suspicious object`.
 
 # Discussion
 

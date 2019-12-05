@@ -14,259 +14,22 @@ library(rvest)
 library(httr)
 library(lubridate)
 library(shiny)
+library(shinydashboard)
 library(viridis)
 library(plotly)
 library(rgdal)
 library(sp)
 library(sf)
 library(leaflet)
-```
-
-```{r, message=FALSE}
-# Read in data
-stop_frisk_df = 
-  # Read in data from internet
-  GET("https://www1.nyc.gov/assets/nypd/downloads/excel/analysis_and_planning/stop-question-frisk/sqf-2016.csv") %>% 
-  content("parsed") %>% 
-  
-  # Clean and fix names of columns
-  janitor::clean_names() %>% 
-  rename(
-    precinct = pct,
-    date_stop = datestop,
-    time_stop = timestop,
-    stop_in_out = inout,
-    obs_time_min = perobs,
-    stop_time_min = perstop,
-    arst_made = arstmade,
-    off_in_unif = offunif,
-    hair_col = haircolr,
-    eye_col = eyecolor,
-    other_feature = othfeatr,
-    boro = city
-  )  %>% 
-  mutate(
-    # Combine height columns
-    height_inch = ht_feet * 12 + ht_inch,
-    # Convert date to proper format
-    date_stop = mdy(date_stop),
-    # Convert time to proper format
-    time_stop = hm(time_stop / 100),
-    # Recode to be more informative
-    stop_in_out = recode(stop_in_out, "I" = "inside", "O" = "outside"),
-    race = recode(
-      race, 
-      "A" = "other", 
-      "B" = "black", 
-      "I" = "other",
-      "P" = "black-hispanic",
-      "Q" = "white-hispanic",
-      "W" = "white",
-      "U" = "other",
-      "Z" = "other"
-    ),
-    hair_col = recode(
-      hair_col,
-      "BA" = "bald",
-      "BK" = "black",
-      "BL" = "blond",
-      "BR" = "brown",
-      "DY" = "other",
-      "FR" = "other",
-      "GY" = "other",
-      "RA" = "other",
-      "SN" = "other",
-      "SP" = "other",
-      "WH" = "other",
-      "XX" = "other",
-      "ZZ" = "other",
-    ),
-    eye_col = recode(
-      eye_col,
-      "BK" = "black",
-      "BL" = "blue",
-      "BR" = "brown",
-      "DF" = "other",
-      "GR" = "other",
-      "GY" = "other",
-      "HA" = "other",
-      "MA" = "other",
-      "PK" = "other",
-      "VI" = "other",
-      "XX" = "other",
-      "Z" = "other",      
-    ),
-    build = recode(
-      build,
-      "H" = "heavy",
-      "M" = "medium",
-      "T" = "thin",
-      "U" = "other",
-      "Z" = "unknown"
-    ),
-    # change boro columns to lowercase for consistency
-    boro = tolower(boro),
-    # change character datatypes to numeric
-    age = as.numeric(age),
-    obs_time_min = as.numeric(obs_time_min),
-    stop_time_min = as.numeric(stop_time_min)
-  )  %>% 
-  # select columns for further analysis
-  select(precinct, date_stop, time_stop, stop_in_out, obs_time_min, stop_time_min, arst_made, off_in_unif, frisked, 
-         searched, rf_vcrim, rf_othsw, rf_attir:ac_evasv, cs_furtv:cs_other, rf_knowl, sb_hdobj:sb_admis, rf_furt, 
-         rf_bulg, sex, race, age, height_inch, weight:build, boro, xcoord, ycoord) %>% 
-  # change all columns that have Y/N to 1/0
-  mutate_at(vars(arst_made:rf_bulg), funs(recode(., "Y" = "1", "N" = "0"))) %>% 
-  # change binary columns to numeric instead of character
-  mutate_at(vars(arst_made:rf_bulg), funs(as.numeric(.))) %>% 
-  # converts all character variables to factors (this does the same as the for loop)
-  mutate_if(is.character, as.factor) %>% 
-  # remove the single row of NAs
-  filter(!is.na(build))
-```
-
-```{r, results=FALSE}
-nypd_prec = 
-  st_read("./data/nypp/geo_export_55605c77-3922-4b7a-bd65-18d11225a91f.shp")
-
-long_lat_df =
-  stop_frisk_df %>% 
-  select(xcoord, ycoord) %>% 
-  drop_na()
-
-coordinates(long_lat_df) <- c("xcoord", "ycoord")
-proj4string(long_lat_df) <- CRS("+init=epsg:2263")
-long_lat_df <- spTransform(long_lat_df, CRS("+init=epsg:4326"))
-long_lat_df <- data.frame(longitude = coordinates(long_lat_df)[,1], latitude = coordinates(long_lat_df)[,2])
-
-stop_frisk_map_df = 
-  stop_frisk_df %>% 
-  drop_na(xcoord) %>% 
-  bind_cols(long_lat_df) %>% 
-  select(-xcoord, -ycoord) %>% 
-  mutate(
-    sex = recode(sex, "M" = "male", "F" = "female"),
-    label = str_c("Gender: ", sex, "<br/>", "Race: ", race, "<br/>", "Age: ", age, "<br/>", "Build: ", build) %>% map(htmltools::HTML))
+library(rsconnect)
 ```
 
 ```{r}
-# Colored Area based on Number of Stops with Information on # of Frisks by Precinct
-stops_by_prec = 
-  stop_frisk_df %>% 
-  group_by(precinct) %>% 
-  summarize(totalstops = n()) %>% 
-  drop_na()
-
-frisks_by_prec = 
-  stop_frisk_df %>% 
-  group_by(precinct) %>% 
-  filter(frisked==1) %>% 
-  summarize(totalfrisks = n())
-
-friskorsearch_by_prec = 
-  stop_frisk_df %>% 
-  group_by(precinct) %>% 
-  filter(frisked==1|searched==1) %>% 
-  summarize(totalfriskorsearch = n())
-
-arrests_by_prec = 
-  stop_frisk_df %>% 
-  group_by(precinct) %>% 
-  filter(arst_made==1) %>% 
-  summarize(totalarrests = n())
-
-nypd_prec  = 
-  inner_join(nypd_prec, stops_by_prec, by="precinct") %>% 
-  inner_join(., frisks_by_prec, by="precinct") %>% 
-  inner_join(., arrests_by_prec, by="precinct") %>% 
-  inner_join(., friskorsearch_by_prec, by="precinct")
-
-pal <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalstops))
-pal2 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfrisks))
-pal3 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalarrests))
-pal4 <- colorNumeric("YlOrRd", domain = range(nypd_prec$totalfriskorsearch))
-
-nypd_prec =
-nypd_prec %>% 
-  mutate(
-    tsc = pal(totalstops),
-    tfc = pal2(totalfrisks),
-    tac = pal3(totalarrests),
-    tfsc = pal4(totalfriskorsearch),
-    label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks or Searches in 2016: ", totalfriskorsearch, "<br/>", "Total Arrests in 2016: ", totalarrests) %>% map(htmltools::HTML)
-  )
+load('stop_frisk_df.rda')
+load('stop_frisk_map_df.rda')
+load('stops_by_race.rda')
+load('nypd_prec.rda')
 ```
-
-```{r}
-stop_reason_total =
-stop_frisk_df %>% 
-  select(precinct, boro, cs_objcs:cs_lkout, cs_cloth, cs_drgtr, cs_furtv, cs_vcrim:cs_other, frisked) %>% 
-  pivot_longer(
-    cs_objcs:cs_other,
-    names_to = "reason_stopped",
-    values_to = "stops"
-  ) %>% 
-  mutate(
-    reason_stopped = recode(
-    reason_stopped,
-    "cs_objcs" = "carrying suspicious object",
-    "cs_descr" = "fits a relevant description",
-    "cs_casng" = "casing a victim or location",
-    "cs_lkout" = "suspect acting as a lookout",
-    "cs_cloth" = "wearing clothes commonly used in crimes",
-    "cs_drgtr" = "actions indicative of drug transaction",
-    "cs_furtv" = "furtive movements",
-    "cs_vcrim" = "actions engaging in violent crime",
-    "cs_bulge" = "suspcious bulge",
-    "cs_other" = "other"
-  )) %>% 
-  filter(stops == 1) %>% 
-  group_by(reason_stopped, precinct) %>% 
-  summarize(total =n()) %>% 
-  ungroup() %>% 
-  group_by(precinct) %>% 
-  top_n(1, total) %>% 
-  mutate(greatreasonstop = reason_stopped) %>% 
-  select(precinct, greatreasonstop)
-
-nypd_prec = left_join(nypd_prec, stop_reason_total, by="precinct")
-
-nypd_prec =
-nypd_prec %>% 
-  mutate(
-    label = str_c("Precinct: ", precinct, "<br/>", "Total Stops in 2016: ", totalstops, "<br/>", "Total Frisks or Searches in 2016: ", totalfriskorsearch, "<br/>", "Total Arrests in 2016: ", totalarrests, "<br/>", "Most Frequent Reason for Stop: ", greatreasonstop) %>% map(htmltools::HTML)
-  )
-```
-
-```{r}
-stops_by_race = 
-  left_join(stop_frisk_map_df, stops_by_prec, by="precinct") %>% 
-  group_by(precinct, race) %>% 
-  summarize(stops_by_race = n()) %>% 
-  left_join(., stops_by_prec, by="precinct") %>% 
-  mutate(
-    percentstops = (stops_by_race/totalstops)*100
-  ) 
-
-palfact <- colorFactor("viridis", domain = stops_by_race$race)
-
-max_stops_by_race = 
-  stops_by_race %>% 
-  group_by(precinct) %>% 
-  top_n(1, percentstops) %>% 
-  mutate(maxstoppedrace = race) %>% 
-  select(precinct, maxstoppedrace)
-
-nypd_prec = left_join(nypd_prec, max_stops_by_race, by="precinct")
-
-precinct_boro = 
-  stop_frisk_df %>% 
-  select(precinct, boro) %>% 
-  distinct(precinct, .keep_all = TRUE)
-
-nypd_prec = left_join(nypd_prec, precinct_boro, by="precinct")
-```
-
 
 Sidebar {.sidebar}
 -----------------------------------------------------------------------
@@ -295,129 +58,36 @@ conditionalPanel(
     selected = "manhattan" # default choice
     )
 )
-```
 
-Row {data-height=350}
------------------------------------------------------------------------
-
-### Number of Stops by Month
-
-```{r}
-renderPlot({
-  
-  if (input[["analysis_type"]] == "Individual Borough") {
-  
-    stop_frisk_df %>% 
-      filter(
-        boro == input[["boro_choice"]]
-      ) %>% 
-      mutate(
-        month_stop = month(date_stop)
-      ) %>% 
-      filter(
-        month_stop != is_null(month_stop)
-      ) %>%   
-      group_by(month_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = month_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE) +
-      labs(
-        x = "Month",
-        y = "Number of Stops"
-      )
-  
-  } else {
-    
-    stop_frisk_df %>% 
-      mutate(
-        month_stop = month(date_stop)
-      ) %>% 
-      filter(
-        month_stop != is_null(month_stop)
-      ) %>%   
-      group_by(month_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = month_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE) +
-      labs(
-        x = "Month",
-        y = "Number of Stops"
-      )
-    
-  }
-  
-})
-```
-
-### Number of Stops by Hour
-
-```{r}
-renderPlot({
-  
-  if (input[["analysis_type"]] == "Individual Borough") {
-  
-    stop_frisk_df %>% 
-      filter(
-        boro == input[["boro_choice"]]
-      ) %>% 
-      mutate(
-        hour_stop = hour(time_stop)
-      ) %>% 
-      group_by(hour_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = hour_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE) +
-      labs(
-        x = "Hour",
-        y = "Number of Stops"
-      )
-  
-  } else {
-    
-    stop_frisk_df %>% 
-      mutate(
-        hour_stop = hour(time_stop)
-      ) %>% 
-      group_by(hour_stop) %>% 
-      summarize(
-        count = n()
-      ) %>% 
-      ggplot(aes(x = hour_stop, y = count)) + 
-      geom_point() +
-      geom_smooth(se = FALSE) +
-      labs(
-        x = "Hour",
-        y = "Number of Stops"
-      )
-    
-  }
-  
-})
+# third widget
+selectInput("heatmap", label = h3("Heat Map Options:"),
+            choices = c("totalstops", "totalfriskorsearch", "totalarrests"))
 ```
 
 Row 
 -----------------------------------------------------------------------
 
-### Map of Stop-and-Frisk Information
-
 ```{r}
 output$map <- renderLeaflet({
   
+pal <- colorNumeric("YlOrRd", domain = nypd_prec[[input$heatmap]])
+
+colordata <- nypd_prec[[input$heatmap]]
+
+palfact <- colorFactor("viridis", domain = stops_by_race$race)
+    
   if (input[["analysis_type"]] == "Individual Borough") {
-  
-  map <- nypd_prec %>% 
+
+nypd_prec <- nypd_prec %>% 
     filter(
       boro == input[["boro_choice"]]
-    ) %>% 
+    )
+    
+pal <- colorNumeric("YlOrRd", domain = nypd_prec[[input$heatmap]])
+
+colordata <- nypd_prec[[input$heatmap]]
+    
+  map <- nypd_prec %>% 
   leaflet() %>% 
   addTiles() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
@@ -430,16 +100,16 @@ output$map <- renderLeaflet({
                    group = "Individual Stops") %>% 
   addPolygons(label = ~label,
               color = "#000000",
-              fillColor = ~tac,
+              fillColor = ~pal(colordata),
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
               fillOpacity = 0.75,
               group = "Police Precinct Info") %>% 
-  addLegend(pal = pal3,
-            values = ~totalarrests,
-            title = "Total Number <br/> of Arrests",
-            position = "topleft",
+  addLegend(pal = pal,
+            values = ~colordata,
+            title = input$heatmap,
+            position = "bottomleft",
             group = "Police Precinct Info") %>% 
   addPolylines(label = ~maxstoppedrace,
               color = ~palfact(maxstoppedrace),
@@ -473,16 +143,16 @@ output$map <- renderLeaflet({
                    group = "Individual Stops") %>% 
   addPolygons(label = ~label,
               color = "#000000",
-              fillColor = ~tac,
+              fillColor = ~pal(colordata),
               weight = 1,
               smoothFactor = 0.5,
               opacity = 1,
               fillOpacity = 0.75,
               group = "Police Precinct Info") %>% 
-  addLegend(pal = pal3,
-            values = ~totalarrests,
-            title = "Total Number <br/> of Arrests",
-            position = "topleft",
+  addLegend(pal = pal,
+            values = ~colordata,
+            title = input$heatmap,
+            position = "bottomleft",
             group = "Police Precinct Info") %>% 
   addPolylines(label = ~maxstoppedrace,
               color = ~palfact(maxstoppedrace),
@@ -506,7 +176,7 @@ output$map <- renderLeaflet({
   
 })
 
-leafletOutput('map')
+leafletOutput('map', height = "92vh")
 ```
 
 

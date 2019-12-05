@@ -269,14 +269,13 @@ car::vif(model_2)
 summary(model_2)
 # Remove hair and eye color because all categories within them are highly unsignificant, cs_drgtr, cs_lkout
 
-model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_cloth + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
+model_3 = glm(frisked ~ sex + race + age + height_inch + weight + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_cloth + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train, na.action = na.omit)
 
 summary(model_3)
 # remove weight, cs_cloth, cs_objcs
 model_4 = glm(frisked ~ sex + race + age + height_inch + build + stop_in_out + precinct + off_in_unif + cs_descr + cs_casng + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
 
 summary(model_4)
-anova(model_4, model_3, test = "Chisq")
 
 log_pred = predict(model_4, newdata = test, type = "response")
 
@@ -292,7 +291,7 @@ auc(test$frisked, log_pred)
 log_pred = ifelse(log_pred == 1, "Predicted Frisk", "Predicted No Frisk")
 ```
 
-Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.567. This value is only slightly better than guessing (0.50).
+Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.564. This value is only slightly better than guessing (0.50).
 
 **FRISKED AUC Curve**
 
@@ -322,24 +321,19 @@ model_6 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + s
 
 summary(model_6)
 
-# remove height, age
-model_7 = glm(arst_made ~ sex + race + weight + hair_col + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
+# remove height, precinct, age
+model_7 = glm(arst_made ~ sex + race + weight + hair_col + stop_in_out + age + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, family = binomial, data = train)
 
 summary(model_7)
 
-# remove cs_furtv, cs_vcrim, cs_other
-model_8 = glm(arst_made ~ sex + race + weight + hair_col + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_bulge, family = binomial, data = train)
+# remove insignificant reasons for stop cs_furtv, cs_vcrim, cs_other, cx_bulge, cs_furtv, cs_lkout, and sex
+model_8 = glm(arst_made ~ race + weight + hair_col + stop_in_out + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_cloth + cs_drgtr, family = binomial, data = train)
 
 summary(model_8)
-
-library(caret)
 
 log_pred = predict(model_8, newdata = test, type = "response")
 
 log_pred = ifelse(log_pred > 0.5, 1, 0)
-
-library(ROCR)
-library(Metrics)
 
 pr = prediction(log_pred, test$arst_made)
 perf = performance(pr, measure = "tpr", x.measure = "fpr")
@@ -349,7 +343,7 @@ log_pred = ifelse(log_pred == 1, "Predicted Arrest", "Predicted No Arrest")
 
 ```
 
-The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.512. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.
+The logistic regression model that was determined to have the best predictive ability included the variables: race, weight, hair color, stop inside/outside, whether the officer was in uniform, and five reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.515. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.
 
 **ARST_MADE AUC Curve**
 
@@ -368,7 +362,7 @@ table(pred = log_pred, true = test$arst_made) %>% knitr::kable(col.names = c("No
 
 ### LASSO Regression
 
-LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data were removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.414, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the "positive" prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix. 
+LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data were removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 16 variables in the model and minimized 17 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.444, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.413, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the "positive" prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix. 
 
 ```{r, results = 'hide', message=FALSE}
 library(glmnet)
@@ -395,16 +389,6 @@ lasso_fit = glmnet(x, y, family = "binomial")
 lasso_cv = cv.glmnet(x, y, family = "binomial", type = "mse")
 
 lambda_opt = lasso_cv$lambda.min
-
-# # visualizing best lambda
-# broom::tidy(lasso_fit) %>% 
-#    select(term, lambda, estimate) %>% 
-#    complete(term, lambda, fill = list(estimate = 0) ) %>% 
-#    filter(term != "(Intercept)") %>% 
-#    ggplot(aes(x = log(lambda, 10), y = estimate, group = term, color = term)) + 
-#    geom_path() + 
-#    geom_vline(xintercept = log(lambda_opt, 10), color = "blue", size = 1.2) +
-#    theme(legend.position = "none")
 ```
 
 

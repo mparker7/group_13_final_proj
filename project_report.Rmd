@@ -102,6 +102,7 @@ stop_frisk_df =
     # Change values to missing
     weight = ifelse(weight == 999, NA, weight),
     age = ifelse(age == 1, NA, age),
+    weight = ifelse(weight == 1, NA, weight),
     # Combine height columns
     height_inch = ht_feet * 12 + ht_inch,
     # Convert date to proper format

@@ -525,20 +525,17 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(c
 
 Additional analysis was performed for stopped individuals under age of 18.
 
-14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping minors are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of minors stopped were innocent and 20% were arrested. Out of minors who have been arrested 86% were black, white-hispanic or black-hispanic. 
-
-Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.
 
 ```{r, message = FALSE, results = 'hide'}
 
 under_18 = stop_frisk_df %>% 
-  filter(age<'18') 
+  filter(age < '18') 
 
 # percent innocent and arrested amoung minors 
 under_18 %>% 
   count(arst_made) %>%
   mutate(
-    percent = (n /nrow(under_18)* 100)
+    percent = (n / nrow(under_18) * 100)
   ) %>% 
   knitr::kable(digits = 2)
 ```
@@ -546,7 +543,7 @@ under_18 %>%
 
 ```{r, message = FALSE}
 under_18 = stop_frisk_df %>% 
-  filter(age<'18') 
+  filter(age < '18') 
 
 under_18 %>%
   count(race) %>% 
@@ -564,8 +561,17 @@ under_18 %>%
     ) 
   )
 
+
+under_18 %>% 
+  group_by(race) %>% 
+  count() %>% 
+  dplyr::arrange(!n) %>% 
+  ungroup() %>% 
+  select(n) %>% 
+  head(1)
 ```
 
+`r round(count(under_18) / count(stop_frisk_df) * 100, 2)`% of people who were stopped were underage of 18; out of those `r under_18 %>% filter(sex == "F") %>% count()` were female, `r under_18 %>% filter(sex == "M") %>% count()` were male and `r under_18 %>% filter(sex == "Z") %>% count()` were identified as other. Most minors that were stopped were of race `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% select(1) %>% head(1)` with a total of `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% ungroup() %>%  select(n) %>% head(1)` stops.
 
 ### Trends over time
 

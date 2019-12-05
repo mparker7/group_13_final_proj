@@ -42,7 +42,7 @@ Our data source, [Stop and Frisk Data](https://www1.nyc.gov/site/nypd/stats/repo
 
 <h2> The Website </h2>
 
-[Demographics](flexdashboard.html) : Exploratory plots highlighting demographic features broken down by people stopped, frisked, and arrested.
+[Demographics Analysis](flexdashboard.html) : Exploratory plots highlighting demographic features broken down by people stopped, frisked, and arrested.
 
 [Project Report](project_report.html) : The complete report with regression analysis along with additional analysis about minors only and stop trends over time.
 

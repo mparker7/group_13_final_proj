@@ -702,8 +702,6 @@ clothes =
 object =
     reasons %>% 
    filter(reason_stopped == "carrying suspicious object")
-
-sum(pull(stop_frisk_df, arst_made))/nrow(stop_frisk_df)
 ```
 
 We conducted analysis over different reasons why individuals were stopped. There are 10 different categories of reasons which are `r (reasons$reason_stopped)` Amongst these different reasons "fits a relevant description" had a total of `r pull(fits_desc, total)`, falling close behind was `other` with a total of `r pull(other, total)`, and the reasons with the least amount of `r pull(clothes, total)` was `wearing clothes commonly used in crimes` and the amount of `r pull(object, total)` was `carrying a suspicious object`.

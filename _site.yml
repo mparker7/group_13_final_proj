@@ -3,7 +3,9 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "Analysis"
+
+
+    - text: "Demographics Analysis"
       href: flexdashboard.html
     - text: "Project Report"
       href: project_report.html
@@ -15,4 +17,4 @@ navbar:
       href: http://github.com/mparker7/group_13_final_proj/
 output:
   html_document:
-    theme: journal
+    theme: simplex

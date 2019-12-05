@@ -51,9 +51,8 @@ During mayoral election campaign in 2013, public pressure forced Bloomberg to cu
 After Bill de Blasio won mayoral election in 2013, he continued to downsize the program. In 2016 number of stops were less than 2% in comparison to that of 2011, when the stops reached its peak. In spite of expectations, crime prevalence continued to decline even after the program was decreased by 98%.  
 
 
-
 # Related Work
-New York Civil Liberties Union report “Stop-and-Frisk in the de Blasio era”.
+New York Civil Liberties Union report [Stop-and-Frisk in the de Blasio era](https://www.nyclu.org/en/publications/stop-and-frisk-de-blasio-era-2019).
 
 # Initial Questions
 
@@ -177,9 +176,10 @@ stop_frisk_df =
   filter(!is.na(build))
 ```
 
+## Demographics 
+The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop. 
 
-# Exploratory Analysis
-*Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.*
+The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old.  Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location". 
 
 ```{r, message = FALSE, eval = FALSE}
 # Percent innocent for each race category
@@ -226,11 +226,6 @@ plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>%
     ) 
   )
 ```
-
-## Demographics 
-The 12,404 reported stops in 2016 were spread unevely amongst the different races with black being the leading race over 50%, white-hispanic about 20%, and white, other and black-hispanic being under 10%. Of those 12,404 reported stops 7939 were frisked and among those different races who were frisked is about the same percentage as those who were stop. 
-
-The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old.  Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location". 
 
 ## Logistic Regression Analysis
  
@@ -649,6 +644,8 @@ stops_per_dow = stop_frisk_df %>%
 # Discussion
 
 The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race. Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. 
+
+Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
 
 
 

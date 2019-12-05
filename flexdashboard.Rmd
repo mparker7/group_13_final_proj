@@ -18,7 +18,10 @@ library(sp)
 library(sf)
 library(leaflet)
 library(patchwork)
+
+
 ```
+
 
 ```{r, include=FALSE}
 # Read in data
@@ -150,13 +153,14 @@ Column {data-width=500}
 ### Frequency of Frisked, Searched, and Arrested of Subjects by Race 
 
 ```{r}
+
 afs %>% 
    count(race, action) %>% 
   mutate(race = fct_infreq(race, n)) %>% 
   mutate(action = fct_relevel(action, c("Stop", "Frisk")),
          race = fct_relevel(race, c("black", "white-hispanic", "white", "other"))
          ) %>% 
-  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race)%>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race, colors = viridis_pal(option = "D")(3))%>% 
   layout(
     xaxis = list(
       type = 'category',
@@ -181,13 +185,13 @@ afs %>%
     "staten is" = "Staten Island"
   )) %>% 
   count(boro, action) %>% 
-  plot_ly(x = ~action, y = ~n, type = "bar", color = ~boro) %>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~boro, colors = viridis_pal(option = "D")(3)) %>% 
    layout(
     xaxis = list(
       type = 'category',
       title  = 'Action'), 
     yaxis = list(
-      title = 'Frequency'))
+      title = 'Frequency')) 
 ```
 
 
@@ -197,16 +201,10 @@ Column {data-width=500}
 ### Distribution of Frisked, Searched, and Arrested of Subjects by Age 
 
 ```{r}
-dist_age_race = 
-  afs %>%  
-count(age, action) %>% 
- ggplot(aes(y= age, x  = action )) +
-   geom_boxplot(aes(color=action), alpha = .4) +
-  labs(
-    x = "Action",
-    y = "Distribution"
-  )
-ggplotly(dist_age_race)
+
+afs %>% 
+  count(age, action) %>% 
+  plot_ly(x = ~action, y = ~age, type = "box", color = ~action, colors = viridis_pal(option = "D")(3)) 
 
   
 ```
@@ -223,7 +221,7 @@ subset(sex %in% c("F","M")) %>%
              "M" = "Male"
            )) %>% 
   count(sex, action) %>% 
-  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ sex)
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ sex, colors = viridis_pal(option = "D")(3)) 
 
 ```
 

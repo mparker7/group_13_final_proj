@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
 <meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -235,7 +236,6 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
-  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -320,7 +320,8 @@ $(document).ready(function () {
 <li>Describe the goal/motivation of the project; have some stats and facts to explain our purpose in investigating this dataset</li>
 <li>Describe the dataset: where is it from, what does it contain</li>
 <li>Review the questions we intend on answering</li>
-<li>Exploratory Data Analysis</li>
+<li>Exploratory Data Analysis
+<ul>
 <li>Give an overview of the demographics of our dataset, any conclusion we make is only relevant to those who were stopped which is why it is good to give an idea of who is represented
 <ul>
 <li>histogram of race/build/etc.</li>
@@ -336,6 +337,7 @@ $(document).ready(function () {
 <li>could maybe find a way to test this, i.e. linear regression, is the slope equal to zero, or something of that nature. the plot shows a funnel pattern so maybe we could look into that more</li>
 </ul></li>
 <li>other things</li>
+</ul></li>
 <li>Findings/Discussion</li>
 </ul>
 <p>Read in and tidy the data</p>

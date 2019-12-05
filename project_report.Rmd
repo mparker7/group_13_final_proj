@@ -246,6 +246,9 @@ Only variables that preceded the individual being stopped were used in logistic 
 
 Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only slightly better than guessing (0.50).
 
+
+Utilizing the methods above, the logistic regression model that was determined to have the best predictive ability included the variables: sex, race, age, height, build, stop inside/outside, officer in uniform, precinct, reason for stop - fits a relevant description, casing a victim or location, furtive movements, violent crime suspected, suspicious bulge, and other. With this model, the predictive power was 0.5677. This value is only mildly better than guessing (0.50).
+
 ```{r, results='hide', message=FALSE}
 set.seed(1)
 train = sample_frac(stop_frisk_df, size = 0.8)
@@ -284,9 +287,7 @@ pr = prediction(log_pred, test$frisked)
 perf = performance(pr, measure = "tpr", x.measure = "fpr")
 auc(test$frisked, log_pred)
 
-#translate probabilities to predictions
-log_predict <- rep("Predicted No Frisk", nrow(test))
-log_predict[log_predict > 0.50] <- "Predicted Frisk"
+log_pred = ifelse(log_pred == 1, "Predicted Frisk", "Predicted No Frisk")
 ```
 
 
@@ -297,17 +298,22 @@ plot(perf)
 ```
 
 
+
 **FRISKED Confusion Matrix**
+
+**Confusion Matrix: Predicted Frisked Status vs True Frisked Status**
 
 ```{r}
 #confusion matrix
-table(pred = log_predict, true = test$frisked) %>% knitr::kable(col.names = c("No Frisk", "Frisk"))
+table(pred = log_pred, true = test$frisked) %>% knitr::kable(col.names = c("No Frisk", "Frisk"))
 ```
 
 
 **ARST_MADE Model:**
 
 The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5283.
+
+The logistic regression model that was determined to have the best predictive ability included the variables: race, age, weight, stop inside/outside, whether the officer was in uniform, and seven reasons for stop variables. This model only performed slightly better than taking a random guess, with an AUC value of 0.5179. Based on the confusion matrix, the model is biased to predicting that the individual will not be arrested.
 
 ```{r, results='hide', message=FALSE}
 model_5 = glm(arst_made ~ sex + race + age + height_inch + weight + hair_col + eye_col + boro + build + stop_in_out + precinct + off_in_unif + cs_objcs + cs_descr + cs_casng + cs_lkout + cs_cloth + cs_drgtr + cs_furtv + cs_vcrim+ cs_bulge + cs_other, data = train)
@@ -344,12 +350,8 @@ pr = prediction(log_pred, test$arst_made)
 perf = performance(pr, measure = "tpr", x.measure = "fpr")
 auc(test$arst_made, log_pred)
 
-#translate probabilities to predictions
-log_predict <- rep("Predicted No Arrest", nrow(test))
-log_predict[log_pred > 0.25] <- "Predicted Arrest"
+log_pred = ifelse(log_pred == 1, "Predicted Arrest", "Predicted No Arrest")
 
-#confusion matrix
-table(pred = log_pred, true = test$arst_made)
 ```
 
 **ARST_MADE AUC Curve**
@@ -358,7 +360,11 @@ table(pred = log_pred, true = test$arst_made)
 plot(perf)
 ```
 
+
 **ARST_MADE Confusion Matrix**
+
+
+**Confusion Matrix: Predicted Arrest Status vs True Arrest Status**
 
 ```{r}
 
@@ -368,7 +374,7 @@ table(pred = log_pred, true = test$arst_made) %>% knitr::kable(col.names = c("No
 
 ### LASSO Regression
 
-LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling. LASSO regression for the arrest made model selected 2 of the 33 variables and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above. 
+LASSO regression was used to determine if machine learning could build a model that can make better predictions. Observations with missing data was removed, testing and training datasets were created, and cross validation was used to select the best model using the LASSO procedure. A matrix dataset was used to create dummy variables for all categorical variables, resulting in 33 variables. The lasso procedure for the FRISKED model kept 12 variables in the model and minimized 21 variables. Some important varialbes that LASSO kept in the model was sex = male, stop inside/outside, and officer in uniform. The AUC value was 0.461, which was less than the value selected from our logistic modeling, and is not a desired value for AUC, falling below 0.50, indicating the model is worse than taking a guess. LASSO regression for the arrest made model selected only 2 of the 33 variables (stop inside/outside and reason for stop: action indicative of drug transaction) and minimized the others to 0. The resulting AUC value was 0.407, which was significantly worse predictions compared to the logistic model from above. This is not surprising given that the model only selected for 2 variables. To develop our confusion matrix, because arrests were a small portion of our dataset, we lowered the "positive" prediction value to 0.3, compared to the traditional 0.5. This yielded a better values in our confusion matrix. 
 
 ```{r, results = 'hide', message=FALSE}
 library(glmnet)
@@ -497,7 +503,7 @@ lasso_prob <- predict(lasso_cv, newx = x_test, s = lambda_1se, type = "response"
 
 #translate probabilities to predictions
 lasso_predict <- rep("Predicted No Arrest", nrow(test_lasso_arst))
-lasso_predict[lasso_prob > 0.25] <- "Predicted Arrest"
+lasso_predict[lasso_prob > 0.30] <- "Predicted Arrest"
 
 #confusion matrix
 table(pred = lasso_predict, true = test_lasso_arst$arst_made)
@@ -701,7 +707,9 @@ stop_frisk_df %>%
 
 # Discussion
 
-The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race. Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. For example, it is understood that race is a strong factor in whether or not 
+The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. The logistic models were only slightly more successful at predicting whether or not the person would be frisked or arrested compared to taking a guess. While our goal was to develop a predictive model, this points to the fact that police officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race.
+
+Machine learning did not improve our predictive modeling. This may be due to the fact that many of the variables need a greater understanding of the topic before making a decision to remove it from the model or not. For arrest made model, it did not predict any probability of being arrested greater than 0.50. This is due to the fact that only ##% of individuals from the dataset were arrested. This problem was anticipated to be nullified by splitting the dataset 50/50 to make sure there were enough arrest observations in both the testing and the training dataset, however this was not the case. To create better predictions for the arrest made confusion matrix, we lowered the “positive” probability cut off to be 0.30 instead of 0.50. 
 
 Looking at the trends in stop frequency across time raise some interesting questions to be explored in future analysis. For example, why did the number of stops decrease across 2016? Are there policy changes causing the shift? Pushback from the general public? It was unsurprising to find that Staten Island had the least number of stops because they have the smallest population of all five boroughs. Looking at the frequency of stops by day of the week and hour of the day reveal some interesting trends that could be explored further by looking at data to understand when the most crimes are committed or when the NYPD has the most officers on duty.
 

@@ -73,7 +73,7 @@ Our dataset is from the New York Police Department and was obtained through the 
 
 ### Loading and tidying the data
 
-To obtain a dataset that could be used in LASSO and modeling logistic regression, several categorical variables with levels that had representation of less than 2% were regrouped into 'other' to ensure that both the testing and training dataset have individuals represented from all categorical levels. This included regrouping levels within the variables build, race, hair color, and eye color.
+The data used in our analysis was read in from the NYPD portion of nyc.gov data. After reading in the data, we selected a subset of variables that we would use for futher analysis. THen initial cleaning steps converted variables to their appropriate data type and renamed variables for clarity. We decided to convert age = 1, weight = 999, and weight = 1 to NA because these values are highly unlikely and may have been entered in error or used to represent missing values. To obtain a dataset that could be used in LASSO and modeling logistic regression, several categorical variables with levels that had representation of less than 2% were regrouped into 'other' to ensure that both the testing and training dataset have individuals represented from all categorical levels. This included regrouping levels within the variables build, race, hair color, and eye color.
 
 ```{r, message=FALSE}
 # Read in data

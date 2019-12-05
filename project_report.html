@@ -12,6 +12,7 @@
 
 <meta name="author" content="Lauren, Olya, Matt, Cj, &amp; Keyanna" />
 
+<meta name="date" content="2019-12-05" />
 
 <title>Stop! You Are Being Frisked!</title>
 
@@ -28,13 +29,6 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="site_libs/plotly-binding-4.9.0/plotly.js"></script>
-<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
-<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
-<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="site_libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="site_libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -415,7 +409,6 @@ div.tocify {
 </div>
 <div id="initial-questions" class="section level1">
 <h1>Initial Questions</h1>
-<p><em>What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?</em></p>
 <p>We are interested in determining if there is a predictive nature to this dataset. We also want to describe the scope of the dataset through visualizations of the different demographics present and create a map of stops across the five boroughs. Specifically, we strive to answer the following questions:</p>
 <ul>
 <li>What is the distribution of demographics in the dataset?</li>
@@ -429,7 +422,6 @@ div.tocify {
 </div>
 <div id="exploratory-analysis" class="section level1">
 <h1>Exploratory Analysis</h1>
-<p><em>Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.</em></p>
 <div id="loading-and-tidying-the-data" class="section level2">
 <h2>Loading and tidying the data</h2>
 <p>To obtain a dataset that could be used in LASSO and modeling logistic regression, several categorical variables with levels that had representation of less than 2% were regrouped into ‘other’ to ensure that both the testing and training dataset have individuals represented from all categorical levels. This included regrouping levels within the variables build, race, hair color, and eye color.</p>
@@ -821,38 +813,17 @@ under_18 %&gt;%
       title = &#39;Count&#39;,
       range = c(0, 1100)
     ) 
-  )</code></pre>
-<div id="htmlwidget-680ac4ac614a85e56073" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-680ac4ac614a85e56073">{"x":{"visdat":{"166f19594e10":["function () ","plotlyVisDat"]},"cur_data":"166f19594e10","attrs":{"166f19594e10":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Minors Stopped by Race","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["black","white-hispanic","black-hispanic","other","white"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Count","range":[0,1100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["black"],"y":[1061],"type":"bar","name":"black","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white-hispanic"],"y":[377],"type":"bar","name":"white-hispanic","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["black-hispanic"],"y":[151],"type":"bar","name":"black-hispanic","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["other"],"y":[143],"type":"bar","name":"other","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["white"],"y":[115],"type":"bar","name":"white","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code># percent innocent and arrested amoung minors 
+  )
+
+# percent innocent and arrested amoung minors 
 under_18 %&gt;% 
   count(arst_made) %&gt;%
   mutate(
     percent = (n /nrow(under_18)* 100)
   ) %&gt;% 
-  knitr::kable(digits = 2)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="right">arst_made</th>
-<th align="right">n</th>
-<th align="right">percent</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="right">0</td>
-<td align="right">1486</td>
-<td align="right">80.45</td>
-</tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="right">361</td>
-<td align="right">19.55</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code># Percent innocent minors among each race category
+  knitr::kable(digits = 2)
+
+# Percent innocent minors among each race category
 under_18_inn = function(x) {
   stop_frisk_df %&gt;% 
   filter(age &lt; 18,
@@ -894,8 +865,6 @@ plot_ly(x = ~race, y = ~percentage, type = &quot;bar&quot;, color = ~race) %&gt;
       range = c(0, 100)
     ) 
   )</code></pre>
-<div id="htmlwidget-ac42d64351e596bf6e3d" style="width:90%;height:576px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ac42d64351e596bf6e3d">{"x":{"visdat":{"166f36140970":["function () ","plotlyVisDat"]},"cur_data":"166f36140970","attrs":{"166f36140970":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Percent innocent Minors among each race category","xaxis":{"domain":[0,1],"automargin":true,"type":"category","title":"Race","categoryorder":"array","categoryarray":["White","Black","Other","White-Hispanic","Black-Hispanic"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"Percent innocent, %","range":[0,100]},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["White"],"y":[83.4782608695652],"type":"bar","name":"White","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Black"],"y":[82.6127819548872],"type":"bar","name":"Black","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Other"],"y":[78.6206896551724],"type":"bar","name":"Other","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["White-Hispanic"],"y":[76.2532981530343],"type":"bar","name":"White-Hispanic","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Black-Hispanic"],"y":[76.158940397351],"type":"bar","name":"Black-Hispanic","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="trends-over-time" class="section level2">
 <h2>Trends over time</h2>
@@ -929,7 +898,8 @@ stops_per_month =
   ) %&gt;% 
   ggplot(aes(x = month_stop, y = count, color = boro)) + 
   geom_point() +
-  geom_smooth(se = FALSE) +
+  geom_line() +
+  geom_smooth(se = FALSE, method = &quot;lm&quot;) +
   labs(
     title = &quot;Number of stops per month by borough&quot;,
     x = &quot;Month of stop&quot;,
@@ -991,12 +961,11 @@ stops_per_dow = stop_frisk_df %&gt;%
   theme(legend.position = &quot;none&quot;)
 
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)</code></pre>
-<p><img src="project_report_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+<p><img src="project_report_files/figure-html/unnamed-chunk-14-1.png" width="90%" /></p>
 </div>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
-<p><em>What were you findings? Are they what you expected? What insights into the data can you make?</em></p>
 <p>The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. These models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested than taking a guess. While our goal was to develop a predictive model, this points to the fact that officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race.</p>
 </div>
 

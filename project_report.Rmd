@@ -56,7 +56,6 @@ After Bill de Blasio won mayoral election in 2013, he continued to downsize the 
 New York Civil Liberties Union report “Stop-and-Frisk in the de Blasio era”.
 
 # Initial Questions
-*What questions are you trying to answer? How did these questions evolve over the course over the course of the project? What new questions did you consider in the course of your analysis?*
 
 We are interested in determining if there is a predictive nature to this dataset. We also want to describe the scope of the dataset through visualizations of the different demographics present and create a map of stops across the five boroughs. Specifically, we strive to answer the following questions:
 
@@ -70,7 +69,6 @@ Our dataset is from the New York Police Department and was obtained through the 
 
 
 # Exploratory Analysis
-*Visualizations, summaries, and exploratory statistical analyses. Justify the steps you took, and show any major changes to you ideas.*
 
 ## Loading and tidying the data
 
@@ -439,13 +437,14 @@ table(pred = lasso_predict, true = test_lasso_arst$arst_made) %>% knitr::kable(c
 
 # Additional Analysis
 ## Minors
+
 Additional analysis was performed for stopped individuals under age of 18.
 
 14.8% of people who were stopped were underage of 18; out of those 156 were female, 1674 were male and 17 were identified as other. Reasons for stopping minors are consistent with the overall trend in the data set. The most common reasons are "fits a relevant description", "furtive movements" and the "other". In 2016 80% of minors stopped were innocent and 20% were arrested. Out of minors who have been arrested 86% were black, white-hispanic or black-hispanic. 
 
 Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.
 
-```{r, message - FALSE}
+```{r, message = FALSE, eval=FALSE}
 under_18 = stop_frisk_df %>% 
   filter(age<'18') 
 
@@ -552,7 +551,8 @@ stops_per_month =
   ) %>% 
   ggplot(aes(x = month_stop, y = count, color = boro)) + 
   geom_point() +
-  geom_smooth(se = FALSE) +
+  geom_line() +
+  geom_smooth(se = FALSE, method = "lm") +
   labs(
     title = "Number of stops per month by borough",
     x = "Month of stop",
@@ -620,7 +620,6 @@ stops_per_dow = stop_frisk_df %>%
 
 
 # Discussion
-*What were you findings? Are they what you expected? What insights into the data can you make?*
 
 The models created for FRISKED and ARST_MADE were not very successful at predicting who would be frisked or arrested. These models were only slightly more sucessful at predicting whether or not the person would be frisked or arrested than taking a guess. While our goal was to develop a predictive model, this points to the fact that officers are not basing their frisk/arrest decisions on characteristics, demographics, and location of the stop. After the tactic came under scrutiny, the NYPD is taking measures to ensure that the policy is non-discriminant, which from our analyses we can see is successful. However, as is described under the demographics analysis section, those that are stopped in the first place tend to be non-white race. 
 

@@ -130,18 +130,16 @@ afs = stop_frisk_df %>%
            stopped > 0 ~ '1',
            TRUE ~""),
          stopped = as.numeric(stopped)) %>% 
-  select(race, arst_made, frisked, stopped, age) %>% 
+  select(race, arst_made, frisked, stopped, age, build, eye_col, hair_col, weight, sex, boro) %>% 
   pivot_longer(
       arst_made:stopped,
       names_to = "action",
       values_to = "value") %>% 
   filter(value == '1') %>% 
-  count(race, action) %>% 
-  mutate(race = fct_infreq(race, n),
-         action = recode(action,
+    mutate(action = recode(action,
                          "arst_made" = "Arrest",
                          "frisked" = "Frisk",
-                         "stopped" = "Stop"))
+                         "stopped" = "Stop")) 
 ```
 
 
@@ -149,76 +147,17 @@ afs = stop_frisk_df %>%
 Column {data-width=500}
 -----------------------------------------------------------------------
 
-### Percentage of Reported Stops and Frisks by Race 
-
-```{r}
-stop =
-  stop_frisk_df %>% 
-  drop_na() %>% 
-  mutate(
-    race = fct_infreq(race)
-    ) %>% 
-  ggplot(aes(race, fill = race))+
-  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
-  labs(
-    title = "Percentages of Reported Stops by Race",
-    y= "percentage") +
-    theme(legend.position = "none")
-
-frisk =
-  stop_frisk_df %>% 
-  drop_na() %>% 
-  mutate(
-    race = fct_infreq(race)
-    ) %>% 
-  filter(frisked == '1') %>% 
-  ggplot(aes(race, fill = race))+
-  geom_bar(aes(y=(..count..)/sum(..count..)),alpha = .5, position = "dodge")+
-  labs(
-    title = "Percentages of Reported Stops Resulting in a Frisk by Race",
-    y= "percentage") +
-    theme(legend.position = "none")
-
-(stop/frisk)
-```
-
-
-Column {data-width=450}
------------------------------------------------------------------------
-
-### Distribution of Age by Race
-
-```{r}
-p = stop_frisk_df %>% 
-drop_na() %>% 
-mutate(stopped = as.numeric(stop_in_out),
-stopped = case_when(
-stopped > 0 ~ '1',
-TRUE ~""),
-stopped = as.numeric(stopped)) %>% 
-select(age, arst_made, frisked, stopped) %>% 
-pivot_longer(
-arst_made:stopped,
-names_to = "action",
-values_to = "value") %>% 
-filter(value == '1') %>% 
-count(age, action) %>% 
- ggplot(aes(y= age, x  = action )) +
-   geom_boxplot(aes(color=action), alpha = .4)
-ggplotly(p)
-  
-```
-
-### Total Count of Frisked, Searched, and Arrested of Subjects by Race
+### Frequency of Frisked, Searched, and Arrested of Subjects by Race 
 
 ```{r}
 afs %>% 
+   count(race, action) %>% 
+  mutate(race = fct_infreq(race, n)) %>% 
   mutate(action = fct_relevel(action, c("Stop", "Frisk")),
          race = fct_relevel(race, c("black", "white-hispanic", "white", "other"))
          ) %>% 
   plot_ly(x = ~action, y = ~n, type = "bar", color = ~ race)%>% 
   layout(
-    title = 'Frequency of race for Stop, Frisk, Arrest',
     xaxis = list(
       type = 'category',
       title  = 'Action'), 
@@ -227,6 +166,64 @@ afs %>%
       range = c(0, 6500)
     ) 
     )
+```
+
+### Frequency of Frisked, Searched, and Arrested of Subjects by Borough
+
+```{r}
+afs %>% 
+  mutate(boro = recode(
+    boro,
+    "bronx" = "Bronx",
+    "brooklyn" = "Brooklyn",
+    "manhattan" = "Manhattan",
+    "queens" = "Queens",
+    "staten is" = "Staten Island"
+  )) %>% 
+  count(boro, action) %>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~boro) %>% 
+   layout(
+    xaxis = list(
+      type = 'category',
+      title  = 'Action'), 
+    yaxis = list(
+      title = 'Frequency'))
+```
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Distribution of Frisked, Searched, and Arrested of Subjects by Age 
+
+```{r}
+dist_age_race = 
+  afs %>%  
+count(age, action) %>% 
+ ggplot(aes(y= age, x  = action )) +
+   geom_boxplot(aes(color=action), alpha = .4) +
+  labs(
+    x = "Action",
+    y = "Distribution"
+  )
+ggplotly(dist_age_race)
+
+  
+```
+
+### Frequency of Frisked, Searched, and Arrested of Subjects by Sex
+
+```{r}
+afs %>% 
+subset(sex %in% c("F","M")) %>% 
+  mutate(sex = 
+           recode(
+             sex,
+             "F" = "Female",
+             "M" = "Male"
+           )) %>% 
+  count(sex, action) %>% 
+  plot_ly(x = ~action, y = ~n, type = "bar", color = ~ sex)
 
 ```
 

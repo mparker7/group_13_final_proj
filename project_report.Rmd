@@ -233,13 +233,8 @@ The 12,404 reported stops in 2016 were spread unevely amongst the different race
 The age of the stopped individuals ranges from 1 to 99, with equal age distribution among the sexes. Over 50% of stopped individuals were between 18 and 30 years old.  Most stops occured in Brooklyn (30%) and Queens (26%). The 4 leading reasons for stops were identified to be "fits a relevant description", "furtive movements", "other" and "casing a victim or location". 
 
 ## Logistic Regression Analysis
-<<<<<<< HEAD
  
-Goal: To select for models that will best answer the following questions:
-=======
-
 **Goal:** To select for models that will best answer the following questions:
->>>>>>> 1c877b3cc57e23f9a0975afa6f991b8ac1c8e19f
 
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be frisked or not?
  * Among those who were stopped, can we model demographics, location of stop, and reasons for stopping to predict whether the person will be arrested or not? 
@@ -499,11 +494,8 @@ Additional analysis was performed for stopped individuals under age of 18.
 
 Majority of stopped minors were innocent:83.5% of white minors, 82.6% of black minors, 78.6% of other race caftegory of minors, 76.3% of white-hispanic minors and 76.2% of black-nispanic minors.
 
-<<<<<<< HEAD
 ```{r, message = FALSE, results = 'hide'}
-=======
-```{r, message = FALSE, eval=FALSE}
->>>>>>> 1c877b3cc57e23f9a0975afa6f991b8ac1c8e19f
+
 under_18 = stop_frisk_df %>% 
   filter(age<'18') 
 
@@ -517,7 +509,7 @@ under_18 %>%
 ```
 
 
-```{r, message - FALSE}
+```{r, message = FALSE}
 under_18 = stop_frisk_df %>% 
   filter(age<'18') 
 
@@ -638,9 +630,6 @@ stops_per_dow = stop_frisk_df %>%
 
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)
 ```
-
-
-
 
 # Discussion
 

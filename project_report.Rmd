@@ -191,11 +191,8 @@ The age of the stopped individuals ranges from `r min(pull(stop_frisk_df, age), 
 
 ```{r, message = FALSE, eval = FALSE}
 # Percent innocent for each race category
-percent_innocent = function(x) {
+percent_innocent = 
   stop_frisk_df %>% 
-  filter(
-         #age < 18,
-         race == x) %>% 
   group_by(race, arst_made) %>% 
   count() %>% 
   pivot_wider(
@@ -206,12 +203,8 @@ percent_innocent = function(x) {
     arrested = `1`) %>% 
   mutate(
     percentage = (innocent/(innocent + arrested)) *100)
-}
 
-output = map_df(stop_frisk_df$race, percent_innocent) %>% 
-  distinct(race, percentage)
-
-output %>% 
+percent_innocent %>% 
   ungroup(race) %>% 
   mutate(
     race = fct_relevel(race, c("white", "black", "other", "white-hispanic")),
@@ -224,12 +217,12 @@ output %>%
     ) %>% 
 plot_ly(x = ~race, y = ~percentage, type = "bar", color = ~race) %>% 
   layout(
-    title = 'Percent innocent Minors among each race category',
+    title = 'Percent Innocent Minors Among Each Race Category',
     xaxis = list(
       type = 'category',
       title  = 'Race'), 
     yaxis = list(
-      title = 'Percent innocent, %',
+      title = 'Percentage',
       range = c(0, 100)
     ) 
   )

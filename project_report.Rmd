@@ -560,22 +560,11 @@ under_18 %>%
       range = c(0, 1100)
     ) 
   )
-
-
-under_18 %>% 
-  group_by(race) %>% 
-  count() %>% 
-  dplyr::arrange(!n) %>% 
-  ungroup() %>% 
-  select(n) %>% 
-  head(1)
 ```
 
 `r round(count(under_18) / count(stop_frisk_df) * 100, 2)`% of people who were stopped were underage of 18; out of those `r under_18 %>% filter(sex == "F") %>% count()` were female, `r under_18 %>% filter(sex == "M") %>% count()` were male and `r under_18 %>% filter(sex == "Z") %>% count()` were identified as other. Most minors that were stopped were of race `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% select(1) %>% head(1)` with a total of `r under_18 %>% group_by(race) %>% count() %>% dplyr::arrange(!n) %>% ungroup() %>%  select(n) %>% head(1)` stops.
 
 ### Trends over time
-
-We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.
 
 ```{r, message=FALSE}
 # Number of stops per day
@@ -672,6 +661,7 @@ stops_per_dow = stop_frisk_df %>%
 (stops_per_day + stops_per_hour) / (stops_per_month + stops_per_dow)
 ```
 
+We also conducted analysis to explore the trends in stops over time and by borough in NYC. We discovered that the number of stops steadily decreased through 2016. Also, most boroughs in NYC have a similar trend and number of stops, except for Staten Island, which had a steady smaller number of stops. Additionally, the frequency of stops is less in the morning (with 7 AM having the smallest number of stops) and higher towards the evening/night. Finally, we looked at the number of stops by the day of the week and discovered that less stops occur on Sunday and Monday than the other days of the week.
 
 ### Reasons for Being Stopped
 
